@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
 
 namespace DataLayer
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddDataLayer(this IServiceCollection services)
+        public static IServiceCollection AddDataLayer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<CarRentalContext>(options =>
-            options.UseNpgsql(Configuration.GetConnectionString("BloggingContext")));
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnectionString")));
             return services;
         }
     }
