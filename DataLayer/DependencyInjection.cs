@@ -9,8 +9,8 @@ namespace DataLayer
     {
         public static IServiceCollection AddDataLayer(this IServiceCollection services)
         {
-            //services.AddDbContext<CarRentalContext>(options =>
-            //options.UseNpgsql(Configuration.GetConnectionString("BloggingContext")));
+            services.AddDbContext<CarRentalContext>(options =>
+            options.UseNpgsql(Configuration.GetConnectionString("BloggingContext")));
             return services;
         }
     }
