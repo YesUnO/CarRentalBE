@@ -4,9 +4,9 @@ namespace CarRentalAPI
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddThingsToContainer(this IServiceCollection services)
+        public static IServiceCollection AddThingsToContainer(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddCore();
+            services.AddCore(configuration);
             return services;
         }
     }

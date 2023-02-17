@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,8 +9,12 @@ namespace DataLayer
     {
         public static IServiceCollection AddDataLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<CarRentalContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnectionString")));
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(connectionString));
+
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
             return services;
         }
     }
