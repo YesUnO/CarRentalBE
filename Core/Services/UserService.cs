@@ -1,9 +1,8 @@
-﻿
-using Core.Services.Interfaces;
+﻿using Core.Services.Interfaces;
 
 namespace Core.Services
 {
-    internal class UserService : IUserService
+    public class UserService : IUserService
     {
     }
 }
