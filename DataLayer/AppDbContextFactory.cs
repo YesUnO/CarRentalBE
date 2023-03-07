@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Configuration;
 
 namespace DataLayer
@@ -17,8 +16,7 @@ namespace DataLayer
 
 
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            //var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             dbContextOptionsBuilder
                 .UseNpgsql(connectionString);
 
