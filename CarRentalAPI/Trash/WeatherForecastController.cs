@@ -1,3 +1,4 @@
+using IdentityModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalAPI.Trash
@@ -28,6 +29,15 @@ namespace CarRentalAPI.Trash
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpPost]
+        public void Post()
+        {
+            if (!HttpMethods.IsPost(Request.Method) || !Request.HasFormContentType)
+            {
+                _logger.LogWarning("Invalid HTTP request for token endpoint");
+            }
         }
     }
 }

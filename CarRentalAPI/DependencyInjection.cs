@@ -1,4 +1,5 @@
 ﻿using Core;
+using Microsoft.AspNetCore.Authentication;
 
 namespace CarRentalAPI
 {
@@ -7,7 +8,8 @@ namespace CarRentalAPI
         public static IServiceCollection AddThingsToContainer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddCore(configuration);
+
             return services;
-        }
+         }
     }
 }
