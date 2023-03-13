@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230308191046_persistedGrant")]
-    partial class persistedGrant
+    [Migration("20230313092357_identityServerAndSeed")]
+    partial class identityServerAndSeed
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -194,14 +194,14 @@ namespace DataLayer.Migrations
                         new
                         {
                             Id = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
-                            ConcurrencyStamp = "e8c5f9ca-c246-4905-9187-1d14c6ebdb32",
+                            ConcurrencyStamp = "477098b8-998a-430f-a665-65f994672bba",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
-                            ConcurrencyStamp = "77d92230-7f1d-420c-89a5-f055e2e93d37",
+                            ConcurrencyStamp = "49bc9d5e-a845-4b58-a56d-8d6e882b18c4",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -300,13 +300,16 @@ namespace DataLayer.Migrations
                         {
                             Id = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a3312c6d-a306-40fc-8249-e8406f863050",
+                            ConcurrencyStamp = "3d277a58-f8b9-4eee-ab0b-72a3516a90b3",
                             Email = "vilem.cech@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAEAACcQAAAAEHSyJfwg3n0LDPVxv+gs4WFap6+h/jCV0gdpyKlz6s8HbZIB0nFeHA0RuDAM0n4zFw==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "74d88bb5-e068-49b2-b124-23c3a21f5cfc",
+                            NormalizedEmail = "VILEM.CECH@GMAIL.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAt8SfKYBDUcN4amfN/1EePBRhMzIfWVlqZAl84A2IVwAdLKF2lASlf+zYJYnWQhkA==",
+                            PhoneNumber = "773951604",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "85909a14-a3f5-49ba-bcfd-9e868a03b868",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -372,6 +375,13 @@ namespace DataLayer.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
+                            RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

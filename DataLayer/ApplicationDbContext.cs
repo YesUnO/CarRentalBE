@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
 namespace DataLayer
 {
@@ -42,10 +43,28 @@ namespace DataLayer
             builder.Entity<IdentityRole>().HasData(roles);
 
             var pH = new PasswordHasher<IdentityUser>();
-            var user = new IdentityUser { Id = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406", Email = "vilem.cech@gmail.com", EmailConfirmed = true, UserName = "admin" };
+            var user = new IdentityUser
+            {
+                Id = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
+                Email = "vilem.cech@gmail.com",
+                EmailConfirmed = true,
+                UserName = "admin",
+                NormalizedUserName = "ADMIN",
+                NormalizedEmail = "VILEM.CECH@GMAIL.COM",
+                PhoneNumber= "773951604",
+                PhoneNumberConfirmed= true,
+            };
             user.PasswordHash = pH.HashPassword(user, "yo");
 
             builder.Entity<IdentityUser>().HasData(new List<IdentityUser> { user });
+
+            builder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>
+            {
+                RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
+                UserId = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406"
+            }
+        );
 
             builder.ConfigurePersistedGrantContext(_operationalStoreOptions.Value);
         }

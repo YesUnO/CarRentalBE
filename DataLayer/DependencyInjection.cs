@@ -1,5 +1,8 @@
-﻿using Duende.IdentityServer.EntityFramework.Entities;
+﻿using Duende.IdentityServer.AspNetIdentity;
+using Duende.IdentityServer.EntityFramework.Entities;
+using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,13 +25,25 @@ namespace DataLayer
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            var clientSection = configuration.GetSection("IdentityServer");
-
-            var yo = clientSection.Get<Client[]>();
+            var identityResources = new List<Duende.IdentityServer.Models.IdentityResource>
+            {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile()
+            };
 
             services.AddIdentityServer()
                 .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
+                .AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
                 .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"));
+                //.AddConfigurationStore(options =>
+                //{
+                //    options.ConfigureDbContext = b => b.UseNpgsql(connectionString);
+                //})
+                //.AddOperationalStore(options =>
+                //{
+                //    options.ConfigureDbContext = b => b.UseNpgsql(connectionString);
+                //})
+                //.AddInMemoryIdentityResources(identityResources);
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

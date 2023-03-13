@@ -20,12 +20,14 @@ namespace DataLayer
 
 
             //var dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            //var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            //var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             //dbContextOptionsBuilder
             //    .UseNpgsql(connectionString);
             //return new ApplicationDbContext(dbContextOptionsBuilder.Options, new OperationalStoreOptions());
-            var connectionString = "User ID =postgres;Password=nevermind;Server=localhost;Port=5432;Database=testDb;Integrated Security=true;Pooling=true;"
-;            //var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+
+            //var connectionString = "User ID =postgres;Password=nevermind;Server=localhost;Port=5432;Database=testDb;Integrated Security=true;Pooling=true;";
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
             IServiceCollection services = new ServiceCollection();
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
             services.Configure<OperationalStoreOptions>(x => { });
