@@ -1,11 +1,13 @@
 ﻿using DTO;
+using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 namespace Core.Services.Interfaces
 {
-    internal interface IUserService
+    public interface IUserService
     {
         Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal);
         List<UserDTO> GetUsers();
+        Task<bool> DeleteUser(IdentityUser user);
     }
 }
