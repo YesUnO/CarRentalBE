@@ -9,6 +9,10 @@ namespace CarRentalAPI
         {
             services.AddCore(configuration);
 
+
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
+
             return services;
          }
     }

@@ -20,16 +20,16 @@ namespace CarRentalAPI.Controllers
         }
 
         [HttpDelete]
-        [AllowAnonymous]
-        public async Task<IActionResult> Delete(string username)
+        [Authorize(AuthenticationSchemes = "IdentityServerJwtBearer")]
+        public async Task<IActionResult> Delete(string name)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(name);
             if (user == null)
             {
                 return NotFound();
             }
             var result = await _userService.DeleteUser(user);
-            
+
             if (result)
             {
                 return Ok();

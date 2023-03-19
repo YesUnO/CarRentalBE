@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ApiResource = Duende.IdentityServer.Models.ApiResource;
+using ApiScope = Duende.IdentityServer.Models.ApiScope;
 
 namespace DataLayer
 {
@@ -22,8 +24,11 @@ namespace DataLayer
             //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
 
             var identityResources = new List<Duende.IdentityServer.Models.IdentityResource>
             {
@@ -31,10 +36,18 @@ namespace DataLayer
                 new IdentityResources.Profile()
             };
 
-            services.AddIdentityServer()
+            var resources = configuration.GetSection("IdentityServer:ApiResources").Get<List<ApiResource>>();
+            var scopes = configuration.GetSection("IdentityServer:ApiScopes").Get<List<ApiScope>>();
+            var clients = configuration.GetSection("IdentityServer:Clients").Get<List<Duende.IdentityServer.Models.Client>>();
+
+            services.AddIdentityServer(options =>
+            {
+                options.EmitStaticAudienceClaim = true;
+            })
                 .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
+                .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
                 .AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
-                .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"));
+                .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
                 //.AddConfigurationStore(options =>
                 //{
                 //    options.ConfigureDbContext = b => b.UseNpgsql(connectionString);
@@ -43,11 +56,11 @@ namespace DataLayer
                 //{
                 //    options.ConfigureDbContext = b => b.UseNpgsql(connectionString);
                 //})
-                //.AddInMemoryIdentityResources(identityResources);
+                .AddInMemoryIdentityResources(identityResources)
+                .AddResourceOwnerValidator < **PasswordAuthentication * *> ();
+            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
 
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
-
+            services.AddLocalApiAuthentication();
             return services;
         }
     }

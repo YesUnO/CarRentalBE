@@ -50,7 +50,7 @@ if (app.Environment.IsDevelopment())
         c.OAuthClientSecret("my-client-secret");
         c.OAuthAppName("My App");
         c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
-        //c.OAuthUsePkce();
+        c.OAuthUsePkce();
     });
 }
 

@@ -31,6 +31,8 @@ namespace Core.Services
                     if (result.Succeeded) return false;
                 }
 
+                await _applicationDbContext.Roles.FindAsync(2);
+
                 if (rolesForUser.Count() > 0)
                 {
                     foreach (var item in rolesForUser.ToList())
