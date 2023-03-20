@@ -11,13 +11,6 @@ namespace CarRentalAPI
         {
             services.AddCore(configuration);
 
-            //services.AddAuthorization(auth =>
-            //{
-            //    auth.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
-            //        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-            //        .RequireAuthenticatedUser()
-            //        .Build());
-            //});
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
