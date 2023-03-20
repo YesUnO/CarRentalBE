@@ -1,6 +1,7 @@
 ﻿using Core;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarRentalAPI
 {
@@ -10,12 +11,19 @@ namespace CarRentalAPI
         {
             services.AddCore(configuration);
 
+            //services.AddAuthorization(auth =>
+            //{
+            //    auth.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
+            //        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+            //        .RequireAuthenticatedUser()
+            //        .Build());
+            //});
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     // base-address of your identityserver
-                    options.Authority = "https://demo.duendesoftware.com";
+                    options.Authority = "https://localhost:7125";
 
                     // audience is optional, make sure you read the following paragraphs
                     // to understand your options
