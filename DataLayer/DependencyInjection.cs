@@ -56,8 +56,8 @@ namespace DataLayer
                 //{
                 //    options.ConfigureDbContext = b => b.UseNpgsql(connectionString);
                 //})
-                .AddInMemoryIdentityResources(identityResources)
-                .AddResourceOwnerValidator < **PasswordAuthentication * *> ();
+                .AddInMemoryIdentityResources(identityResources);
+                //.AddResourceOwnerValidator < **PasswordAuthentication * *> ();
             services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
 
             services.AddLocalApiAuthentication();

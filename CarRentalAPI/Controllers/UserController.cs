@@ -2,6 +2,7 @@
 using Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CarRentalAPI.Controllers
 {
@@ -20,7 +21,7 @@ namespace CarRentalAPI.Controllers
         }
 
         [HttpDelete]
-        [Authorize(AuthenticationSchemes = "IdentityServerJwtBearer")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(string name)
         {
             var user = await _userManager.FindByNameAsync(name);
