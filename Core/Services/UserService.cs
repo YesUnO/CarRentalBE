@@ -65,14 +65,25 @@ namespace Core.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> RegisterCustomer(IdentityUser user, string email)
+        public async Task<bool> RegisterCustomer(IdentityUser user, string email, string password)
         {
-            var createApplicationUser = await CreateApplicationUserAsync(user);
-            if(!createApplicationUser)
-                return false;
+            using (var transaction = _applicationDbContext.Database.BeginTransaction())
+            {
+                var creatingUserResult = await _userManager.CreateAsync(user, password);
 
-            await _userManager.AddToRoleAsync(user, "customer"); 
-            await _userManager.SetEmailAsync(user, email);
+                if (creatingUserResult.Succeeded)
+                {
+                    var createApplicationUser = await CreateApplicationUserAsync(user);
+                    if (!createApplicationUser)
+                        return false;
+
+                    await _userManager.AddToRoleAsync(user, "customer");
+                    await _userManager.SetEmailAsync(user, email);
+                }
+                else
+                    return false;
+                transaction.Commit();
+            }
             return true;
         }
 

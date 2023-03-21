@@ -26,16 +26,11 @@ namespace CarRentalAPI.Controllers
         public async Task<IActionResult> Register(RegisterModel model)
         {
             var user = new IdentityUser(model.UserName);
-            var creatingUserResult = await _userManager.CreateAsync(user, model.Password);
-            if (creatingUserResult.Succeeded)
-            {
-                var registerCustomer = await _userService.RegisterCustomer(user, model.Email);
-                if(!registerCustomer)
-                    return BadRequest();
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return Ok();
-            }
-            return BadRequest();
+            var registerCustomer = await _userService.RegisterCustomer(user, model.Email, model.Password);
+            if(!registerCustomer)
+                return BadRequest();
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return Ok();
         }
         //public async Task<IActionResult> Login(Login model)
         //{
