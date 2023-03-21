@@ -37,5 +37,24 @@ namespace CarRentalAPI.Controllers
             }
             return BadRequest();
         }
+
+        [HttpDelete]
+        [Route("SoftDelete")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> SoftDelete(string name)
+        {
+            var user = await _userManager.FindByNameAsync(name);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var result = await _userService.DeleteUser(user);
+
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
     }
 }

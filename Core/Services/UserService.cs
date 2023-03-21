@@ -1,8 +1,10 @@
 ﻿using Core.Helpers;
 using Core.Services.Interfaces;
 using DataLayer;
+using DataLayer.Entities;
 using DTO;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Core.Services
@@ -25,13 +27,16 @@ namespace Core.Services
 
             using (var transaction = _applicationDbContext.Database.BeginTransaction())
             {
+                var deleteApplicationUserResult = await DeleteApplicationUser(user);
+
+                if (!deleteApplicationUserResult)
+                    return false;
+
                 foreach (var login in logins.ToList())
                 {
                     var result = await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
-                    if (result.Succeeded) return false;
+                    if (!result.Succeeded) return false;
                 }
-
-                await _applicationDbContext.Roles.FindAsync(2);
 
                 if (rolesForUser.Count() > 0)
                 {
@@ -39,7 +44,7 @@ namespace Core.Services
                     {
                         // item should be the name of the role
                         var result = await _userManager.RemoveFromRoleAsync(user, item);
-                        if (result.Succeeded) return false;
+                        if (!result.Succeeded) return false;
                     }
                 }
 
@@ -58,6 +63,41 @@ namespace Core.Services
         public List<UserDTO> GetUsers()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> RegisterCustomer(IdentityUser user, string email)
+        {
+            var createApplicationUser = await CreateApplicationUserAsync(user);
+            if(!createApplicationUser)
+                return false;
+
+            await _userManager.AddToRoleAsync(user, "customer"); 
+            await _userManager.SetEmailAsync(user, email);
+            return true;
+        }
+
+        public Task<bool> SoftDeleteUser(IdentityUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
+        {
+            var applicationUser = new ApplicationUser { IdentityUser= user };
+            var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
+            await _applicationDbContext.SaveChangesAsync();
+            return userAdd.IsKeySet;
+        }
+
+        private async Task<bool> DeleteApplicationUser (IdentityUser user)
+        {
+            var applicationUser = await _applicationDbContext.ApplicationUsers.Where(x=>x.IdentityUser == user).FirstOrDefaultAsync();
+            if (applicationUser == null)
+            {
+                return true;
+            }
+            var result = _applicationDbContext.ApplicationUsers.Remove(applicationUser);
+            return result.IsKeySet;
         }
     }
 }

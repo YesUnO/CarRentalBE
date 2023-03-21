@@ -1,13 +1,8 @@
-﻿using CarRentalAPI.Models;
-using CarRentalAPI.Models.Auth;
+﻿using CarRentalAPI.Models.Auth;
+using Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace CarRentalAPI.Controllers
 {
@@ -17,11 +12,13 @@ namespace CarRentalAPI.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserService _userService;
 
-        public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+        public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IUserService userService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -29,11 +26,12 @@ namespace CarRentalAPI.Controllers
         public async Task<IActionResult> Register(RegisterModel model)
         {
             var user = new IdentityUser(model.UserName);
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
+            var creatingUserResult = await _userManager.CreateAsync(user, model.Password);
+            if (creatingUserResult.Succeeded)
             {
-                await _userManager.SetEmailAsync(user, model.Email);
-                await _userManager.SetEmailAsync(user, model.Email);
+                var registerCustomer = await _userService.RegisterCustomer(user, model.Email);
+                if(!registerCustomer)
+                    return BadRequest();
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return Ok();
             }
