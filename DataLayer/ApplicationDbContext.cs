@@ -36,6 +36,9 @@ namespace DataLayer
         {
             base.OnModelCreating(builder);
 
+
+            //TODO: add applicationUser
+
             List<IdentityRole> roles = new List<IdentityRole> {
                 new IdentityRole { Id = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7", Name = "Admin", NormalizedName = "ADMIN" },
                 new IdentityRole { Id = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f", Name = "Customer", NormalizedName = "CUSTOMER" }

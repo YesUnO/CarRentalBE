@@ -89,6 +89,7 @@ namespace Core.Services
 
         public Task<bool> SoftDeleteUser(IdentityUser user)
         {
+            //TODO: implement
             throw new NotImplementedException();
         }
 

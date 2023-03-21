@@ -14,7 +14,7 @@ namespace DataLayer
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
 
-            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn
+            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>()
                 .AddRoles<IdentityRole>()
@@ -38,7 +38,6 @@ namespace DataLayer
                 .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
                 .AddInMemoryIdentityResources(identityResources);
                 //.AddResourceOwnerValidator < **PasswordAuthentication * *> ();
-            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
 
             services.AddLocalApiAuthentication();
             return services;

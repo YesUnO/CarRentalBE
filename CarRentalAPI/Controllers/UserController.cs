@@ -21,7 +21,7 @@ namespace CarRentalAPI.Controllers
         }
 
         [HttpDelete]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles = "Admin")]
         public async Task<IActionResult> Delete(string name)
         {
             var user = await _userManager.FindByNameAsync(name);
@@ -36,6 +36,13 @@ namespace CarRentalAPI.Controllers
                 return Ok();
             }
             return BadRequest();
+        }
+
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles = "Admin")]
+        public async Task<IActionResult> Get()
+        {
+            return Ok();
         }
 
         [HttpDelete]
