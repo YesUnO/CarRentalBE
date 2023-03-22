@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
-namespace DataLayer
+namespace DataLayer.IdentityServer
 {
     public class AdditionalUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<IdentityUser, IdentityRole>
     {
 
         public AdditionalUserClaimsPrincipalFactory(
             UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, 
+            RoleManager<IdentityRole> roleManager,
             IOptions<IdentityOptions> options)
             : base(userManager, roleManager, options)
         {

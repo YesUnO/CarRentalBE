@@ -1,4 +1,6 @@
-﻿using Duende.IdentityServer.Models;
+﻿using DataLayer.IdentityServer;
+using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,14 +17,16 @@ namespace DataLayer
             options.UseNpgsql(connectionString));
 
             services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
+            services.AddScoped<IResourceOwnerPasswordValidator, PasswordValidator>();
+
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>()
+                //.AddDefaultTokenProviders()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-            var identityResources = new List<Duende.IdentityServer.Models.IdentityResource>
+            var identityResources = new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile()
@@ -36,8 +40,8 @@ namespace DataLayer
                 .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
                 .AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
                 .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
+                .AddResourceOwnerValidator<PasswordValidator>()
                 .AddInMemoryIdentityResources(identityResources);
-                //.AddResourceOwnerValidator < **PasswordAuthentication * *> ();
 
             services.AddLocalApiAuthentication();
             return services;
