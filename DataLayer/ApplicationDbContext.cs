@@ -68,23 +68,24 @@ namespace DataLayer
             };
             builder.Entity<IdentityUserRole<string>>().HasData(userRoles);
 
-            var roleClaims = new List<IdentityRoleClaim<string>> {
-                new IdentityRoleClaim<string>
-                {
-                    RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
-                    Id= 1,
-                    ClaimType= ClaimTypes.Role,
-                    ClaimValue = "admin"
-                },
-                new IdentityRoleClaim<string>
-                {
-                    RoleId = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
-                    Id= 2,
-                    ClaimType= ClaimTypes.Role,
-                    ClaimValue = "customer"
-                }
-            };
-            builder.Entity<IdentityRoleClaim<string>>().HasData(roleClaims);
+            // roleClaims
+            //var roleClaims = new List<IdentityRoleClaim<string>> {
+            //    new IdentityRoleClaim<string>
+            //    {
+            //        RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
+            //        Id= 1,
+            //        ClaimType= ClaimTypes.Role,
+            //        ClaimValue = "admin"
+            //    },
+            //    new IdentityRoleClaim<string>
+            //    {
+            //        RoleId = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
+            //        Id= 2,
+            //        ClaimType= ClaimTypes.Role,
+            //        ClaimValue = "customer"
+            //    }
+            //};
+            //builder.Entity<IdentityRoleClaim<string>>().HasData(roleClaims);
 
             builder.ConfigurePersistedGrantContext(_operationalStoreOptions.Value);
         }
