@@ -1,10 +1,8 @@
-﻿using Duende.IdentityServer.Models;
-using Duende.IdentityServer.Validation;
+﻿using Duende.IdentityServer.Validation;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using static IdentityModel.OidcConstants;
 
 namespace DataLayer.IdentityServer
 {
@@ -41,7 +39,7 @@ namespace DataLayer.IdentityServer
                     {
                         foreach (var role in rolez)
                         {
-                            claims.Append(new Claim(JwtClaimTypes.Role, role));
+                            claims.Add(new Claim(JwtClaimTypes.Role, role));
 
                         }
                     }
@@ -49,8 +47,8 @@ namespace DataLayer.IdentityServer
                     // context set to success
                     context.Result = new GrantValidationResult(
                         subject: user.Id.ToString(),
-                        authenticationMethod: AuthenticationMethods.Password,
-                        customResponse: yo
+                        authenticationMethod: "custom",
+                        claims: claims
                     );
                     _logger.LogInformation("yo from the ho",context);
 

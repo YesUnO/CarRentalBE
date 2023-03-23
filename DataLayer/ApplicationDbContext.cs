@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using System.Security.Claims;
 
 namespace DataLayer
 {
@@ -58,16 +59,32 @@ namespace DataLayer
                 PhoneNumberConfirmed= true,
             };
             user.PasswordHash = pH.HashPassword(user, "yo");
-
             builder.Entity<IdentityUser>().HasData(new List<IdentityUser> { user });
 
-            builder.Entity<IdentityUserRole<string>>().HasData(
-            new IdentityUserRole<string>
+            var userRoles = new IdentityUserRole<string>
             {
                 RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
                 UserId = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406"
-            }
-        );
+            };
+            builder.Entity<IdentityUserRole<string>>().HasData(userRoles);
+
+            var roleClaims = new List<IdentityRoleClaim<string>> {
+                new IdentityRoleClaim<string>
+                {
+                    RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
+                    Id= 1,
+                    ClaimType= ClaimTypes.Role,
+                    ClaimValue = "admin"
+                },
+                new IdentityRoleClaim<string>
+                {
+                    RoleId = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
+                    Id= 2,
+                    ClaimType= ClaimTypes.Role,
+                    ClaimValue = "customer"
+                }
+            };
+            builder.Entity<IdentityRoleClaim<string>>().HasData(roleClaims);
 
             builder.ConfigurePersistedGrantContext(_operationalStoreOptions.Value);
         }

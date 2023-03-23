@@ -16,11 +16,11 @@ namespace DataLayer
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
 
-            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
-            services.AddScoped<IResourceOwnerPasswordValidator, PasswordValidator>();
+            //services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
+            //services.AddScoped<IResourceOwnerPasswordValidator, PasswordValidator>();
 
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>()
+                //.AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>()
                 //.AddDefaultTokenProviders()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -29,7 +29,7 @@ namespace DataLayer
             var identityResources = new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
             };
 
             services.AddIdentityServer(options =>
@@ -38,9 +38,9 @@ namespace DataLayer
             })
                 .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
                 .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
-                .AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
+                //.AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
                 .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
-                .AddResourceOwnerValidator<PasswordValidator>()
+                //.AddResourceOwnerValidator<PasswordValidator>()
                 .AddInMemoryIdentityResources(identityResources);
 
             services.AddLocalApiAuthentication();
