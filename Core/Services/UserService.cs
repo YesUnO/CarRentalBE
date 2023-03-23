@@ -2,6 +2,7 @@
 using Core.Services.Interfaces;
 using DataLayer;
 using DataLayer.Entities;
+using DataLayer.Entities.User;
 using DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

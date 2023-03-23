@@ -1,4 +1,4 @@
-﻿using DataLayer.Entities;
+﻿using DataLayer.Entities.User;
 using Duende.IdentityServer.EntityFramework.Entities;
 using Duende.IdentityServer.EntityFramework.Extensions;
 using Duende.IdentityServer.EntityFramework.Interfaces;
