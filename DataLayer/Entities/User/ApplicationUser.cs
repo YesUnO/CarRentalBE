@@ -6,5 +6,8 @@ namespace DataLayer.Entities.User
     {
         public int Id { get; set; }
         public IdentityUser IdentityUser { get; set; }
+        public UserDocument? DriversLicense { get; set; }
+        public UserDocument? IdentificationCard { get; set; }
+        public bool Approved { get; set; }
     }
 }

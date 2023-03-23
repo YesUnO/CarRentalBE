@@ -1,4 +1,7 @@
-﻿using DataLayer.Entities.User;
+﻿using DataLayer.Entities.Cars;
+using DataLayer.Entities.Files;
+using DataLayer.Entities.Orders;
+using DataLayer.Entities.User;
 using Duende.IdentityServer.EntityFramework.Entities;
 using Duende.IdentityServer.EntityFramework.Extensions;
 using Duende.IdentityServer.EntityFramework.Interfaces;
@@ -7,9 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Security.Claims;
 
 namespace DataLayer
 {
@@ -22,16 +22,32 @@ namespace DataLayer
             _operationalStoreOptions = operationalStoreOptions;
         }
 
+        //Identity Setup
         public DbSet<PersistedGrant> PersistedGrants { get; set; }
         public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
         public DbSet<Key> Keys { get; set; }
 
         Task<int> IPersistedGrantDbContext.SaveChangesAsync() => base.SaveChangesAsync();
 
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //    => optionsBuilder.UseNpgsql("Host=my_host;Database=my_db;Username=my_user;Password=my_pw");
+        //Application entities
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Car> Cars { get; set; }
+        public DbSet<CarDocument> CarDocuments { get; set; }
+        public DbSet<CarInsurance> CarInsurances { get; set; }
+        public DbSet<CarSpecification> CarSpecifications { get; set; }
+
+        public DbSet<Image> Images { get; set; }
+        public DbSet<PDF> PDFs { get; set; }
+
+        public DbSet<Accident> Accidents { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+
+        public DbSet<PaymentCard> PaymentCards { get; set; }
+        public DbSet<UserDocument> UserDocuments { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

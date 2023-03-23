@@ -16,13 +16,5 @@ namespace DataLayer.Entities.Orders
         public Accident? Accident { get; set; }
         public decimal Distance { get; set; }
         public CarReturningPhotos? ReturningPhotos { get; set; }
-        public Order(ApplicationUser customer, Car car, DateTime startDate, DateTime endDate)
-        {
-            Customer = customer;
-            Car = car;
-            StartDate = startDate;
-            EndDate = endDate;
-            CreatedAt = DateTime.Now;
-        }
     }
 }
