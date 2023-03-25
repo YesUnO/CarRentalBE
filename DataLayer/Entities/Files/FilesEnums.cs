@@ -1,6 +1,6 @@
 ﻿namespace DataLayer.Entities.Files
 {
-    public enum ImageType
+    public enum CarImageType
     {
         CarPromo = 0,
         CarFront = 1,

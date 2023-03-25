@@ -16,6 +16,6 @@ namespace DataLayer.Entities.Orders
         public DateTime CancelledAt { get; set; }
         public Accident? Accident { get; set; }
         public decimal Distance { get; set; }
-        public List<Image>? ReturningPhotos { get; set; }
+        public List<OrderImage>? ReturningPhotos { get; set; }
     }
 }

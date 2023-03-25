@@ -53,31 +53,55 @@ namespace DataLayer
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Image>()
+                .HasDiscriminator<string>("ImageType")
+                .HasValue<Image>("Base")
+                .HasValue<OrderImage>("Order")
+                .HasValue<CarDocumentImage>("CarDocument")
+                .HasValue<UserDocumentImage>("UserDocument")
+                .HasValue<AccidentImage>("Accident");
+
             builder.Entity<CarDocument>()
                 .HasOne(x => x.FrontSideImage)
-                .WithMany(x => x.CarDocuments)
-                .HasForeignKey(x => x.FrontSideImageId)
-                .HasPrincipalKey(x => x.Id);
+                .WithMany(x => x.FrontCarDocuments);
 
             builder.Entity<CarDocument>()
                 .HasOne(x => x.BackSideImage)
-                .WithMany(x => x.CarDocuments)
-                .HasForeignKey(x => x.BackSideImageId)
-                .HasPrincipalKey(x => x.Id);
-
+                .WithMany(x => x.BackCarDocuments);
 
             builder.Entity<UserDocument>()
                 .HasOne(x => x.FrontSideImage)
-                .WithMany(x => x.UserDocuments)
-                .HasForeignKey(x => x.FrontSideImageId)
-                .HasPrincipalKey(x => x.Id);
+                .WithMany(x => x.FrontUserDocuments);
 
             builder.Entity<UserDocument>()
                 .HasOne(x => x.BackSideImage)
-                .WithMany(x => x.UserDocuments)
-                .HasForeignKey(x => x.BackSideImageId)
-                .HasPrincipalKey(x => x.Id);
+                .WithMany(x => x.BackUserDocuments);
 
+            builder.Entity<ApplicationUser>()
+                .HasOne(x => x.IdentificationCard)
+                .WithMany(x => x.IdentificationLicenseUsers);
+
+            builder.Entity<ApplicationUser>()
+                .HasOne(x => x.DriversLicense)
+                .WithMany(x => x.DriverLicenseUsers);
+
+            builder.Entity<Car>()
+                .HasOne(x => x.TechnicLicense)
+                .WithMany(x => x.TechnicLicenseUsers);
+
+            builder.Entity<Car>()
+                .HasOne(x => x.STK)
+                .WithMany(x => x.STKUsers);
+
+            builder.Entity<Order>()
+                .HasMany(x => x.ReturningPhotos)
+                .WithMany(x => x.Orders)
+                .UsingEntity(x => x.ToTable("OrderImages"));
+
+            builder.Entity<Accident>()
+                .HasMany(x => x.PhotoDocumantation)
+                .WithMany(x => x.Accidents)
+                .UsingEntity(x => x.ToTable("AccidentImages"));
 
             base.OnModelCreating(builder);
 

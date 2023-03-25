@@ -7,14 +7,29 @@ namespace DataLayer.Entities.Files
     public class Image
     {
         public int Id { get; set; }
-        public ImageType ImageType { get; set; }
         public string RelativePath { get; set; }
-        public Order? Order { get; set; }
-        public int? UserDocumentId { get; set; }
-        public List<UserDocument>? UserDocuments { get; set; }
-        public int? CarDocumentId { get; set; }
-        public List<CarDocument>? CarDocuments { get; set; }
-        public Car? Car { get; set; }
-        public Accident? Accident { get; set; }
+    }
+
+    public class OrderImage : Image
+    {
+        public CarImageType CarImageType { get; set; }
+        public List<Order> Orders { get; set; }
+    }
+
+    public class CarDocumentImage: Image
+    {
+        public List<CarDocument> FrontCarDocuments { get; set; }
+        public List<CarDocument> BackCarDocuments { get; set; }
+    }
+
+    public class UserDocumentImage : Image
+    {
+        public List<UserDocument> FrontUserDocuments { get; set; }
+        public List<UserDocument> BackUserDocuments { get; set; }
+    }
+
+    public class AccidentImage: Image
+    {
+        public List<Accident> Accidents { get; set; }
     }
 }
