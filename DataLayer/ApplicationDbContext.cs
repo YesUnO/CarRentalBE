@@ -1,4 +1,5 @@
-﻿using DataLayer.Entities.Cars;
+﻿using DataLayer.Entities;
+using DataLayer.Entities.Cars;
 using DataLayer.Entities.Files;
 using DataLayer.Entities.Orders;
 using DataLayer.Entities.User;
@@ -10,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Reflection.Emit;
+using System.Reflection.Metadata;
 
 namespace DataLayer
 {
@@ -48,9 +51,34 @@ namespace DataLayer
         public DbSet<UserDocument> UserDocuments { get; set; }
 
 
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<CarDocument>()
+                .HasOne(x => x.FrontSideImage)
+                .WithMany(x => x.CarDocuments)
+                .HasForeignKey(x => x.FrontSideImageId)
+                .HasPrincipalKey(x => x.Id);
+
+            builder.Entity<CarDocument>()
+                .HasOne(x => x.BackSideImage)
+                .WithMany(x => x.CarDocuments)
+                .HasForeignKey(x => x.BackSideImageId)
+                .HasPrincipalKey(x => x.Id);
+
+
+            builder.Entity<UserDocument>()
+                .HasOne(x => x.FrontSideImage)
+                .WithMany(x => x.UserDocuments)
+                .HasForeignKey(x => x.FrontSideImageId)
+                .HasPrincipalKey(x => x.Id);
+
+            builder.Entity<UserDocument>()
+                .HasOne(x => x.BackSideImage)
+                .WithMany(x => x.UserDocuments)
+                .HasForeignKey(x => x.BackSideImageId)
+                .HasPrincipalKey(x => x.Id);
+
+
             base.OnModelCreating(builder);
 
 

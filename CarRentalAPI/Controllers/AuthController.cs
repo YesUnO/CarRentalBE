@@ -1,5 +1,5 @@
 ﻿using CarRentalAPI.Models.Auth;
-using Core.Services.Interfaces;
+using Core.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

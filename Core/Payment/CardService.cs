@@ -1,6 +1,4 @@
-﻿using Core.Services.Interfaces;
-
-namespace Core.Services
+﻿namespace Core.Payment
 {
     public class CardService : ICardService
     {

@@ -1,6 +1,4 @@
-﻿
-
-namespace Core.Services.Interfaces
+﻿namespace Core.Payment
 {
     public interface ICardService
     {

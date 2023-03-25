@@ -1,5 +1,4 @@
 ﻿using Core.Helpers;
-using Core.Services.Interfaces;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Entities.User;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Core.Services
+namespace Core.User
 {
     public class UserService : IUserService
     {
@@ -96,15 +95,15 @@ namespace Core.Services
 
         private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
         {
-            var applicationUser = new ApplicationUser { IdentityUser= user };
+            var applicationUser = new ApplicationUser { IdentityUser = user };
             var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
             await _applicationDbContext.SaveChangesAsync();
             return userAdd.IsKeySet;
         }
 
-        private async Task<bool> DeleteApplicationUser (IdentityUser user)
+        private async Task<bool> DeleteApplicationUser(IdentityUser user)
         {
-            var applicationUser = await _applicationDbContext.ApplicationUsers.Where(x=>x.IdentityUser == user).FirstOrDefaultAsync();
+            var applicationUser = await _applicationDbContext.ApplicationUsers.Where(x => x.IdentityUser == user).FirstOrDefaultAsync();
             if (applicationUser == null)
             {
                 return true;

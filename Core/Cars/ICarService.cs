@@ -1,6 +1,4 @@
-﻿
-
-namespace Core.Services.Interfaces
+﻿namespace Core.Cars
 {
     public interface ICarService
     {

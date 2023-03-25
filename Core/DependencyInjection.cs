@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using DataLayer;
-using Core.Services.Interfaces;
-using Core.Services;
 using Microsoft.Extensions.Configuration;
+using Core.User;
+using Core.Files;
+using Core.Cars;
+using Core.Payment;
 
 namespace Core
 {
@@ -16,7 +18,6 @@ namespace Core
             services.AddTransient<ICardService, CardService>();
             services.AddTransient<ICarService, CarService>();
             services.AddTransient<IFileService, FileService>();
-            services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<IPaymentService, PaymentService>();
 
             return services;
