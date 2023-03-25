@@ -15,10 +15,10 @@ namespace Core.Files
         private string _filePath = Environment.CurrentDirectory;
         public async Task<PDF> SaveFileAsync()
         {
-            return await SavePDF();
+            return await SavePDFtoDb();
         }
 
-        private async Task<PDF> SavePDF()
+        private async Task<PDF> SavePDFtoDb()
         {
             var pdf = new PDF { RelativePath = _filePath };
             var savedPdf = _applicationDbContext.PDFs.Add(pdf);
