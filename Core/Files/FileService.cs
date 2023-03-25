@@ -25,5 +25,10 @@ namespace Core.Files
             await _applicationDbContext.SaveChangesAsync();
             return savedPdf.Entity;
         }
+
+        private string GetFolderPath()
+        {
+            return _filePath;
+        }
     }
 }
