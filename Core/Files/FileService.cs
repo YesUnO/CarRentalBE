@@ -1,18 +1,28 @@
 ﻿using DataLayer;
 using DataLayer.Entities.Files;
+using DTO;
+using Microsoft.AspNetCore.Http;
 
 namespace Core.Files
 {
     public class FileService : IFileService
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private string _filePath = Environment.CurrentDirectory;
 
         public FileService(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
         }
 
-        private string _filePath = Environment.CurrentDirectory;
+        public async Task<bool> SaveFileToDiskAsync(IFormFile file, string carName, FileType fileType)
+        {
+            var path = GetFolderPath(carName, fileType);
+            return true;
+        }
+
+
+
         public async Task<PDF> SaveFileAsync()
         {
             return await SavePDFtoDb();
@@ -26,7 +36,7 @@ namespace Core.Files
             return savedPdf.Entity;
         }
 
-        private string GetFolderPath()
+        private string GetFolderPath(string carName, FileType fileType)
         {
             return _filePath;
         }
