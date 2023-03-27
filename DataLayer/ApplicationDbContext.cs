@@ -98,6 +98,19 @@ namespace DataLayer
                 .WithMany(x => x.Orders)
                 .UsingEntity(x => x.ToTable("OrderImages"));
 
+            builder.Entity<Order>()
+                .Property<int>("PaymentId");
+
+            builder.Entity<Order>()
+                .HasOne(x => x.Payment)
+                .WithOne()
+                .HasForeignKey<Order>("PaymentId")
+                .IsRequired(false);
+
+            builder.Entity<Order>()
+                .Property(x => x.HasBeenPayed)
+                .HasComputedColumnSql("(\"Payment\".\"FinishedAt\" IS NOT NULL)", stored: true);
+
             builder.Entity<Accident>()
                 .HasMany(x => x.PhotoDocumantation)
                 .WithMany(x => x.Accidents)
@@ -123,8 +136,8 @@ namespace DataLayer
                 UserName = "admin",
                 NormalizedUserName = "ADMIN",
                 NormalizedEmail = "VILEM.CECH@GMAIL.COM",
-                PhoneNumber= "773951604",
-                PhoneNumberConfirmed= true,
+                PhoneNumber = "773951604",
+                PhoneNumberConfirmed = true,
             };
             user.PasswordHash = pH.HashPassword(user, "yo");
             builder.Entity<IdentityUser>().HasData(new List<IdentityUser> { user });

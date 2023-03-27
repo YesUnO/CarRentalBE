@@ -1,6 +1,7 @@
 ﻿using DataLayer.Entities.Cars;
 using DataLayer.Entities.Files;
 using DataLayer.Entities.User;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataLayer.Entities.Orders
 {
@@ -17,5 +18,7 @@ namespace DataLayer.Entities.Orders
         public Accident? Accident { get; set; }
         public decimal Distance { get; set; }
         public List<OrderImage>? ReturningPhotos { get; set; }
+        [NotMapped]
+        public bool HasBeenPayed { get; set; }
     }
 }

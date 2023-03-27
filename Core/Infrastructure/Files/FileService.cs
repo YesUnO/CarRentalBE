@@ -18,7 +18,6 @@ namespace Core.Infrastructure.Files
         private readonly FileSettings _fileSettingsOptions;
         private string _filePath = Environment.CurrentDirectory;
         private readonly ILogger<FileService> _logger;
-        private readonly SignInManager
 
         public FileService(ApplicationDbContext applicationDbContext, IOptions<FileSettings> fileSettingsOptions, ILogger<FileService> logger)
         {
