@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Core.User;
+using Core.Domain.User;
 
 namespace CarRentalAPI.Controllers
 {

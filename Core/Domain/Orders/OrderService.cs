@@ -1,4 +1,4 @@
-﻿namespace Core.Orders
+﻿namespace Core.Domain.Orders
 {
     public class TestService : ITestService
     {

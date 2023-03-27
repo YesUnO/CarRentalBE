@@ -1,4 +1,4 @@
-﻿namespace Core.Cars
+﻿namespace Core.Domain.Cars
 {
     public interface ICarService
     {

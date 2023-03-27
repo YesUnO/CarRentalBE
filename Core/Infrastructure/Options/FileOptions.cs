@@ -1,5 +1,4 @@
-﻿
-namespace Core.Options
+﻿namespace Core.Infrastructure.Options
 {
     public class FileOptions
     {

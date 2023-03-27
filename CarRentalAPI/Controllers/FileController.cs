@@ -1,4 +1,4 @@
-﻿using Core.Files;
+﻿using Core.Infrastructure.Files;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;

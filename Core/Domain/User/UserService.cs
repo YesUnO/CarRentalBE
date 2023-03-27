@@ -1,4 +1,4 @@
-﻿using Core.Helpers;
+﻿using Core.Domain.Helpers;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Entities.User;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Core.User
+namespace Core.Domain.User
 {
     public class UserService : IUserService
     {

@@ -1,5 +1,4 @@
-﻿
-namespace Core.Cars
+﻿namespace Core.Domain.Cars
 {
     public class CarService : ICarService
     {

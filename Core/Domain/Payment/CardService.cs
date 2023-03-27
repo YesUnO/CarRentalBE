@@ -1,4 +1,4 @@
-﻿namespace Core.Payment
+﻿namespace Core.Domain.Payment
 {
     public class CardService : ICardService
     {

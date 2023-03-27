@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace Core.User
+namespace Core.Domain.User
 {
     public interface IUserService
     {

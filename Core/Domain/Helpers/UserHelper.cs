@@ -1,7 +1,7 @@
 ﻿using DTO;
 using Microsoft.AspNetCore.Identity;
 
-namespace Core.Helpers
+namespace Core.Domain.Helpers
 {
     public static class UserHelper
     {

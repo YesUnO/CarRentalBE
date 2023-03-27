@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using DataLayer;
 using Microsoft.Extensions.Configuration;
-using Core.User;
-using Core.Files;
-using Core.Cars;
-using Core.Payment;
+using Core.Domain.Cars;
+using Core.Domain.User;
+using Core.Domain.Payment;
+using Core.Infrastructure.Files;
 
 namespace Core
 {
