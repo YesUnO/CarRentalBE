@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AntiVirusScanner" Version="1.0.2" />
+    <PackageReference Include="Cloudmersive.APIClient.NETCore.VirusScan" Version="2.1.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -21,10 +21,10 @@ namespace DTO
         DriverseLicenseFrontImage = 12,
         DriverseLicenseBackImage = 13,
 
-        CarAccidentImage = 14,
+        IdentificationCardFrontImage = 14,
+        IdentificationCardBackImage = 15,
 
-        IdentificationCardFrontImage = 15,
-        IdentificationCardBackImage = 16,
+        CarAccidentImage = 16,
 
         InsurancePdf = 17,
 

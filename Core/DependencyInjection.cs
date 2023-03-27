@@ -5,6 +5,7 @@ using Core.Domain.Cars;
 using Core.Domain.User;
 using Core.Domain.Payment;
 using Core.Infrastructure.Files;
+using Core.Infrastructure.Options;
 
 namespace Core
 {
@@ -17,9 +18,10 @@ namespace Core
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ICardService, CardService>();
             services.AddTransient<ICarService, CarService>();
-            services.AddTransient<IFileService, FileService>();
             services.AddTransient<IPaymentService, PaymentService>();
 
+            services.AddTransient<IFileService, FileService>();
+            services.Configure<FileSettings>(configuration.GetSection(""));
             return services;
         }
     }

@@ -3,8 +3,10 @@ using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Entities.User;
 using DTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 namespace Core.Domain.User
@@ -13,11 +15,15 @@ namespace Core.Domain.User
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(UserManager<IdentityUser> userManager, ApplicationDbContext applicationDbContext)
+        public UserService(UserManager<IdentityUser> userManager, ApplicationDbContext applicationDbContext, IHttpContextAccessor httpContextAccessor, ILogger<UserService> logger)
         {
             _userManager = userManager;
             _applicationDbContext = applicationDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public async Task<bool> DeleteUser(IdentityUser user)
@@ -52,6 +58,23 @@ namespace Core.Domain.User
                 transaction.Commit();
             }
             return true;
+        }
+
+        public async Task<ApplicationUser> GetSignedInUser()
+        {
+            //TODO: maybe??
+            if (_httpContextAccessor.HttpContext.User.Identity is null)
+            {
+                _logger.LogWarning("Unauthorize access?");
+            }
+            var loggedInUserName = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var applicationUser = _applicationDbContext.ApplicationUsers.FirstOrDefault(x=>x.IdentityUser.UserName == loggedInUserName);
+            if (applicationUser == null)
+            {
+                _logger.LogWarning("Unauthorize access?");
+                return null;
+            }
+            return applicationUser;
         }
 
         public async Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal)

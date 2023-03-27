@@ -1,4 +1,5 @@
-﻿using DTO;
+﻿using DataLayer.Entities.User;
+using DTO;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -6,6 +7,7 @@ namespace Core.Domain.User
 {
     public interface IUserService
     {
+        Task<ApplicationUser> GetSignedInUser();
         Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal);
         List<UserDTO> GetUsers();
         Task<bool> DeleteUser(IdentityUser user);

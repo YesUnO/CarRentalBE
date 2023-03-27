@@ -2,17 +2,29 @@
 using DataLayer.Entities.Files;
 using DTO;
 using Microsoft.AspNetCore.Http;
+using Cloudmersive.APIClient.NETCore.VirusScan.Client;
+using Core.Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using Cloudmersive.APIClient.NETCore.VirusScan.Api;
+using Microsoft.Extensions.Logging;
+using Cloudmersive.APIClient.NETCore.VirusScan.Model;
+using Microsoft.AspNetCore.Identity;
 
 namespace Core.Infrastructure.Files
 {
     public class FileService : IFileService
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly FileSettings _fileSettingsOptions;
         private string _filePath = Environment.CurrentDirectory;
+        private readonly ILogger<FileService> _logger;
+        private readonly SignInManager
 
-        public FileService(ApplicationDbContext applicationDbContext)
+        public FileService(ApplicationDbContext applicationDbContext, IOptions<FileSettings> fileSettingsOptions, ILogger<FileService> logger)
         {
             _applicationDbContext = applicationDbContext;
+            _fileSettingsOptions = fileSettingsOptions.Value;
+            _logger = logger;
         }
 
 
@@ -50,9 +62,9 @@ namespace Core.Infrastructure.Files
             FileType.TechnicLicenseBackImage => "",
             FileType.DriverseLicenseFrontImage => "",
             FileType.DriverseLicenseBackImage => "",
-            FileType.CarAccidentImage => "",
             FileType.IdentificationCardFrontImage => "",
             FileType.IdentificationCardBackImage => "",
+            FileType.CarAccidentImage => "",
             FileType.InsurancePdf => "",
             FileType.CarPurchasePdf => "",
             _ => ""
@@ -60,6 +72,36 @@ namespace Core.Infrastructure.Files
 
         private string GetFolderPath(string carName, FileType fileType)
         {
+            //var signedInUser = ;
+
+            var carReturningPhotos = new FileType[]
+            {
+                FileType.CarBackImage,
+                FileType.CarDashboardImage,
+                FileType.CarFrontImage,
+                FileType.CarOtherSideImage,
+                FileType.CarSideImage,
+                FileType.CarTrunkImage,
+                FileType.CarCabineImage,
+            };
+
+            var userDocumentPhoto = new FileType[]
+            {
+                FileType.DriverseLicenseBackImage,
+                FileType.DriverseLicenseFrontImage,
+                FileType.IdentificationCardBackImage,
+                FileType.IdentificationCardFrontImage,
+            };
+
+            if (carReturningPhotos.Contains(fileType))
+            {
+
+            }
+            else if(carReturningPhotos.Contains(fileType))
+            {
+
+            }
+
             return _filePath;
         }
         private async Task<bool> SaveFileToDiskAsync(IFormFile file, string carName, FileType fileType)
@@ -68,14 +110,34 @@ namespace Core.Infrastructure.Files
             var name = GetFileName(fileType);
             using (var fileStream = new FileStream(Path.Combine(path, name), FileMode.Create))
             {
-                await file.CopyToAsync(fileStream);
+                var scanResult = CheckFileForAnitVirus(fileStream);
+                if (scanResult.CleanResult.HasValue && scanResult.CleanResult.Value)
+                {
+                    await file.CopyToAsync(fileStream);
+                }
             }
             return true;
         }
 
-        private void CheckFileForAnitVirus(IFormFile file)
+        private VirusScanResult CheckFileForAnitVirus(FileStream fileStream)
         {
-            var scanner = new AntiVirus.Scanner();
+            
+            try
+            {
+                Configuration.Default.AddApiKey("Apikey", _fileSettingsOptions.CloudmersiveApiKey);
+
+                var apiInstance = new ScanApi(); 
+                var scanResult = apiInstance.ScanFile(fileStream);
+                return scanResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"Cloudmersive scan for virus failed");
+                return null;
+            }
+
+            //var path = file.Get
+            //var scanner = new AntiVirus.Scanner();
         }
     }
 }

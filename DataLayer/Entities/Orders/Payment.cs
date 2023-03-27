@@ -12,7 +12,7 @@ namespace DataLayer.Entities.Orders
         public Currency Currency { get; set; }
         public decimal Amount { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime FinishedAt { get; set; }
+        public DateTime? FinishedAt { get; set; }
         public DateTime CanceledAt { get; set; }
     }
 }
