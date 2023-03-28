@@ -27,7 +27,7 @@ namespace Core.Infrastructure.Files
         }
 
 
-        public async Task SaveFileAsync(IFormFile file, FileType fileType, int? orderId)
+        public async Task SaveFileAsync(IFormFile file, FileType fileType, int? orderId, int? userDocumentId)
         {
             var result = await SaveFileToDiskAsync(file, fileType);
 
@@ -35,6 +35,20 @@ namespace Core.Infrastructure.Files
             {
                 await SaveFiletoDb();
             }
+        }
+        private async Task<bool> SaveFileToDiskAsync(IFormFile file, FileType fileType)
+        {
+            var path = GetFolderPath(fileType);
+            var name = GetFileName(fileType);
+            using (var fileStream = new FileStream(Path.Combine(path, name), FileMode.Create))
+            {
+                var scanResult = CheckFileForAnitVirus(fileStream);
+                if (scanResult.CleanResult.HasValue && scanResult.CleanResult.Value)
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+            }
+            return true;
         }
 
         private async Task<PDF> SaveFiletoDb()
@@ -76,20 +90,6 @@ namespace Core.Infrastructure.Files
             
 
             return _filePath;
-        }
-        private async Task<bool> SaveFileToDiskAsync(IFormFile file, FileType fileType)
-        {
-            var path = GetFolderPath(fileType);
-            var name = GetFileName(fileType);
-            using (var fileStream = new FileStream(Path.Combine(path, name), FileMode.Create))
-            {
-                var scanResult = CheckFileForAnitVirus(fileStream);
-                if (scanResult.CleanResult.HasValue && scanResult.CleanResult.Value)
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-            }
-            return true;
         }
 
         private VirusScanResult CheckFileForAnitVirus(FileStream fileStream)
