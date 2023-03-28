@@ -1,6 +1,8 @@
 ﻿using DataLayer.IdentityServer;
+using DataLayer.IdentityServer.AuthorizationPolicies.OwnOrdersRequirement;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +18,7 @@ namespace DataLayer
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
 
+            services.AddTransient<IAuthorizationHandler, ViewOwnOrdersHandler>();
             //services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
             //services.AddScoped<IResourceOwnerPasswordValidator, PasswordValidator>();
 
@@ -43,7 +46,12 @@ namespace DataLayer
                 //.AddResourceOwnerValidator<PasswordValidator>()
                 .AddInMemoryIdentityResources(identityResources);
 
-            services.AddLocalApiAuthentication();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ViewOwnOrdersPolicy", policy =>
+                    policy.Requirements.Add(new ViewOwnOrdersRequirement()));
+            });
+            //services.AddLocalApiAuthentication();
             return services;
         }
     }

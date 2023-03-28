@@ -21,7 +21,7 @@ namespace CarRentalAPI.Controllers
         }
 
         [HttpDelete]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles = "Admin", Policy = "")]
         public async Task<IActionResult> Delete(string name)
         {
             var user = await _userManager.FindByNameAsync(name);
