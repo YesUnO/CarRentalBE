@@ -1,5 +1,4 @@
-﻿using DataLayer.Entities;
-using DataLayer.Entities.Cars;
+﻿using DataLayer.Entities.Cars;
 using DataLayer.Entities.Files;
 using DataLayer.Entities.Orders;
 using DataLayer.Entities.User;
@@ -11,8 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Reflection.Emit;
-using System.Reflection.Metadata;
 
 namespace DataLayer
 {
@@ -85,6 +82,10 @@ namespace DataLayer
                 .HasOne(x => x.DriversLicense)
                 .WithMany(x => x.DriverLicenseUsers);
 
+            builder.Entity<ApplicationUser>()
+                .HasMany(x => x.Orders)
+                .WithOne(x => x.Customer);
+
             builder.Entity<Car>()
                 .HasOne(x => x.TechnicLicense)
                 .WithMany(x => x.TechnicLicenseUsers);
@@ -93,28 +94,29 @@ namespace DataLayer
                 .HasOne(x => x.STK)
                 .WithMany(x => x.STKUsers);
 
+            builder.Entity<Car>()
+                .HasMany(x => x.Orders)
+                .WithOne(x => x.Car);
+
+            builder.Entity<Car>()
+                .HasMany(x => x.Accidents)
+                .WithOne(x => x.Car);
+
             builder.Entity<Order>()
                 .HasMany(x => x.ReturningPhotos)
-                .WithMany(x => x.Orders)
-                .UsingEntity(x => x.ToTable("OrderImages"));
+                .WithOne(x => x.Order);
 
             builder.Entity<Order>()
-                .Property<int>("PaymentId");
+                .HasMany(x => x.Payments)
+                .WithOne(x => x.Order);
 
             builder.Entity<Order>()
-                .HasOne(x => x.Payment)
-                .WithOne()
-                .HasForeignKey<Order>("PaymentId")
-                .IsRequired(false);
-
-            builder.Entity<Order>()
-                .Property(x => x.HasBeenPayed)
-                .HasComputedColumnSql("(\"Payment\".\"FinishedAt\" IS NOT NULL)", stored: true);
+                .HasMany(x => x.Accidents)
+                .WithOne(x => x.Order);
 
             builder.Entity<Accident>()
                 .HasMany(x => x.PhotoDocumantation)
-                .WithMany(x => x.Accidents)
-                .UsingEntity(x => x.ToTable("AccidentImages"));
+                .WithOne(x => x.Accident);
 
             base.OnModelCreating(builder);
 

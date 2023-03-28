@@ -13,7 +13,7 @@ namespace DataLayer.Entities.Files
     public class OrderImage : Image
     {
         public CarImageType CarImageType { get; set; }
-        public List<Order> Orders { get; set; }
+        public Order Order { get; set; }
     }
 
     public class CarDocumentImage: Image
@@ -30,6 +30,6 @@ namespace DataLayer.Entities.Files
 
     public class AccidentImage: Image
     {
-        public List<Accident> Accidents { get; set; }
+        public Accident Accident { get; set; }
     }
 }

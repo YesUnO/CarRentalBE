@@ -22,21 +22,6 @@ namespace DataLayer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AccidentAccidentImage", b =>
-                {
-                    b.Property<int>("AccidentsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PhotoDocumantationId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("AccidentsId", "PhotoDocumantationId");
-
-                    b.HasIndex("PhotoDocumantationId");
-
-                    b.ToTable("AccidentImages", (string)null);
-                });
-
             modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
                 {
                     b.Property<int>("Id")
@@ -268,6 +253,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CarId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("ClosedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -277,7 +265,14 @@ namespace DataLayer.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CarId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Accidents");
                 });
@@ -312,12 +307,7 @@ namespace DataLayer.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("HasBeenPayed")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("boolean")
-                        .HasComputedColumnSql("(\"Payment\".\"FinishedAt\" IS NOT NULL)", true);
-
-                    b.Property<int>("PaymentId")
-                        .HasColumnType("integer");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
@@ -329,9 +319,6 @@ namespace DataLayer.Migrations
                     b.HasIndex("CarId");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
 
                     b.ToTable("Orders");
                 });
@@ -359,10 +346,15 @@ namespace DataLayer.Migrations
                     b.Property<DateTime?>("FinishedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PaymentCardId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("PaymentCardId");
 
@@ -622,14 +614,14 @@ namespace DataLayer.Migrations
                         new
                         {
                             Id = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
-                            ConcurrencyStamp = "12d7c4fc-d9d5-4d09-9792-95f1cf477f84",
+                            ConcurrencyStamp = "34fc709c-c7f8-4cc5-a3ae-2e4c0d8598d1",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
-                            ConcurrencyStamp = "1a25ff18-f41e-4232-8337-ac0a6cbe1d0c",
+                            ConcurrencyStamp = "07a71494-7719-4eec-9d0b-3ad3de76a559",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -728,16 +720,16 @@ namespace DataLayer.Migrations
                         {
                             Id = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b34c10c8-0021-4c33-8308-75d29f4396ac",
+                            ConcurrencyStamp = "d4d00e78-b183-4483-a6a5-b48970a96e09",
                             Email = "vilem.cech@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "VILEM.CECH@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEL1U3UOYmvoKvHbvBCcqhPtSsLFuj0G7gts/g4gZkEFPLjAsr8hrawuCBwLykntjTg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOZKMJrncqSgkuiUe/toCZg9H4hPtrbSlZgQfEy0VClcsCpqj4YykRFzDNqv149WNg==",
                             PhoneNumber = "773951604",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "5f414084-2953-4257-9625-19a249d23f8e",
+                            SecurityStamp = "4a7c59ed-0048-4956-81d5-f80ca66ba8f0",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -831,24 +823,14 @@ namespace DataLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("OrderOrderImage", b =>
-                {
-                    b.Property<int>("OrdersId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ReturningPhotosId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("OrdersId", "ReturningPhotosId");
-
-                    b.HasIndex("ReturningPhotosId");
-
-                    b.ToTable("OrderImages", (string)null);
-                });
-
             modelBuilder.Entity("DataLayer.Entities.Files.AccidentImage", b =>
                 {
                     b.HasBaseType("DataLayer.Entities.Files.Image");
+
+                    b.Property<int>("AccidentId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("AccidentId");
 
                     b.HasDiscriminator().HasValue("Accident");
                 });
@@ -867,6 +849,11 @@ namespace DataLayer.Migrations
                     b.Property<int>("CarImageType")
                         .HasColumnType("integer");
 
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("OrderId");
+
                     b.HasDiscriminator().HasValue("Order");
                 });
 
@@ -875,21 +862,6 @@ namespace DataLayer.Migrations
                     b.HasBaseType("DataLayer.Entities.Files.Image");
 
                     b.HasDiscriminator().HasValue("UserDocument");
-                });
-
-            modelBuilder.Entity("AccidentAccidentImage", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Orders.Accident", null)
-                        .WithMany()
-                        .HasForeignKey("AccidentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataLayer.Entities.Files.AccidentImage", null)
-                        .WithMany()
-                        .HasForeignKey("PhotoDocumantationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
@@ -965,6 +937,23 @@ namespace DataLayer.Migrations
                     b.Navigation("CarInsurance");
                 });
 
+            modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
+                {
+                    b.HasOne("DataLayer.Entities.Cars.Car", "Car")
+                        .WithMany("Accidents")
+                        .HasForeignKey("CarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataLayer.Entities.Orders.Order", "Order")
+                        .WithMany("Accidents")
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("Car");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
                 {
                     b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
@@ -972,37 +961,39 @@ namespace DataLayer.Migrations
                         .HasForeignKey("AccidentId");
 
                     b.HasOne("DataLayer.Entities.Cars.Car", "Car")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataLayer.Entities.User.ApplicationUser", "Customer")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("DataLayer.Entities.Orders.Payment", "Payment")
-                        .WithOne()
-                        .HasForeignKey("DataLayer.Entities.Orders.Order", "PaymentId");
 
                     b.Navigation("Accident");
 
                     b.Navigation("Car");
 
                     b.Navigation("Customer");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("DataLayer.Entities.Orders.Payment", b =>
                 {
+                    b.HasOne("DataLayer.Entities.Orders.Order", "Order")
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DataLayer.Entities.User.PaymentCard", "PaymentCard")
                         .WithMany()
                         .HasForeignKey("PaymentCardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("PaymentCard");
                 });
@@ -1098,23 +1089,34 @@ namespace DataLayer.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("OrderOrderImage", b =>
+            modelBuilder.Entity("DataLayer.Entities.Files.AccidentImage", b =>
                 {
-                    b.HasOne("DataLayer.Entities.Orders.Order", null)
-                        .WithMany()
-                        .HasForeignKey("OrdersId")
+                    b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
+                        .WithMany("PhotoDocumantation")
+                        .HasForeignKey("AccidentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataLayer.Entities.Files.OrderImage", null)
-                        .WithMany()
-                        .HasForeignKey("ReturningPhotosId")
+                    b.Navigation("Accident");
+                });
+
+            modelBuilder.Entity("DataLayer.Entities.Files.OrderImage", b =>
+                {
+                    b.HasOne("DataLayer.Entities.Orders.Order", "Order")
+                        .WithMany("ReturningPhotos")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
                 {
+                    b.Navigation("Accidents");
+
+                    b.Navigation("Orders");
+
                     b.Navigation("PurchaseContract");
                 });
 
@@ -1133,6 +1135,22 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
                 {
                     b.Navigation("Documantation");
+
+                    b.Navigation("PhotoDocumantation");
+                });
+
+            modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
+                {
+                    b.Navigation("Accidents");
+
+                    b.Navigation("Payments");
+
+                    b.Navigation("ReturningPhotos");
+                });
+
+            modelBuilder.Entity("DataLayer.Entities.User.ApplicationUser", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("DataLayer.Entities.User.UserDocument", b =>

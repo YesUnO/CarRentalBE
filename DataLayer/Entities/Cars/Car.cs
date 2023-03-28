@@ -1,4 +1,5 @@
 ﻿using DataLayer.Entities.Files;
+using DataLayer.Entities.Orders;
 
 namespace DataLayer.Entities.Cars
 {
@@ -13,6 +14,8 @@ namespace DataLayer.Entities.Cars
         public CarDocument? TechnicLicense { get; set; }
         public DateTime PurchasedAt { get; set; }
         public List<PDF>? PurchaseContract { get; set; }
+        public List<Accident> Accidents { get; set; }
+        public List<Order> Orders { get; set; }
         public decimal MileageAtPurchase { get; set; }
         public decimal CurrentMileage { get; set; }
         public CarInsurance? CarInsurance { get; set; }

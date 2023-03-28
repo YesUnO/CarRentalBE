@@ -27,9 +27,9 @@ namespace Core.Infrastructure.Files
         }
 
 
-        public async Task SaveFileAsync(IFormFile file, string carName, FileType fileType)
+        public async Task SaveFileAsync(IFormFile file, FileType fileType, int? orderId)
         {
-            var result = await SaveFileToDiskAsync(file, carName, fileType);
+            var result = await SaveFileToDiskAsync(file, fileType);
 
             if (result)
             {
@@ -69,43 +69,17 @@ namespace Core.Infrastructure.Files
             _ => ""
         };
 
-        private string GetFolderPath(string carName, FileType fileType)
+        private string GetFolderPath(FileType fileType)
         {
             //var signedInUser = ;
 
-            var carReturningPhotos = new FileType[]
-            {
-                FileType.CarBackImage,
-                FileType.CarDashboardImage,
-                FileType.CarFrontImage,
-                FileType.CarOtherSideImage,
-                FileType.CarSideImage,
-                FileType.CarTrunkImage,
-                FileType.CarCabineImage,
-            };
-
-            var userDocumentPhoto = new FileType[]
-            {
-                FileType.DriverseLicenseBackImage,
-                FileType.DriverseLicenseFrontImage,
-                FileType.IdentificationCardBackImage,
-                FileType.IdentificationCardFrontImage,
-            };
-
-            if (carReturningPhotos.Contains(fileType))
-            {
-
-            }
-            else if(carReturningPhotos.Contains(fileType))
-            {
-
-            }
+            
 
             return _filePath;
         }
-        private async Task<bool> SaveFileToDiskAsync(IFormFile file, string carName, FileType fileType)
+        private async Task<bool> SaveFileToDiskAsync(IFormFile file, FileType fileType)
         {
-            var path = GetFolderPath(carName, fileType);
+            var path = GetFolderPath(fileType);
             var name = GetFileName(fileType);
             using (var fileStream = new FileStream(Path.Combine(path, name), FileMode.Create))
             {

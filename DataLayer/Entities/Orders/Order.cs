@@ -10,7 +10,8 @@ namespace DataLayer.Entities.Orders
         public int Id { get; set; }
         public ApplicationUser Customer { get; set; }
         public Car Car { get; set; }
-        public Payment? Payment { get; set; }
+        public List<Payment> Payments { get; set; }
+        public List<Accident> Accidents { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -18,7 +19,6 @@ namespace DataLayer.Entities.Orders
         public Accident? Accident { get; set; }
         public decimal Distance { get; set; }
         public List<OrderImage>? ReturningPhotos { get; set; }
-        [NotMapped]
         public bool HasBeenPayed { get; set; }
     }
 }

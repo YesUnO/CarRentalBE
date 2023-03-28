@@ -14,5 +14,6 @@ namespace DataLayer.Entities.Orders
         public DateTime CreatedAt { get; set; }
         public DateTime? FinishedAt { get; set; }
         public DateTime CanceledAt { get; set; }
+        public Order Order { get; set; }
     }
 }
