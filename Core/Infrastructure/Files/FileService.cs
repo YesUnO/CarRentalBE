@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Cloudmersive.APIClient.NETCore.VirusScan.Api;
 using Microsoft.Extensions.Logging;
 using Cloudmersive.APIClient.NETCore.VirusScan.Model;
-using Microsoft.AspNetCore.Identity;
 
 namespace Core.Infrastructure.Files
 {

@@ -1,7 +1,6 @@
 ﻿using DataLayer.Entities.Cars;
 using DataLayer.Entities.Files;
 using DataLayer.Entities.User;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataLayer.Entities.Orders
 {

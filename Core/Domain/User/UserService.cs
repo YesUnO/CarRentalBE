@@ -67,8 +67,9 @@ namespace Core.Domain.User
             {
                 _logger.LogWarning("Unauthorize access?");
             }
-            var loggedInUserName = _httpContextAccessor.HttpContext.User.Identity.Name;
-            var applicationUser = _applicationDbContext.ApplicationUsers.FirstOrDefault(x=>x.IdentityUser.UserName == loggedInUserName);
+            var email = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var identityUser = await _userManager.FindByEmailAsync(email);
+            var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
             if (applicationUser == null)
             {
                 _logger.LogWarning("Unauthorize access?");

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Core.Domain.User;
+using CarRentalAPI.Models.File;
 
 namespace CarRentalAPI.Controllers
 {
@@ -20,8 +21,16 @@ namespace CarRentalAPI.Controllers
             _userManager = userManager;
         }
 
+        [HttpPost]
+        [HttpPost("{orderId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy")]
+        public async Task<IActionResult> Post([FromRoute]int? orderId)
+        {
+            return Ok();
+        }
+
         [HttpDelete]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles = "Admin", Policy = "")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin", Policy = "")]
         public async Task<IActionResult> Delete(string name)
         {
             var user = await _userManager.FindByNameAsync(name);

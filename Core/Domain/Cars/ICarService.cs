@@ -1,6 +1,9 @@
-﻿namespace Core.Domain.Cars
+﻿using DTO;
+
+namespace Core.Domain.Cars
 {
     public interface ICarService
     {
+        Task<bool> CreateCarAsync(CarDTO model);
     }
 }

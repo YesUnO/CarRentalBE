@@ -6,6 +6,7 @@ using Core.Domain.User;
 using Core.Domain.Payment;
 using Core.Infrastructure.Files;
 using Core.Infrastructure.Options;
+using Core.Domain.Orders;
 
 namespace Core
 {
@@ -19,6 +20,7 @@ namespace Core
             services.AddTransient<ICardService, CardService>();
             services.AddTransient<ICarService, CarService>();
             services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<IOrderService, OrderService>();
 
             services.AddTransient<IFileService, FileService>();
             services.Configure<FileSettings>(configuration.GetSection(""));
