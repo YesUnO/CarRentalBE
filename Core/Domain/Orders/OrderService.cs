@@ -19,7 +19,7 @@ namespace Core.Domain.Orders
 
         public async Task<bool> CreateOrder(OrderDTO model)
         {
-            var signedInUser = await _userService.GetSignedInUser();
+            var signedInUser = await _userService.GetSignedInUserAsync();
             var car = await _applicationDbContext.FindAsync<Car>(model.CarId);
             if (car == null)
             {
@@ -38,7 +38,7 @@ namespace Core.Domain.Orders
 
         public async Task<Order> GetSignedInUsersActiveOrder()
         {
-            var signedInUser = await _userService.GetSignedInUser();
+            var signedInUser = await _userService.GetSignedInUserAsync();
             var activeOrder = _applicationDbContext.Orders.FirstOrDefault(x => x.Customer == signedInUser);
             throw new NotImplementedException();
         }

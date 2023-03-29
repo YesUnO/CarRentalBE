@@ -60,14 +60,22 @@ namespace Core.Domain.User
             return true;
         }
 
-        public async Task<ApplicationUser> GetSignedInUser()
+        public ApplicationUser GetSignedInUser()
         {
-            //TODO: maybe??
-            if (_httpContextAccessor.HttpContext.User.Identity is null)
+            var email = GetEmailFromContext();
+            var identityUser = _userManager.FindByEmailAsync(email).Result;
+            var applicationUser = _applicationDbContext.ApplicationUsers.FirstOrDefault(x => x.IdentityUser == identityUser);
+            if (applicationUser == null)
             {
                 _logger.LogWarning("Unauthorize access?");
+                return null;
             }
-            var email = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            return applicationUser;
+        }
+
+        public async Task<ApplicationUser> GetSignedInUserAsync()
+        {
+            var email = GetEmailFromContext();
             var identityUser = await _userManager.FindByEmailAsync(email);
             var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
             if (applicationUser == null)
@@ -76,6 +84,16 @@ namespace Core.Domain.User
                 return null;
             }
             return applicationUser;
+        }
+
+        private string GetEmailFromContext()
+        {
+            //TODO: maybe??
+            if (_httpContextAccessor.HttpContext.User.Identity is null)
+            {
+                _logger.LogWarning("Unauthorize access?");
+            }
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email); ;
         }
 
         public async Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal)

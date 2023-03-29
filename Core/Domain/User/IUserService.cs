@@ -7,7 +7,8 @@ namespace Core.Domain.User
 {
     public interface IUserService
     {
-        Task<ApplicationUser> GetSignedInUser();
+        ApplicationUser GetSignedInUser();
+        Task<ApplicationUser> GetSignedInUserAsync();
         Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal);
         List<UserDTO> GetUsers();
         Task<bool> DeleteUser(IdentityUser user);
