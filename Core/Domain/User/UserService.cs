@@ -64,7 +64,9 @@ namespace Core.Domain.User
         {
             var email = GetEmailFromContext();
             var identityUser = _userManager.FindByEmailAsync(email).Result;
-            var applicationUser = _applicationDbContext.ApplicationUsers.FirstOrDefault(x => x.IdentityUser == identityUser);
+            var applicationUser = _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
+                                                                        .Include(x => x.IdentificationCard)
+                                                                        .FirstOrDefault(x => x.IdentityUser == identityUser);
             if (applicationUser == null)
             {
                 _logger.LogWarning("Unauthorize access?");

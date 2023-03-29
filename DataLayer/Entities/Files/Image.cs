@@ -32,4 +32,5 @@ namespace DataLayer.Entities.Files
     {
         public Accident Accident { get; set; }
     }
+
 }

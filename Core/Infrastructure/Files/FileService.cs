@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Core.Domain.User;
 using DataLayer.Entities.User;
 using DataLayer.Entities.Orders;
+using DataLayer.Entities;
 
 namespace Core.Infrastructure.Files
 {
@@ -67,49 +68,26 @@ namespace Core.Infrastructure.Files
 
        
 
-        private DbEntitity GetDbEntitity<DbEntitity>(FileType fileType, string filePath) where DbEntitity : Image => fileType switch
+        private Image GetDbEntitity(FileType fileType, string filePath) => fileType switch
         {
             FileType.CarFrontImage => new OrderImage { CarImageType = CarImageType.CarFront, Order = _order, RelativePath = filePath },
-            FileType.CarBackImage => throw new NotImplementedException(),
-            FileType.CarSideImage => throw new NotImplementedException(),
-            FileType.CarOtherSideImage => throw new NotImplementedException(),
-            FileType.CarTrunkImage => throw new NotImplementedException(),
-            FileType.CarDashboardImage => throw new NotImplementedException(),
-            FileType.CarCabineImage => throw new NotImplementedException(),
-            FileType.STKFrontImage => throw new NotImplementedException(),
-            FileType.STKBackImage => throw new NotImplementedException(),
-            FileType.TechnicLicenseFrontImage => throw new NotImplementedException(),
-            FileType.TechnicLicenseBackImage => throw new NotImplementedException(),
-            FileType.DriverseLicenseFrontImage => throw new NotImplementedException(),
-            FileType.DriverseLicenseBackImage => throw new NotImplementedException(),
-            FileType.IdentificationCardFrontImage => throw new NotImplementedException(),
-            FileType.IdentificationCardBackImage => throw new NotImplementedException(),
-            FileType.CarAccidentImage => throw new NotImplementedException(),
-            FileType.InsurancePdf => throw new NotImplementedException(),
-            FileType.CarPurchasePdf => throw new NotImplementedException(),
-            FileType.CarPromoImage => throw new NotImplementedException(),
+            FileType.CarBackImage => new OrderImage { CarImageType = CarImageType.CarBack, Order = _order, RelativePath = filePath },
+            FileType.CarSideImage => new OrderImage { CarImageType = CarImageType.CarSide, Order = _order, RelativePath = filePath },
+            FileType.CarOtherSideImage => new OrderImage { CarImageType = CarImageType.CarOtherSide, Order = _order, RelativePath = filePath },
+            FileType.CarTrunkImage => new OrderImage { CarImageType = CarImageType.CarTrunk, Order = _order, RelativePath = filePath },
+            FileType.CarDashboardImage => new OrderImage { CarImageType = CarImageType.CarDashboard, Order = _order, RelativePath = filePath },
+            FileType.CarCabineImage => new OrderImage { CarImageType = CarImageType.CarCabine, Order = _order, RelativePath = filePath },
+            FileType.DriverseLicenseFrontImage => new UserDocumentImage { RelativePath = filePath },
+            FileType.DriverseLicenseBackImage => new UserDocumentImage { RelativePath = filePath },
+            FileType.IdentificationCardFrontImage => new UserDocumentImage { RelativePath = filePath },
+            FileType.IdentificationCardBackImage => new UserDocumentImage { RelativePath = filePath },
+            _ => throw new NotImplementedException(),
         };
 
         private async Task<bool> SaveFileToDb(FileType fileType, string filePath)
         {
-            switch (fileType)
-            {
-                case FileType.CarFrontImage:
-                case FileType.CarBackImage:
-                case FileType.CarSideImage:
-                case FileType.CarOtherSideImage:
-                case FileType.CarTrunkImage:
-                case FileType.CarDashboardImage:
-                case FileType.CarCabineImage:
-                    return false;
-                case FileType.DriverseLicenseFrontImage:
-                case FileType.DriverseLicenseBackImage:
-                case FileType.IdentificationCardFrontImage:
-                case FileType.IdentificationCardBackImage:
-                    return false;
-                default:
-                    return false;
-            }
+            var dbEntity = GetDbEntitity(fileType,filePath);
+            
         }
 
 
