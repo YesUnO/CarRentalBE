@@ -23,7 +23,7 @@ namespace Core
             services.AddTransient<IOrderService, OrderService>();
 
             services.AddTransient<IFileService, FileService>();
-            services.Configure<FileSettings>(configuration.GetSection(""));
+            services.Configure<FileSettings>(configuration.GetSection("FileSettings"));
             return services;
         }
     }

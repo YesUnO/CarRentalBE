@@ -37,7 +37,7 @@ namespace Core.Infrastructure.Files
 
         public async Task SaveFileAsync(IFormFile file, FileType fileType, int? orderId, int? userDocumentId)
         {
-            var filePath = await SaveFileToDiskAsync(file, fileType, userDocumentId);
+            var filePath = await SaveFileToDiskAsync(file, fileType, orderId);
 
             if (!string.IsNullOrEmpty(filePath))
             {
@@ -87,6 +87,9 @@ namespace Core.Infrastructure.Files
         private async Task<bool> SaveFileToDb(FileType fileType, string filePath)
         {
             var dbEntity = GetDbEntitity(fileType,filePath);
+            _applicationDbContext.Add(dbEntity);
+            _applicationDbContext.SaveChanges();
+            return true;
             
         }
 

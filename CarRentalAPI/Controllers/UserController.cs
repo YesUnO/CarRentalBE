@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Core.Domain.User;
 using CarRentalAPI.Models.File;
+using Core.Infrastructure.Files;
 
 namespace CarRentalAPI.Controllers
 {
@@ -13,19 +14,22 @@ namespace CarRentalAPI.Controllers
     public class UserController: ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IFileService _fileService;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public UserController(IUserService userService, UserManager<IdentityUser> userManager)
+        public UserController(IUserService userService, UserManager<IdentityUser> userManager, IFileService fileService)
         {
             _userService = userService;
             _userManager = userManager;
+            _fileService = fileService;
         }
 
         [HttpPost]
         [HttpPost("{orderId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy")]
-        public async Task<IActionResult> Post([FromRoute]int? orderId)
+        public async Task<IActionResult> Post([FromRoute]int? orderId, [FromForm]PostFileModel model)
         {
+            await _fileService.SaveFileAsync(model.File, model.FileType, orderId, null);
             return Ok();
         }
 
