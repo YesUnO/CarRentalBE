@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "User ID =postgres;Password=nevermind;Server=localhost;Port=5432;Database=testDb;Integrated Security=true;Pooling=true;Include Error Detail=true"
+  }
+}
