@@ -46,7 +46,7 @@ namespace Core.Infrastructure.Files
         }
         private async Task<string> SaveFileToDiskAsync(IFormFile file, FileType fileType, int? orderId)
         {
-            var path = GetFolderPath(fileType, orderId);
+            var path = GetAndEnsureCreatedFolderPath(fileType, orderId);
             var name = GetFileName(fileType);
             var filePath = Path.Combine(path, name);
 
@@ -86,11 +86,42 @@ namespace Core.Infrastructure.Files
 
         private async Task<bool> SaveFileToDb(FileType fileType, string filePath)
         {
+            var userDocumentsFileTypes = new FileType[] {
+                FileType.DriverseLicenseFrontImage ,
+                FileType.DriverseLicenseBackImage ,
+                FileType.IdentificationCardFrontImage ,
+                FileType.IdentificationCardBackImage 
+            };
+
             var dbEntity = GetDbEntitity(fileType,filePath);
-            _applicationDbContext.Add(dbEntity);
-            _applicationDbContext.SaveChanges();
-            return true;
-            
+            if (userDocumentsFileTypes.Contains(fileType))
+            {
+                switch (fileType)
+                {
+                    case FileType.DriverseLicenseFrontImage:
+                        _applicationUser.DriversLicense.FrontSideImage = dbEntity as UserDocumentImage;
+                        break;
+                    case FileType.DriverseLicenseBackImage:
+                        _applicationUser.DriversLicense.BackSideImage = dbEntity as UserDocumentImage;
+                        break;
+                    case FileType.IdentificationCardFrontImage:
+                        _applicationUser.IdentificationCard.FrontSideImage = dbEntity as UserDocumentImage;
+                        break;
+                    case FileType.IdentificationCardBackImage:
+                        _applicationUser.IdentificationCard.BackSideImage = dbEntity as UserDocumentImage;
+                        break;
+                    default:
+                        break;
+                }
+                _applicationDbContext.SaveChanges();
+                return true;
+            }
+            else
+            {
+                _applicationDbContext.Add(dbEntity);
+                _applicationDbContext.SaveChanges();
+                return true;
+            }
         }
 
 
@@ -118,7 +149,7 @@ namespace Core.Infrastructure.Files
             _ => ""
         };
 
-        private string GetFolderPath(FileType fileType, int? orderId)
+        private string GetAndEnsureCreatedFolderPath(FileType fileType, int? orderId)
         {
             var path = orderId == null ? GetUserDocumentFolderPath(fileType): GetReturningPhotoFolderPath((int)orderId);
 
@@ -162,7 +193,7 @@ namespace Core.Infrastructure.Files
             var day = DateTime.Now.Day.ToString();
             var carName = order.Car.Name;
 
-            return Path.Combine(_fileSettingsOptions.Root, "Cars", carName, year, month, day, order.Id.ToString());
+            return Path.Combine(_fileSettingsOptions.Root, "Cars", carName, year, month, day,"Orders", order.Id.ToString());
         }
 
         private string GetUserDocumentFolderPath(FileType fileType)
