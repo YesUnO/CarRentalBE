@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTO", "..\DTO\DTO.csproj", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3F60D87F-85D3-48C2-9B2C-AC7D67A352E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarRentalAPI.Tests", "..\Tests\CarRentalAPI.Tests\CarRentalAPI.Tests.csproj", "{07A7EDF9-B248-4A18-8F12-42DC9D05A7C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarRentalAPI.Tests", "..\Tests\CarRentalAPI.Tests\CarRentalAPI.Tests.csproj", "{07A7EDF9-B248-4A18-8F12-42DC9D05A7C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer.Tests'", "..\Tests\DataLayer.Tests'\DataLayer.Tests'.csproj", "{98AE9287-3DC0-4D62-88AE-4587A035082A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer.Tests", "..\Tests\DataLayer.Tests'\DataLayer.Tests.csproj", "{98AE9287-3DC0-4D62-88AE-4587A035082A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "..\Tests\Core.Tests\Core.Tests.csproj", "{BEB422FA-134B-4BC9-9A4D-A28DF16F3CEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{98AE9287-3DC0-4D62-88AE-4587A035082A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98AE9287-3DC0-4D62-88AE-4587A035082A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98AE9287-3DC0-4D62-88AE-4587A035082A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEB422FA-134B-4BC9-9A4D-A28DF16F3CEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEB422FA-134B-4BC9-9A4D-A28DF16F3CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEB422FA-134B-4BC9-9A4D-A28DF16F3CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEB422FA-134B-4BC9-9A4D-A28DF16F3CEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{07A7EDF9-B248-4A18-8F12-42DC9D05A7C8} = {3F60D87F-85D3-48C2-9B2C-AC7D67A352E1}
 		{98AE9287-3DC0-4D62-88AE-4587A035082A} = {3F60D87F-85D3-48C2-9B2C-AC7D67A352E1}
+		{BEB422FA-134B-4BC9-9A4D-A28DF16F3CEB} = {3F60D87F-85D3-48C2-9B2C-AC7D67A352E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {936E9777-773B-4D2A-9712-52E00E4DEC11}
