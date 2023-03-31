@@ -1,4 +1,5 @@
 ﻿using Core.Domain.User;
+using Core.Infrastructure.Options;
 using DataLayer;
 using DataLayer.Entities.User;
 using Duende.IdentityServer.EntityFramework.Options;

@@ -63,13 +63,23 @@ namespace Core.Infrastructure.Files
                 return string.Empty;
             }
 
+            VirusScanResult? scanResult = null;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                scanResult = CheckFileForVirus(memoryStream);
+            }
+
+            if (scanResult is null || scanResult.CleanResult.HasValue && scanResult.CleanResult.Value)
+            {
+                return string.Empty;
+            }
+
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                var scanResult = CheckFileForAnitVirus(fileStream);
-                if (scanResult is not null && scanResult.CleanResult.HasValue && scanResult.CleanResult.Value)
-                {
-                    await file.CopyToAsync(fileStream);
-                }
+                await file.CopyToAsync(fileStream);
             }
             return filePath;
         }
@@ -242,14 +252,14 @@ namespace Core.Infrastructure.Files
             return Path.Combine(_fileSettingsOptions.Root, "Users", signedInUser.Id.ToString(), documentType);
         }
 
-        private VirusScanResult CheckFileForAnitVirus(FileStream fileStream)
+        private VirusScanResult CheckFileForVirus(MemoryStream fileStream)
         {
 
             try
             {
                 Configuration.Default.AddApiKey("Apikey", _fileSettingsOptions.CloudmersiveApiKey);
 
-                var apiInstance = new ScanApi();
+                 var apiInstance = new ScanApi();
                 var scanResult = apiInstance.ScanFile(fileStream);
                 return scanResult;
             }
