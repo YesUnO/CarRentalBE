@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Core.Domain.User;
 using DataLayer.Entities.User;
 using DataLayer.Entities.Orders;
-using DataLayer.Entities;
 
 namespace Core.Infrastructure.Files
 {
@@ -20,11 +19,10 @@ namespace Core.Infrastructure.Files
     {
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly FileSettings _fileSettingsOptions;
-        private string _filePath = Environment.CurrentDirectory;
         private readonly ILogger<FileService> _logger;
         private readonly IUserService _userService;
-        private ApplicationUser _applicationUser;
-        private Order _order;
+        private ApplicationUser? _applicationUser;
+        private Order? _order;
 
         public FileService(ApplicationDbContext applicationDbContext, IOptions<FileSettings> fileSettingsOptions, ILogger<FileService> logger, IUserService userService)
         {
@@ -39,15 +37,25 @@ namespace Core.Infrastructure.Files
         {
             var filePath = await SaveFileToDiskAsync(file, fileType, orderId);
 
-            if (!string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(filePath))
             {
-                await SaveFileToDb(fileType, filePath);
+                return;
             }
+
+            if (IsUserDocumentFileType(fileType))
+            {
+                await SaveUserDocumentImageToDb(fileType, filePath);
+            }
+            else
+            {
+                await SaveOrderImageToDb(fileType, filePath);
+            }
+
         }
         private async Task<string> SaveFileToDiskAsync(IFormFile file, FileType fileType, int? orderId)
         {
             var path = GetAndEnsureCreatedFolderPath(fileType, orderId);
-            var name = GetFileName(fileType);
+            var name = fileType.ToString();
             var filePath = Path.Combine(path, name);
 
             if (File.Exists(filePath))
@@ -66,9 +74,19 @@ namespace Core.Infrastructure.Files
             return filePath;
         }
 
-       
+        private bool IsUserDocumentFileType(FileType fileType)
+        {
+            var userDocumentsFileTypes = new FileType[] {
+                FileType.DriverseLicenseFrontImage ,
+                FileType.DriverseLicenseBackImage ,
+                FileType.IdentificationCardFrontImage ,
+                FileType.IdentificationCardBackImage
+            };
 
-        private Image GetDbEntitity(FileType fileType, string filePath) => fileType switch
+            return userDocumentsFileTypes.Contains(fileType);
+        }
+
+        private OrderImage GetOrderImageDbEntitity(FileType fileType, string filePath) => fileType switch
         {
             FileType.CarFrontImage => new OrderImage { CarImageType = CarImageType.CarFront, Order = _order, RelativePath = filePath },
             FileType.CarBackImage => new OrderImage { CarImageType = CarImageType.CarBack, Order = _order, RelativePath = filePath },
@@ -77,81 +95,88 @@ namespace Core.Infrastructure.Files
             FileType.CarTrunkImage => new OrderImage { CarImageType = CarImageType.CarTrunk, Order = _order, RelativePath = filePath },
             FileType.CarDashboardImage => new OrderImage { CarImageType = CarImageType.CarDashboard, Order = _order, RelativePath = filePath },
             FileType.CarCabineImage => new OrderImage { CarImageType = CarImageType.CarCabine, Order = _order, RelativePath = filePath },
-            FileType.DriverseLicenseFrontImage => new UserDocumentImage { RelativePath = filePath },
-            FileType.DriverseLicenseBackImage => new UserDocumentImage { RelativePath = filePath },
-            FileType.IdentificationCardFrontImage => new UserDocumentImage { RelativePath = filePath },
-            FileType.IdentificationCardBackImage => new UserDocumentImage { RelativePath = filePath },
             _ => throw new NotImplementedException(),
         };
 
-        private async Task<bool> SaveFileToDb(FileType fileType, string filePath)
+        private async Task<bool> SaveUserDocumentImageToDb(FileType fileType, string filePath)
         {
-            var userDocumentsFileTypes = new FileType[] {
-                FileType.DriverseLicenseFrontImage ,
-                FileType.DriverseLicenseBackImage ,
-                FileType.IdentificationCardFrontImage ,
-                FileType.IdentificationCardBackImage 
-            };
+            var dbEntity = new UserDocumentImage { RelativePath = filePath };
+            var user = GetAndSetIfNullApplicationUser();
 
-            var dbEntity = GetDbEntitity(fileType,filePath);
-            if (userDocumentsFileTypes.Contains(fileType))
+            switch (fileType)
             {
-                switch (fileType)
-                {
-                    case FileType.DriverseLicenseFrontImage:
-                        _applicationUser.DriversLicense.FrontSideImage = dbEntity as UserDocumentImage;
-                        break;
-                    case FileType.DriverseLicenseBackImage:
-                        _applicationUser.DriversLicense.BackSideImage = dbEntity as UserDocumentImage;
-                        break;
-                    case FileType.IdentificationCardFrontImage:
-                        _applicationUser.IdentificationCard.FrontSideImage = dbEntity as UserDocumentImage;
-                        break;
-                    case FileType.IdentificationCardBackImage:
-                        _applicationUser.IdentificationCard.BackSideImage = dbEntity as UserDocumentImage;
-                        break;
-                    default:
-                        break;
-                }
-                _applicationDbContext.SaveChanges();
-                return true;
+                case FileType.DriverseLicenseFrontImage:
+                    if (user.DriversLicense == null)
+                    {
+                        user.DriversLicense = new UserDocument
+                        {
+                            FrontSideImage = dbEntity,
+                        };
+                    }
+                    else
+                    {
+                        user.DriversLicense.FrontSideImage = dbEntity;
+                    }
+                    break;
+
+                case FileType.DriverseLicenseBackImage:
+                    if (user.DriversLicense == null)
+                    {
+                        user.DriversLicense = new UserDocument
+                        {
+                            BackSideImage = dbEntity,
+                        };
+                    }
+                    else
+                    {
+                        user.DriversLicense.BackSideImage = dbEntity;
+                    }
+                    break;
+                case FileType.IdentificationCardFrontImage:
+                    if (user.IdentificationCard == null)
+                    {
+                        user.IdentificationCard = new UserDocument
+                        {
+                            FrontSideImage = dbEntity,
+                        };
+                    }
+                    else
+                    {
+                        user.IdentificationCard.FrontSideImage = dbEntity;
+                    }
+                    break;
+                case FileType.IdentificationCardBackImage:
+                    if (user.IdentificationCard == null)
+                    {
+                        user.IdentificationCard = new UserDocument { BackSideImage = dbEntity };
+                    }
+                    else
+                    {
+                        user.IdentificationCard.BackSideImage = dbEntity;
+                    }
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                _applicationDbContext.Add(dbEntity);
-                _applicationDbContext.SaveChanges();
-                return true;
-            }
+
+            _applicationDbContext.Update(user);
+            _applicationDbContext.SaveChanges();
+            return true;
         }
 
-
-        private string GetFileName(FileType fileType) => fileType switch
+        private async Task<bool> SaveOrderImageToDb(FileType fileType, string filePath)
         {
-            FileType.CarBackImage => FileType.CarBackImage.ToString(),
-            FileType.CarPromoImage => FileType.CarPromoImage.ToString(),
-            FileType.CarFrontImage => FileType.CarFrontImage.ToString(),
-            FileType.CarSideImage => FileType.CarSideImage.ToString(),
-            FileType.CarOtherSideImage => FileType.CarOtherSideImage.ToString(),
-            FileType.CarTrunkImage => FileType.CarTrunkImage.ToString(),
-            FileType.CarDashboardImage => FileType.CarDashboardImage.ToString(),
-            FileType.CarCabineImage => FileType.CarCabineImage.ToString(),
-            FileType.STKFrontImage => FileType.STKFrontImage.ToString(),
-            FileType.STKBackImage => FileType.STKBackImage.ToString(),
-            FileType.TechnicLicenseFrontImage => FileType.TechnicLicenseFrontImage.ToString(),
-            FileType.TechnicLicenseBackImage => FileType.TechnicLicenseBackImage.ToString(),
-            FileType.DriverseLicenseFrontImage => FileType.DriverseLicenseFrontImage.ToString(),
-            FileType.DriverseLicenseBackImage => FileType.DriverseLicenseBackImage.ToString(),
-            FileType.IdentificationCardFrontImage => FileType.IdentificationCardFrontImage.ToString(),
-            FileType.IdentificationCardBackImage => FileType.IdentificationCardBackImage.ToString(),
-            FileType.CarAccidentImage => FileType.CarAccidentImage.ToString(),
-            FileType.InsurancePdf => FileType.InsurancePdf.ToString(),
-            FileType.CarPurchasePdf => FileType.CarPurchasePdf.ToString(),
-            _ => ""
-        };
+            var dbEntity = GetOrderImageDbEntitity(fileType, filePath);
+
+            _applicationDbContext.Add(dbEntity);
+            _applicationDbContext.SaveChanges();
+            return true;
+
+        }
 
         private string GetAndEnsureCreatedFolderPath(FileType fileType, int? orderId)
         {
-            var path = orderId == null ? GetUserDocumentFolderPath(fileType): GetReturningPhotoFolderPath((int)orderId);
+            var path = orderId == null ? GetUserDocumentFolderPath(fileType) : GetReturningPhotoFolderPath((int)orderId);
 
             if (!Directory.Exists(path))
             {
@@ -180,7 +205,7 @@ namespace Core.Infrastructure.Files
             return _order;
         }
 
-        private string GetReturningPhotoFolderPath(int orderId) 
+        private string GetReturningPhotoFolderPath(int orderId)
         {
             var order = GetAndSetIfNullOrder(orderId);
             if (order is null)
@@ -193,14 +218,13 @@ namespace Core.Infrastructure.Files
             var day = DateTime.Now.Day.ToString();
             var carName = order.Car.Name;
 
-            return Path.Combine(_fileSettingsOptions.Root, "Cars", carName, year, month, day,"Orders", order.Id.ToString());
+            return Path.Combine(_fileSettingsOptions.Root, "Cars", carName, year, month, "Orders", order.Id.ToString());
         }
 
         private string GetUserDocumentFolderPath(FileType fileType)
         {
             var signedInUser = GetAndSetIfNullApplicationUser();
-            var documentType = string.Empty;
-
+            string? documentType;
             if (fileType is FileType.DriverseLicenseBackImage or FileType.DriverseLicenseFrontImage)
             {
                 documentType = "DriverseLicense";
@@ -220,18 +244,18 @@ namespace Core.Infrastructure.Files
 
         private VirusScanResult CheckFileForAnitVirus(FileStream fileStream)
         {
-            
+
             try
             {
                 Configuration.Default.AddApiKey("Apikey", _fileSettingsOptions.CloudmersiveApiKey);
 
-                var apiInstance = new ScanApi(); 
+                var apiInstance = new ScanApi();
                 var scanResult = apiInstance.ScanFile(fileStream);
                 return scanResult;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Cloudmersive scan for virus failed");
+                _logger.LogError(ex, "Cloudmersive scan for virus failed");
                 return null;
             }
 

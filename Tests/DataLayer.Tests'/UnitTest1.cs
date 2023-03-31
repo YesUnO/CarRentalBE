@@ -1,13 +1,13 @@
 
 namespace DataLayer.Tests_
 {
-    public class UnitTest1 :IClassFixture<CustomApplicationFactory<Program>>
+    public class UnitTest1
     {
-
         [Fact]
         public void Test1()
         {
 
         }
     }
+
 }

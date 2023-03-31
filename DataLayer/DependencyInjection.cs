@@ -19,12 +19,8 @@ namespace DataLayer
             options.UseNpgsql(connectionString));
 
             services.AddTransient<IAuthorizationHandler, ViewOwnOrdersHandler>();
-            //services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, AdditionalUserClaimsPrincipalFactory>();
-            //services.AddScoped<IResourceOwnerPasswordValidator, PasswordValidator>();
 
             services.AddIdentity<IdentityUser, IdentityRole>()
-                //.AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>()
-                //.AddDefaultTokenProviders()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -41,9 +37,7 @@ namespace DataLayer
             })
                 .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
                 .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
-                //.AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
                 .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
-                //.AddResourceOwnerValidator<PasswordValidator>()
                 .AddInMemoryIdentityResources(identityResources);
 
             services.AddAuthorization(options =>
@@ -51,7 +45,6 @@ namespace DataLayer
                 options.AddPolicy("ViewOwnOrdersPolicy", policy =>
                     policy.Requirements.Add(new ViewOwnOrdersRequirement()));
             });
-            //services.AddLocalApiAuthentication();
             return services;
         }
     }
