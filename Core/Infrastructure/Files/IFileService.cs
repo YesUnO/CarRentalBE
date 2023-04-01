@@ -5,7 +5,8 @@ namespace Core.Infrastructure.Files
 {
     public interface IFileService
     {
-        Task SaveFileAsync(IFormFile file, FileType fileType, int? orderId, int? userDocumentId);
+        Task SaveCarReturningPhotoAsync(IFormFile file, int orderId, CarReturningImageType carReturningImageType);
+        Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType);
         Task GetUserDocumentPhoto(string userName);
     }
 }

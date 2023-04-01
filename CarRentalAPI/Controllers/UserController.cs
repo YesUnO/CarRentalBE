@@ -24,15 +24,6 @@ namespace CarRentalAPI.Controllers
             _fileService = fileService;
         }
 
-        [HttpPost]
-        [HttpPost("{orderId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy")]
-        public async Task<IActionResult> Post([FromRoute]int? orderId, [FromForm]PostFileModel model)
-        {
-            await _fileService.SaveFileAsync(model.File, model.FileType, orderId, null);
-            return Ok();
-        }
-
         [HttpDelete]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin", Policy = "")]
         public async Task<IActionResult> Delete(string name)

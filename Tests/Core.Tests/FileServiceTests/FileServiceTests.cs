@@ -58,8 +58,8 @@ namespace Core.Tests.FileServiceTests
         {
             //Arrange
             var services = DIServiceUtilities.CreateServiceCollectionForFileService();
-            var provider = services.BuildServiceProvider();
             var orderId = DIServiceUtilities.AddOrderToExistingDbContext(services);
+            var provider = services.BuildServiceProvider();
             var fileService = provider.GetService<FileService>();
             var context = provider.GetService<ApplicationDbContext>();
 
@@ -68,7 +68,7 @@ namespace Core.Tests.FileServiceTests
             using (var filesStream = new FileStream("C:\\vilem\\work\\test\\yo.jpg", FileMode.Open))
             {
                 IFormFile file = new FormFile(filesStream, 0, filesStream.Length, null, "yo");
-                await fileService.SaveFileAsync(file, DTO.FileType.CarBackImage, orderId,null);
+                await fileService.SaveCarReturningPhotoAsync(file, orderId, DTO.CarReturningImageType.CarBackImage);
             }
 
 
