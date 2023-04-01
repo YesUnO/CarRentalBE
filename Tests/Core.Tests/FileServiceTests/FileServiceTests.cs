@@ -1,10 +1,9 @@
 using Cloudmersive.APIClient.NETCore.VirusScan.Model;
 using Core.Infrastructure.Files;
-using Core.Infrastructure.Options;
 using DataLayer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using TestHelpers;
 
 namespace Core.Tests.FileServiceTests
@@ -55,16 +54,28 @@ namespace Core.Tests.FileServiceTests
         }
 
         [Fact]
-        public void SaveFileToDiskAsync()
+        public async Task SaveFileToDiskAsync()
         {
             //Arrange
-            var fileService = DIServiceUtilities.GetFileService();
+            var services = DIServiceUtilities.CreateServiceCollectionForFileService();
+            var provider = services.BuildServiceProvider();
+            var orderId = DIServiceUtilities.AddOrderToExistingDbContext(services);
+            var fileService = provider.GetService<FileService>();
+            var context = provider.GetService<ApplicationDbContext>();
+
 
             //Act
-
+            using (var filesStream = new FileStream("C:\\vilem\\work\\test\\yo.jpg", FileMode.Open))
+            {
+                IFormFile file = new FormFile(filesStream, 0, filesStream.Length, null, "yo");
+                await fileService.SaveFileAsync(file, DTO.FileType.CarBackImage, orderId,null);
+            }
 
 
             //Assert
+            var order = context.Orders.Include(x => x.ReturningPhotos).FirstOrDefault();
+            Assert.NotNull(order);
+            Assert.True(order.ReturningPhotos.Any());
         }
     }
 }

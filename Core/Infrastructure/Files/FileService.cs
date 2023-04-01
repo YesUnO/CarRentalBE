@@ -72,7 +72,7 @@ namespace Core.Infrastructure.Files
                 scanResult = CheckFileForVirus(memoryStream);
             }
 
-            if (scanResult is null || scanResult.CleanResult.HasValue && scanResult.CleanResult.Value)
+            if (scanResult is null || !scanResult.CleanResult.HasValue || !scanResult.CleanResult.Value)
             {
                 return string.Empty;
             }

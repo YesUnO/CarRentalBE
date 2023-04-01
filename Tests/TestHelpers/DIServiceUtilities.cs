@@ -2,6 +2,8 @@
 using Core.Infrastructure.Files;
 using Core.Infrastructure.Options;
 using DataLayer;
+using DataLayer.Entities.Cars;
+using DataLayer.Entities.Orders;
 using DataLayer.Entities.User;
 using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +32,7 @@ namespace TestHelpers
 
         public static IServiceCollection AddUserServiceMockWithSignedInUser(this IServiceCollection services, ApplicationUser? desiredUser = null)
         {
-            var user = desiredUser is null?  new ApplicationUser() : desiredUser;
+            var user = desiredUser is null ? new ApplicationUser() : desiredUser;
 
             var userServicceMock = new Mock<IUserService>();
 
@@ -47,8 +49,40 @@ namespace TestHelpers
                 context.ApplicationUsers.Add(user);
                 context.SaveChanges();
             }
-            
+
             return services;
+        }
+
+        public static int AddOrderToExistingDbContext(this IServiceCollection services)
+        {
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+            if (context is not null)
+            {
+                var customer = context.ApplicationUsers.FirstOrDefault();
+                var car = new Car 
+                {
+                    Name = "yo",    
+                };
+                if (customer is null)
+                {
+                    return 0;
+                }
+                var order = new Order
+                {
+                    Car = car,
+                    Customer = customer
+                };
+
+
+                context.Add(car);
+                context.Add(order);
+                context.SaveChanges();
+                return order.Id;
+            }
+            return 0;
         }
 
         public static IServiceCollection CreateServiceCollectionForFileService(ApplicationUser? desiredUser = null)
@@ -60,7 +94,7 @@ namespace TestHelpers
             var options = Options.Create(new FileSettings
             {
                 CloudmersiveApiKey = "8c6027b2-7bef-487d-977f-f22fb2e14579",
-                Root = "yo"
+                Root = "C:\\vilem\\work\\test\\StoragetTest"
             });
             services.AddSingleton(options);
             return services;
