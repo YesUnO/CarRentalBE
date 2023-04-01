@@ -16,13 +16,10 @@ namespace Core.Tests.FileServiceTests
         public void SaveUserDocumentImageToDb()
         {
             //Arrange
-            var services = DIServiceUtilities.CreateServiceCollection();
-            services.AddInMemoryDbContext();
-            services.AddUserServiceMockWithSignedInUser();
-            services.AddSingleton<Infrastructure.Files.FileService>();
+            var services = DIServiceUtilities.CreateServiceCollectionForFileService();
 
             var provider = services.BuildServiceProvider();
-            var fileService = provider.GetService<Infrastructure.Files.FileService>();
+            var fileService = provider.GetService<FileService>();
 
             //Act
             //fileService.SaveUserDocumentImageToDb(DTO.FileType.DriverseLicenseBackImage, "nejaka/cesta");
@@ -39,20 +36,7 @@ namespace Core.Tests.FileServiceTests
         public void CheckFileForVirus()
         {
             //Arrange
-            var services = DIServiceUtilities.CreateServiceCollection();
-            services.AddInMemoryDbContext();
-            services.AddUserServiceMockWithSignedInUser();
-            services.AddSingleton<FileService>();
-            var options = Options.Create(new FileSettings
-            {
-                CloudmersiveApiKey = "8c6027b2-7bef-487d-977f-f22fb2e14579",
-                Root = "yo"
-            });
-            services.AddSingleton(options);
-
-            var provider = services.BuildServiceProvider();
-            var fileService = provider.GetService<FileService>();
-
+            var fileService = DIServiceUtilities.GetFileService();
 
             //Act
             VirusScanResult? result = null;
@@ -68,6 +52,19 @@ namespace Core.Tests.FileServiceTests
             //Assert
             Assert.NotNull(result);
             Assert.True(result.CleanResult);
+        }
+
+        [Fact]
+        public void SaveFileToDiskAsync()
+        {
+            //Arrange
+            var fileService = DIServiceUtilities.GetFileService();
+
+            //Act
+
+
+
+            //Assert
         }
     }
 }
