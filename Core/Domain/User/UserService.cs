@@ -18,7 +18,10 @@ namespace Core.Domain.User
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(UserManager<IdentityUser> userManager, ApplicationDbContext applicationDbContext, IHttpContextAccessor httpContextAccessor, ILogger<UserService> logger)
+        public UserService(UserManager<IdentityUser> userManager,
+                           ApplicationDbContext applicationDbContext,
+                           IHttpContextAccessor httpContextAccessor,
+                           ILogger<UserService> logger)
         {
             _userManager = userManager;
             _applicationDbContext = applicationDbContext;
@@ -62,7 +65,7 @@ namespace Core.Domain.User
 
         public ApplicationUser GetSignedInUser()
         {
-            var email = GetEmailFromContext();
+            var email = GetEmailFromHttpContext();
             var identityUser = _userManager.FindByEmailAsync(email).Result;
             var applicationUser = _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
                                                                         .Include(x => x.IdentificationCard)
@@ -77,7 +80,7 @@ namespace Core.Domain.User
 
         public async Task<ApplicationUser> GetSignedInUserAsync()
         {
-            var email = GetEmailFromContext();
+            var email = GetEmailFromHttpContext();
             var identityUser = await _userManager.FindByEmailAsync(email);
             var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
             if (applicationUser == null)
@@ -88,7 +91,7 @@ namespace Core.Domain.User
             return applicationUser;
         }
 
-        private string GetEmailFromContext()
+        private string GetEmailFromHttpContext()
         {
             //TODO: maybe??
             if (_httpContextAccessor.HttpContext.User.Identity is null)
@@ -147,13 +150,25 @@ namespace Core.Domain.User
 
         private async Task<bool> DeleteApplicationUser(IdentityUser user)
         {
-            var applicationUser = await _applicationDbContext.ApplicationUsers.Where(x => x.IdentityUser == user).FirstOrDefaultAsync();
+            var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == user);
             if (applicationUser == null)
             {
                 return true;
             }
             var result = _applicationDbContext.ApplicationUsers.Remove(applicationUser);
             return result.IsKeySet;
+        }
+
+        public async Task<ApplicationUser> GetUserByName(string userName)
+        {
+            var identityUser = await _userManager.FindByNameAsync(userName);
+            var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+            if (applicationUser == null)
+            {
+                _logger.LogWarning("User doesnt exist");
+                return null;
+            }
+            return applicationUser;
         }
     }
 }

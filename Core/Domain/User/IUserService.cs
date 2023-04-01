@@ -9,6 +9,7 @@ namespace Core.Domain.User
     {
         ApplicationUser GetSignedInUser();
         Task<ApplicationUser> GetSignedInUserAsync();
+        Task<ApplicationUser> GetUserByName(string userName);
         Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal);
         List<UserDTO> GetUsers();
         Task<bool> DeleteUser(IdentityUser user);

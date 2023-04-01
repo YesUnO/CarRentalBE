@@ -30,4 +30,24 @@ namespace DTO
 
         CarPurchasePdf = 18,
     }
+
+    public enum CarReturningImageType
+    {
+        CarFrontImage,
+        CarBackImage,
+        CarSideImage,
+        CarOtherSideImage,
+        CarTrunkImage,
+        CarDashboardImage,
+        CarCabineImage,
+    }
+
+    public enum UserDocumentImageType
+    {
+        DriverseLicenseFrontImage,
+        DriverseLicenseBackImage,
+
+        IdentificationCardFrontImage,
+        IdentificationCardBackImage,
+    } 
 }

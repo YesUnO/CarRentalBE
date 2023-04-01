@@ -272,5 +272,11 @@ namespace Core.Infrastructure.Files
             //var path = file.Get
             //var scanner = new AntiVirus.Scanner();
         }
+
+        public async Task GetUserDocumentPhoto(string userName)
+        {
+            var user = await _userService.GetUserByName(userName);
+            return;
+        }
     }
 }
