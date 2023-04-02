@@ -2,10 +2,9 @@
 
 namespace CarRentalAPI.Models.File
 {
-    public class PostFileModel
+    public class PostCarReturningPhotoModel
     {
         public IFormFile File { get; set; }
-        public int OrderId { get; set; }
-        public FileType FileType { get; set; }
+        public CarReturningImageType CarReturningImageType { get; set; }
     }
 }

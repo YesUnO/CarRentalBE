@@ -162,7 +162,9 @@ namespace Core.Domain.User
         public async Task<ApplicationUser> GetUserByName(string userName)
         {
             var identityUser = await _userManager.FindByNameAsync(userName);
-            var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+            var applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
+                                                                              .Include(x => x.IdentificationCard)
+                                                                              .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
             if (applicationUser == null)
             {
                 _logger.LogWarning("User doesnt exist");

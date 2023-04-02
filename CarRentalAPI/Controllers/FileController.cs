@@ -1,4 +1,7 @@
-﻿using Core.Infrastructure.Files;
+﻿using CarRentalAPI.Models.File;
+using Core.Infrastructure.Files;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +18,30 @@ namespace CarRentalAPI.Controllers
             _fileService = fileService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SaveFile()
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetUserDocumentPhoto(GetUserDocumentPhotoModel model)
         {
+            var fileStream = await _fileService.GetUserDocumentPhoto(model.UserName,model.UserDocumentImageType);
+            return Ok(File(fileStream,"application/octet-stream",model.UserDocumentImageType.ToString()));
+        }
+
+        [HttpPost("{orderId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy")]
+        public async Task<IActionResult> PostCarReturningPhoto([FromRoute] int orderId, [FromForm] PostCarReturningPhotoModel model)
+        {
+            await _fileService.SaveCarReturningPhotoAsync(model.File, orderId, model.CarReturningImageType);
             return Ok();
+            //return BadRequest();
+        }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+        public async Task<IActionResult> PostUserDocumentImage([FromForm] PostUserDocumentImageModel model)
+        {
+            await _fileService.SaveUserDocumentPhotoAsync(model.File, model.UserDocumentImageType);
+            return Ok();
+            //return BadRequest();
         }
     }
 }

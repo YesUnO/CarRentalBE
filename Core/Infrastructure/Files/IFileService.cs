@@ -7,6 +7,6 @@ namespace Core.Infrastructure.Files
     {
         Task SaveCarReturningPhotoAsync(IFormFile file, int orderId, CarReturningImageType carReturningImageType);
         Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType);
-        Task GetUserDocumentPhoto(string userName);
+        Task<FileStream> GetUserDocumentPhoto(string userName, UserDocumentImageType userDocumentImageType);
     }
 }

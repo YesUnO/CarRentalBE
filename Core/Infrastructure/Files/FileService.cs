@@ -65,10 +65,32 @@ namespace Core.Infrastructure.Files
 
             await SaveUserDocumentImageToDb(imageType, filePath);
         }
-        public async Task GetUserDocumentPhoto(string userName)
+        public async Task<FileStream> GetUserDocumentPhoto(string userName, UserDocumentImageType userDocumentImageType)
         {
             var user = await _userService.GetUserByName(userName);
-            return;
+            Image entity;
+            switch (userDocumentImageType)
+            {
+                case UserDocumentImageType.DriverseLicenseFrontImage:
+                    entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.DriversLicense.FrontSideImage.Id);
+                    break;
+                case UserDocumentImageType.DriverseLicenseBackImage:
+                    entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.DriversLicense.BackSideImage.Id);
+                    break;
+                case UserDocumentImageType.IdentificationCardFrontImage:
+                    entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.IdentificationCard.FrontSideImage.Id);
+                    break;
+                case UserDocumentImageType.IdentificationCardBackImage:
+                    entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.IdentificationCard.BackSideImage.Id);
+                    break;
+                default: return null;
+            }
+            if (entity is null)
+            {
+                return null;
+            }
+
+            return new FileStream(entity.RelativePath, FileMode.Open);
         }
 
         #region private
@@ -81,19 +103,19 @@ namespace Core.Infrastructure.Files
                 return string.Empty;
             }
 
-            VirusScanResult? scanResult = null;
+            //VirusScanResult? scanResult = null;
 
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                scanResult = CheckFileForVirus(memoryStream);
-            }
+            //using (var memoryStream = new MemoryStream())
+            //{
+            //    await file.CopyToAsync(memoryStream);
+            //    memoryStream.Seek(0, SeekOrigin.Begin);
+            //    scanResult = CheckFileForVirus(memoryStream);
+            //}
 
-            if (scanResult is null || !scanResult.CleanResult.HasValue || !scanResult.CleanResult.Value)
-            {
-                return string.Empty;
-            }
+            //if (scanResult is null || !scanResult.CleanResult.HasValue || !scanResult.CleanResult.Value)
+            //{
+            //    return string.Empty;
+            //}
 
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
@@ -175,6 +197,7 @@ namespace Core.Infrastructure.Files
                     break;
             }
 
+            _applicationDbContext.Add(dbEntity);
             _applicationDbContext.Update(user);
             await _applicationDbContext.SaveChangesAsync();
             return true;
@@ -265,7 +288,7 @@ namespace Core.Infrastructure.Files
             {
                 Configuration.Default.AddApiKey("Apikey", _fileSettingsOptions.CloudmersiveApiKey);
 
-                 var apiInstance = new ScanApi();
+                var apiInstance = new ScanApi();
                 var scanResult = apiInstance.ScanFile(fileStream);
                 return scanResult;
             }

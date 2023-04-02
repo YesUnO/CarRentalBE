@@ -9,7 +9,7 @@ namespace DataLayer.Entities.User
         public UserDocumentImage FrontSideImage { get; set; }
         public UserDocumentImage BackSideImage {get; set;}
         public bool Checked { get; set; }
-        public string DocNr { get; set; }
+        public string? DocNr { get; set; }
         public DateTime ValidTill { get; set; }
         public bool IsActive { get; set; }
         public List<ApplicationUser> DriverLicenseUsers { get; set; }
