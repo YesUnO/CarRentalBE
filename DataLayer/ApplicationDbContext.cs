@@ -60,19 +60,23 @@ namespace DataLayer
 
             builder.Entity<CarDocument>()
                 .HasOne(x => x.FrontSideImage)
-                .WithMany(x => x.FrontCarDocuments);
+                .WithMany(x=>x.FrontCarDocuments)
+                .HasForeignKey("FrontSideImageId");
 
             builder.Entity<CarDocument>()
                 .HasOne(x => x.BackSideImage)
-                .WithMany(x => x.BackCarDocuments);
+                .WithMany(x => x.BackCarDocuments)
+                .HasForeignKey("BackSideImageId");
 
             builder.Entity<UserDocument>()
                 .HasOne(x => x.FrontSideImage)
-                .WithMany(x => x.FrontUserDocuments);
+                .WithMany(x=>x.FrontUserDocuments)
+                .HasForeignKey("FrontSideImageId");
 
             builder.Entity<UserDocument>()
                 .HasOne(x => x.BackSideImage)
-                .WithMany(x => x.BackUserDocuments);
+                .WithMany(x=>x.BackUserDocuments)
+                .HasForeignKey("BackSideImageId");
 
             builder.Entity<ApplicationUser>()
                 .HasOne(x => x.IdentificationCard)

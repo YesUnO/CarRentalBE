@@ -412,7 +412,7 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BackSideImageId")
+                    b.Property<int?>("BackSideImageId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("Checked")
@@ -421,7 +421,7 @@ namespace DataLayer.Migrations
                     b.Property<string>("DocNr")
                         .HasColumnType("text");
 
-                    b.Property<int>("FrontSideImageId")
+                    b.Property<int?>("FrontSideImageId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
@@ -612,14 +612,14 @@ namespace DataLayer.Migrations
                         new
                         {
                             Id = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
-                            ConcurrencyStamp = "b17fb4a3-43ff-4340-a39c-33b26fe07e6e",
+                            ConcurrencyStamp = "1fde0367-fa39-4202-b73f-ac7ca3c440d9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
-                            ConcurrencyStamp = "591df0cb-6882-4431-bd29-2ba1019934e3",
+                            ConcurrencyStamp = "586849e6-449b-4e93-98e6-c1cfdcd32ae0",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -718,16 +718,16 @@ namespace DataLayer.Migrations
                         {
                             Id = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "06910eb9-5f6f-41e9-9d29-200eddde23c9",
+                            ConcurrencyStamp = "4ca025a0-0539-4e9b-a978-b7409c03f216",
                             Email = "vilem.cech@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "VILEM.CECH@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBRMxh7Sf7uJ5H9rgquZg+oH7BDkxYsBjvFsFsMWqplOJ9M3Pe985NFBYyG5mbl9wg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOTcnHM0+Sf0yi9wbbTgNkdan/IR5AXpP8jbJLeppKHqWIUN4uN7w99NRNKtZIzd/g==",
                             PhoneNumber = "773951604",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "70c956d7-24e8-4006-b1bc-c29246117140",
+                            SecurityStamp = "8f9d9f11-74ff-429d-9de0-9670a15f19ad",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1021,15 +1021,11 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("DataLayer.Entities.Files.UserDocumentImage", "BackSideImage")
                         .WithMany("BackUserDocuments")
-                        .HasForeignKey("BackSideImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BackSideImageId");
 
                     b.HasOne("DataLayer.Entities.Files.UserDocumentImage", "FrontSideImage")
                         .WithMany("FrontUserDocuments")
-                        .HasForeignKey("FrontSideImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FrontSideImageId");
 
                     b.Navigation("BackSideImage");
 

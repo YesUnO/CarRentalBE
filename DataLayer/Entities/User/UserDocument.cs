@@ -6,8 +6,8 @@ namespace DataLayer.Entities.User
     {
         public int Id { get; set; }
         public UserDocumentType UserDocumentType { get; set; }
-        public UserDocumentImage FrontSideImage { get; set; }
-        public UserDocumentImage BackSideImage {get; set;}
+        public UserDocumentImage? FrontSideImage { get; set; }
+        public UserDocumentImage? BackSideImage {get; set;}
         public bool Checked { get; set; }
         public string? DocNr { get; set; }
         public DateTime ValidTill { get; set; }

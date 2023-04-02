@@ -7,6 +7,7 @@ using DataLayer.Entities.Orders;
 using DataLayer.Entities.User;
 using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -30,14 +31,23 @@ namespace TestHelpers
             return services;
         }
 
+        public static IServiceCollection AddTestDbContext(this IServiceCollection services)
+        {
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql("User ID =postgres;Password=nevermind;Server=localhost;Port=5432;Database=yoDb;Integrated Security=true;Pooling=true;Include Error Detail=true"));
+            services.Configure<OperationalStoreOptions>(x => { });
+
+            var serviceProvider = services.BuildServiceProvider();
+            var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+            context.Database.EnsureCreated();
+
+            return services;
+        }
+
         public static IServiceCollection AddUserServiceMockWithSignedInUser(this IServiceCollection services, ApplicationUser? desiredUser = null)
         {
             var user = desiredUser is null ? new ApplicationUser() : desiredUser;
-
             var userServicceMock = new Mock<IUserService>();
-
             userServicceMock.Setup(x => x.GetSignedInUser()).Returns(user);
-
             services.AddSingleton(userServicceMock.Object);
 
             var serviceProvider = services.BuildServiceProvider();
