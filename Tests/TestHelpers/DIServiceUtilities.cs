@@ -110,7 +110,7 @@ public static class DIServiceUtilities
 
     public static FileService GetFileService(ApplicationUser? desiredUser = null)
     {
-        var services = CreateServiceCollectionForFileService();
+        var services = CreateServiceCollectionForFileService(desiredUser);
         var provider = services.BuildServiceProvider();
         return provider.GetRequiredService<FileService>();
     }
