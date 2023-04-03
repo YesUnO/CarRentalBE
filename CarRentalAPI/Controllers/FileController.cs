@@ -20,10 +20,14 @@ namespace CarRentalAPI.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> GetUserDocumentPhoto(GetUserDocumentPhotoModel model)
+        public async Task<IActionResult> GetUserDocumentPhoto([FromQuery] GetUserDocumentPhotoModel model)
         {
             var fileStream = await _fileService.GetUserDocumentPhoto(model.UserName,model.UserDocumentImageType);
-            return Ok(File(fileStream,"application/octet-stream",model.UserDocumentImageType.ToString()));
+            //return Ok(File(fileStream,"application/octet-stream",model.UserDocumentImageType.ToString()));
+            return new FileStreamResult(fileStream, "application/octet-stream")
+            {
+                FileDownloadName = model.UserDocumentImageType.ToString()
+            };
         }
 
         [HttpPost("{orderId}")]

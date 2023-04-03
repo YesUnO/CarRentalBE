@@ -162,8 +162,10 @@ namespace Core.Domain.User
         public async Task<ApplicationUser> GetUserByName(string userName)
         {
             var identityUser = await _userManager.FindByNameAsync(userName);
-            var applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
-                                                                              .Include(x => x.IdentificationCard)
+            var applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense.BackSideImage)
+                                                                              .Include(x => x.DriversLicense.FrontSideImage)
+                                                                              .Include(x => x.IdentificationCard.BackSideImage)
+                                                                              .Include(x => x.IdentificationCard.FrontSideImage)
                                                                               .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
             if (applicationUser == null)
             {
