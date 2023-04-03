@@ -1,4 +1,4 @@
-﻿namespace Core.Infrastructure.Options;
+﻿namespace Core.Infrastructure.Files.Options;
 
 public class FileSettings
 {

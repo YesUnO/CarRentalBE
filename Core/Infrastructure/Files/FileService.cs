@@ -3,7 +3,6 @@ using DataLayer.Entities.Files;
 using DTO;
 using Microsoft.AspNetCore.Http;
 using Cloudmersive.APIClient.NETCore.VirusScan.Client;
-using Core.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Cloudmersive.APIClient.NETCore.VirusScan.Api;
 using Microsoft.Extensions.Logging;
@@ -12,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Core.Domain.User;
 using DataLayer.Entities.User;
 using DataLayer.Entities.Orders;
+using Core.Infrastructure.Files.Options;
 
 namespace Core.Infrastructure.Files;
 

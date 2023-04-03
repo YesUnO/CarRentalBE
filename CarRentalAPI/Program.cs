@@ -1,7 +1,9 @@
 using CarRentalAPI;
 using Microsoft.OpenApi.Models;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 // Add services to the container.
 
@@ -38,7 +40,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+var stripeApiKey = configuration.GetSection("StripeSettings:ApiKey").Value;
 
+StripeConfiguration.ApiKey = stripeApiKey;
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

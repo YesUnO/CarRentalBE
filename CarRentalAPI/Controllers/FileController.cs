@@ -8,7 +8,7 @@ namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class FileController:ControllerBase
+public class FileController : ControllerBase
 {
     private readonly IFileService _fileService;
 
@@ -21,7 +21,7 @@ public class FileController:ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> GetUserDocumentPhoto([FromQuery] GetUserDocumentPhotoModel model)
     {
-        var fileStream = await _fileService.GetUserDocumentPhoto(model.UserName,model.UserDocumentImageType);
+        var fileStream = await _fileService.GetUserDocumentPhoto(model.UserName, model.UserDocumentImageType);
         return new FileStreamResult(fileStream, "application/octet-stream")
         {
             FileDownloadName = model.UserDocumentImageType.ToString() + ".jpg"

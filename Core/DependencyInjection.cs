@@ -5,8 +5,10 @@ using Core.Domain.Cars;
 using Core.Domain.User;
 using Core.Domain.Payment;
 using Core.Infrastructure.Files;
-using Core.Infrastructure.Options;
 using Core.Domain.Orders;
+using Core.Infrastructure.Files.Options;
+using Core.Infrastructure.StripePayment;
+using Core.Infrastructure.StripePayment.Options;
 
 namespace Core;
 
@@ -21,6 +23,9 @@ public static class DependencyInjection
         services.AddTransient<ICarService, CarService>();
         services.AddTransient<IPaymentService, PaymentService>();
         services.AddTransient<IOrderService, OrderService>();
+
+        services.AddTransient<IStripeService, StripeService>();
+        services.Configure<StripeSettings>(configuration.GetSection("StripeSettings"));
 
         services.AddTransient<IFileService, FileService>();
         services.Configure<FileSettings>(configuration.GetSection("FileSettings"));
