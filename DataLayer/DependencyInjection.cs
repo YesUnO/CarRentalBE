@@ -8,44 +8,43 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DataLayer
+namespace DataLayer;
+
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddDataLayer(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddDataLayer(this IServiceCollection services, IConfiguration configuration)
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString));
+
+        services.AddTransient<IAuthorizationHandler, ViewOwnOrdersHandler>();
+
+        services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+        var identityResources = new List<IdentityResource>
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
+        };
 
-            services.AddTransient<IAuthorizationHandler, ViewOwnOrdersHandler>();
+        services.AddIdentityServer(options =>
+        {
+            options.EmitStaticAudienceClaim = true;
+        })
+            .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
+            .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
+            .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
+            .AddInMemoryIdentityResources(identityResources);
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
-
-            var identityResources = new List<IdentityResource>
-            {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-            };
-
-            services.AddIdentityServer(options =>
-            {
-                options.EmitStaticAudienceClaim = true;
-            })
-                .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
-                .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
-                .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
-                .AddInMemoryIdentityResources(identityResources);
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("ViewOwnOrdersPolicy", policy =>
-                    policy.Requirements.Add(new ViewOwnOrdersRequirement()));
-            });
-            return services;
-        }
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ViewOwnOrdersPolicy", policy =>
+                policy.Requirements.Add(new ViewOwnOrdersRequirement()));
+        });
+        return services;
     }
 }

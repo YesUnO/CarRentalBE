@@ -1,9 +1,8 @@
 ﻿
-namespace DataLayer.Entities.User
+namespace DataLayer.Entities.User;
+
+public enum UserDocumentType
 {
-    public enum UserDocumentType
-    {
-        DriversLicense = 0,
-        IdentityCard = 1
-    }
+    DriversLicense = 0,
+    IdentityCard = 1
 }

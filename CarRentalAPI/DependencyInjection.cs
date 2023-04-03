@@ -3,27 +3,26 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
-namespace CarRentalAPI
+namespace CarRentalAPI;
+
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddThingsToContainer(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddThingsToContainer(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddCore(configuration);
+        services.AddCore(configuration);
 
-            services.AddHttpContextAccessor();
+        services.AddHttpContextAccessor();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.Authority = "https://localhost:7125";
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = "https://localhost:7125";
 
-                    options.TokenValidationParameters.ValidateAudience = false;
+                options.TokenValidationParameters.ValidateAudience = false;
 
-                    options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-                });
+                options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+            });
 
-            return services;
-         }
-    }
+        return services;
+     }
 }

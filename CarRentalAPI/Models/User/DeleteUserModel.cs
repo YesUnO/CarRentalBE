@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CarRentalAPI.Models.User
+namespace CarRentalAPI.Models.User;
+
+public class DeleteUserModel
 {
-    public class DeleteUserModel
-    {
-        [Required]
-        public string UserName { get; set; }
-    }
+    [Required]
+    public string UserName { get; set; }
 }

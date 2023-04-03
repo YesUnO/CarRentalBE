@@ -1,26 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CarRentalAPI.Models.Auth
+namespace CarRentalAPI.Models.Auth;
+
+public class RegisterModel
 {
-    public class RegisterModel
-    {
-        [Required]
-        public string UserName { get; set; }
+    [Required]
+    public string UserName { get; set; }
 
-        [Required]
-        public string Password { get; set; }
+    [Required]
+    public string Password { get; set; }
 
-        [Required]
-        [Compare("Password")]
-        [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; }
+    [Required]
+    [Compare("Password")]
+    [DataType(DataType.Password)]
+    public string ConfirmPassword { get; set; }
 
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
+    [Required]
+    [DataType(DataType.EmailAddress)]
+    public string Email { get; set; }
 
-        [Required]
-        [DataType(DataType.PhoneNumber)]
-        public string PhoneNumber { get; set; } 
-    }
+    [Required]
+    [DataType(DataType.PhoneNumber)]
+    public string PhoneNumber { get; set; } 
 }

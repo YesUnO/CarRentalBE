@@ -4,26 +4,25 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DTO;
 
-namespace CarRentalAPI.Controllers
+namespace CarRentalAPI.Controllers;
 
+
+[Route("api/[controller]")]
+[ApiController]
+public class OrderController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class OrderController : ControllerBase
+    private readonly IOrderService _orderService;
+
+    public OrderController(IOrderService orderService)
     {
-        private readonly IOrderService _orderService;
+        _orderService = orderService;
+    }
 
-        public OrderController(IOrderService orderService)
-        {
-            _orderService = orderService;
-        }
-
-        [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
-        public async Task<IActionResult> Create(OrderDTO model)
-        {
-            await _orderService.CreateOrder(model);
-            return Ok();
-        }
+    [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    public async Task<IActionResult> Create(OrderDTO model)
+    {
+        await _orderService.CreateOrder(model);
+        return Ok();
     }
 }

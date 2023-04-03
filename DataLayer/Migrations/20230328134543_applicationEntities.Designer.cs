@@ -9,1173 +9,1172 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DataLayer.Migrations
+namespace DataLayer.Migrations;
+
+[DbContext(typeof(ApplicationDbContext))]
+[Migration("20230328134543_applicationEntities")]
+partial class applicationEntities
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230328134543_applicationEntities")]
-    partial class applicationEntities
+    protected override void BuildTargetModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "6.0.0")
+            .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+        NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("BasicRentalPrice")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("BasicRentalPrice")
+                    .HasColumnType("numeric");
 
-                    b.Property<int?>("CarInsuranceId")
-                        .HasColumnType("integer");
+                b.Property<int?>("CarInsuranceId")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("CarServiceState")
-                        .HasColumnType("integer");
+                b.Property<int>("CarServiceState")
+                    .HasColumnType("integer");
 
-                    b.Property<int?>("CarSpecificationId")
-                        .HasColumnType("integer");
+                b.Property<int?>("CarSpecificationId")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("CarState")
-                        .HasColumnType("integer");
+                b.Property<int>("CarState")
+                    .HasColumnType("integer");
 
-                    b.Property<decimal>("CurrentMileage")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("CurrentMileage")
+                    .HasColumnType("numeric");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .HasColumnType("text");
 
-                    b.Property<decimal>("MileageAtPurchase")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("MileageAtPurchase")
+                    .HasColumnType("numeric");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<int?>("ProfilePicId")
-                        .HasColumnType("integer");
+                b.Property<int?>("ProfilePicId")
+                    .HasColumnType("integer");
 
-                    b.Property<decimal>("PurchasePrice")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("PurchasePrice")
+                    .HasColumnType("numeric");
 
-                    b.Property<DateTime>("PurchasedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("PurchasedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("STKId")
-                        .HasColumnType("integer");
+                b.Property<int?>("STKId")
+                    .HasColumnType("integer");
 
-                    b.Property<int?>("TechnicLicenseId")
-                        .HasColumnType("integer");
+                b.Property<int?>("TechnicLicenseId")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CarInsuranceId");
+                b.HasIndex("CarInsuranceId");
 
-                    b.HasIndex("CarSpecificationId");
+                b.HasIndex("CarSpecificationId");
 
-                    b.HasIndex("ProfilePicId");
+                b.HasIndex("ProfilePicId");
 
-                    b.HasIndex("STKId");
+                b.HasIndex("STKId");
 
-                    b.HasIndex("TechnicLicenseId");
+                b.HasIndex("TechnicLicenseId");
 
-                    b.ToTable("Cars");
-                });
+                b.ToTable("Cars");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.CarDocument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Cars.CarDocument", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BackSideImageId")
-                        .HasColumnType("integer");
+                b.Property<int>("BackSideImageId")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("CarDocumentType")
-                        .HasColumnType("integer");
+                b.Property<int>("CarDocumentType")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("DocNr")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("DocNr")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<int>("FrontSideImageId")
-                        .HasColumnType("integer");
+                b.Property<int>("FrontSideImageId")
+                    .HasColumnType("integer");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ValidTill")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("ValidTill")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BackSideImageId");
+                b.HasIndex("BackSideImageId");
 
-                    b.HasIndex("FrontSideImageId");
+                b.HasIndex("FrontSideImageId");
 
-                    b.ToTable("CarDocuments");
-                });
+                b.ToTable("CarDocuments");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.CarInsurance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Cars.CarInsurance", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("Price")
+                    .HasColumnType("numeric");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("CarInsurances");
-                });
+                b.ToTable("CarInsurances");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.CarSpecification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Cars.CarSpecification", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Height")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("Height")
+                    .HasColumnType("numeric");
 
-                    b.Property<decimal>("Length")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("Length")
+                    .HasColumnType("numeric");
 
-                    b.Property<decimal>("LoadCapacity")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("LoadCapacity")
+                    .HasColumnType("numeric");
 
-                    b.Property<DateTime>("ManufacturedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("ManufacturedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ManufacturedIn")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("ManufacturedIn")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<int>("NumberOfSeats")
-                        .HasColumnType("integer");
+                b.Property<int>("NumberOfSeats")
+                    .HasColumnType("integer");
 
-                    b.Property<decimal>("TrunkHeight")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("TrunkHeight")
+                    .HasColumnType("numeric");
 
-                    b.Property<decimal>("TrunkLength")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("TrunkLength")
+                    .HasColumnType("numeric");
 
-                    b.Property<decimal>("TrunkVolume")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("TrunkVolume")
+                    .HasColumnType("numeric");
 
-                    b.Property<decimal>("TrunkWidth")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("TrunkWidth")
+                    .HasColumnType("numeric");
 
-                    b.Property<decimal>("Width")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("Width")
+                    .HasColumnType("numeric");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("CarSpecifications");
-                });
+                b.ToTable("CarSpecifications");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Files.Image", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ImageType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("ImageType")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<string>("RelativePath")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("RelativePath")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Images");
+                b.ToTable("Images");
 
-                    b.HasDiscriminator<string>("ImageType").HasValue("Base");
-                });
+                b.HasDiscriminator<string>("ImageType").HasValue("Base");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.PDF", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Files.PDF", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccidentId")
-                        .HasColumnType("integer");
+                b.Property<int?>("AccidentId")
+                    .HasColumnType("integer");
 
-                    b.Property<int?>("CarId")
-                        .HasColumnType("integer");
+                b.Property<int?>("CarId")
+                    .HasColumnType("integer");
 
-                    b.Property<int?>("CarInsuranceId")
-                        .HasColumnType("integer");
+                b.Property<int?>("CarInsuranceId")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("RelativePath")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("RelativePath")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AccidentId");
+                b.HasIndex("AccidentId");
 
-                    b.HasIndex("CarId");
+                b.HasIndex("CarId");
 
-                    b.HasIndex("CarInsuranceId");
+                b.HasIndex("CarInsuranceId");
 
-                    b.ToTable("PDFs");
-                });
+                b.ToTable("PDFs");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CarId")
-                        .HasColumnType("integer");
+                b.Property<int>("CarId")
+                    .HasColumnType("integer");
 
-                    b.Property<DateTime>("ClosedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("ClosedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("Date")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
+                b.Property<int?>("OrderId")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CarId");
+                b.HasIndex("CarId");
 
-                    b.HasIndex("OrderId");
+                b.HasIndex("OrderId");
 
-                    b.ToTable("Accidents");
-                });
+                b.ToTable("Accidents");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccidentId")
-                        .HasColumnType("integer");
+                b.Property<int?>("AccidentId")
+                    .HasColumnType("integer");
 
-                    b.Property<DateTime>("CancelledAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CancelledAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CarId")
-                        .HasColumnType("integer");
+                b.Property<int>("CarId")
+                    .HasColumnType("integer");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
+                b.Property<int>("CustomerId")
+                    .HasColumnType("integer");
 
-                    b.Property<decimal>("Distance")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("Distance")
+                    .HasColumnType("numeric");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("EndDate")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("HasBeenPayed")
-                        .HasColumnType("boolean");
+                b.Property<bool>("HasBeenPayed")
+                    .HasColumnType("boolean");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("StartDate")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AccidentId");
+                b.HasIndex("AccidentId");
 
-                    b.HasIndex("CarId");
+                b.HasIndex("CarId");
 
-                    b.HasIndex("CustomerId");
+                b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders");
-                });
+                b.ToTable("Orders");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.Orders.Payment", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                b.Property<decimal>("Amount")
+                    .HasColumnType("numeric");
 
-                    b.Property<DateTime>("CanceledAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CanceledAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Currency")
-                        .HasColumnType("integer");
+                b.Property<int>("Currency")
+                    .HasColumnType("integer");
 
-                    b.Property<DateTime?>("FinishedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime?>("FinishedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                b.Property<int>("OrderId")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("PaymentCardId")
-                        .HasColumnType("integer");
+                b.Property<int>("PaymentCardId")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                b.HasIndex("OrderId");
 
-                    b.HasIndex("PaymentCardId");
+                b.HasIndex("PaymentCardId");
 
-                    b.ToTable("Payments");
-                });
+                b.ToTable("Payments");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.User.ApplicationUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.User.ApplicationUser", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Approved")
-                        .HasColumnType("boolean");
+                b.Property<bool>("Approved")
+                    .HasColumnType("boolean");
 
-                    b.Property<int?>("DriversLicenseId")
-                        .HasColumnType("integer");
+                b.Property<int?>("DriversLicenseId")
+                    .HasColumnType("integer");
 
-                    b.Property<int?>("IdentificationCardId")
-                        .HasColumnType("integer");
+                b.Property<int?>("IdentificationCardId")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("IdentityUserId")
-                        .HasColumnType("text");
+                b.Property<string>("IdentityUserId")
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("DriversLicenseId");
+                b.HasIndex("DriversLicenseId");
 
-                    b.HasIndex("IdentificationCardId");
+                b.HasIndex("IdentificationCardId");
 
-                    b.HasIndex("IdentityUserId");
+                b.HasIndex("IdentityUserId");
 
-                    b.ToTable("ApplicationUsers");
-                });
+                b.ToTable("ApplicationUsers");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.User.PaymentCard", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.User.PaymentCard", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("PaymentCards");
-                });
+                b.ToTable("PaymentCards");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.User.UserDocument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("DataLayer.Entities.User.UserDocument", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BackSideImageId")
-                        .HasColumnType("integer");
+                b.Property<int>("BackSideImageId")
+                    .HasColumnType("integer");
 
-                    b.Property<bool>("Checked")
-                        .HasColumnType("boolean");
+                b.Property<bool>("Checked")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("DocNr")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("DocNr")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<int>("FrontSideImageId")
-                        .HasColumnType("integer");
+                b.Property<int>("FrontSideImageId")
+                    .HasColumnType("integer");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean");
 
-                    b.Property<int>("UserDocumentType")
-                        .HasColumnType("integer");
+                b.Property<int>("UserDocumentType")
+                    .HasColumnType("integer");
 
-                    b.Property<DateTime>("ValidTill")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("ValidTill")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BackSideImageId");
+                b.HasIndex("BackSideImageId");
 
-                    b.HasIndex("FrontSideImageId");
+                b.HasIndex("FrontSideImageId");
 
-                    b.ToTable("UserDocuments");
-                });
+                b.ToTable("UserDocuments");
+            });
 
-            modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
-                {
-                    b.Property<string>("UserCode")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+        modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
+            {
+                b.Property<string>("UserCode")
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("ClientId")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreationTime")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasMaxLength(50000)
-                        .HasColumnType("character varying(50000)");
+                b.Property<string>("Data")
+                    .IsRequired()
+                    .HasMaxLength(50000)
+                    .HasColumnType("character varying(50000)");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("Description")
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<string>("DeviceCode")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("DeviceCode")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime?>("Expiration")
-                        .IsRequired()
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime?>("Expiration")
+                    .IsRequired()
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("SessionId")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("SessionId")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<string>("SubjectId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("SubjectId")
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.HasKey("UserCode");
+                b.HasKey("UserCode");
 
-                    b.HasIndex("DeviceCode")
-                        .IsUnique();
+                b.HasIndex("DeviceCode")
+                    .IsUnique();
 
-                    b.HasIndex("Expiration");
+                b.HasIndex("Expiration");
 
-                    b.ToTable("DeviceCodes", (string)null);
-                });
+                b.ToTable("DeviceCodes", (string)null);
+            });
 
-            modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.Key", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+        modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.Key", b =>
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("text");
 
-                    b.Property<string>("Algorithm")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("Algorithm")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("Created")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Data")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<bool>("DataProtected")
-                        .HasColumnType("boolean");
+                b.Property<bool>("DataProtected")
+                    .HasColumnType("boolean");
 
-                    b.Property<bool>("IsX509Certificate")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsX509Certificate")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("Use")
-                        .HasColumnType("text");
+                b.Property<string>("Use")
+                    .HasColumnType("text");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("integer");
+                b.Property<int>("Version")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Use");
+                b.HasIndex("Use");
 
-                    b.ToTable("Keys");
-                });
+                b.ToTable("Keys");
+            });
 
-            modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.PersistedGrant", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+        modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.PersistedGrant", b =>
+            {
+                b.Property<string>("Key")
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("ClientId")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime?>("ConsumedTime")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime?>("ConsumedTime")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreationTime")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasMaxLength(50000)
-                        .HasColumnType("character varying(50000)");
+                b.Property<string>("Data")
+                    .IsRequired()
+                    .HasMaxLength(50000)
+                    .HasColumnType("character varying(50000)");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("Description")
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime?>("Expiration")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime?>("Expiration")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("SessionId")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("SessionId")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<string>("SubjectId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("SubjectId")
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                b.Property<string>("Type")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("character varying(50)");
 
-                    b.HasKey("Key");
+                b.HasKey("Key");
 
-                    b.HasIndex("ConsumedTime");
+                b.HasIndex("ConsumedTime");
 
-                    b.HasIndex("Expiration");
+                b.HasIndex("Expiration");
 
-                    b.HasIndex("SubjectId", "ClientId", "Type");
+                b.HasIndex("SubjectId", "ClientId", "Type");
 
-                    b.HasIndex("SubjectId", "SessionId", "Type");
+                b.HasIndex("SubjectId", "SessionId", "Type");
 
-                    b.ToTable("PersistedGrants", (string)null);
-                });
+                b.ToTable("PersistedGrants", (string)null);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("text");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                b.Property<string>("Name")
+                    .HasMaxLength(256)
+                    .HasColumnType("character varying(256)");
 
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                b.Property<string>("NormalizedName")
+                    .HasMaxLength(256)
+                    .HasColumnType("character varying(256)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                b.HasIndex("NormalizedName")
+                    .IsUnique()
+                    .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                b.ToTable("AspNetRoles", (string)null);
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
-                            ConcurrencyStamp = "34fc709c-c7f8-4cc5-a3ae-2e4c0d8598d1",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
-                            ConcurrencyStamp = "07a71494-7719-4eec-9d0b-3ad3de76a559",
-                            Name = "Customer",
-                            NormalizedName = "CUSTOMER"
-                        });
-                });
+                b.HasData(
+                    new
+                    {
+                        Id = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7",
+                        ConcurrencyStamp = "34fc709c-c7f8-4cc5-a3ae-2e4c0d8598d1",
+                        Name = "Admin",
+                        NormalizedName = "ADMIN"
+                    },
+                    new
+                    {
+                        Id = "0b5141f7-3aed-4cf9-a51d-4ad671703e1f",
+                        ConcurrencyStamp = "07a71494-7719-4eec-9d0b-3ad3de76a559",
+                        Name = "Customer",
+                        NormalizedName = "CUSTOMER"
+                    });
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("text");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("text");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("RoleId")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
+                b.ToTable("AspNetRoleClaims", (string)null);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("text");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
+                b.Property<int>("AccessFailedCount")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("text");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                b.Property<string>("Email")
+                    .HasMaxLength(256)
+                    .HasColumnType("character varying(256)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
+                b.Property<bool>("EmailConfirmed")
+                    .HasColumnType("boolean");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
+                b.Property<bool>("LockoutEnabled")
+                    .HasColumnType("boolean");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTimeOffset?>("LockoutEnd")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                b.Property<string>("NormalizedEmail")
+                    .HasMaxLength(256)
+                    .HasColumnType("character varying(256)");
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                b.Property<string>("NormalizedUserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("character varying(256)");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
+                b.Property<string>("PasswordHash")
+                    .HasColumnType("text");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
+                b.Property<string>("PhoneNumber")
+                    .HasColumnType("text");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
+                b.Property<bool>("PhoneNumberConfirmed")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
+                b.Property<string>("SecurityStamp")
+                    .HasColumnType("text");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
+                b.Property<bool>("TwoFactorEnabled")
+                    .HasColumnType("boolean");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                b.Property<string>("UserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("character varying(256)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                b.HasIndex("NormalizedEmail")
+                    .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                b.HasIndex("NormalizedUserName")
+                    .IsUnique()
+                    .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                b.ToTable("AspNetUsers", (string)null);
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "d4d00e78-b183-4483-a6a5-b48970a96e09",
-                            Email = "vilem.cech@gmail.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "VILEM.CECH@GMAIL.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOZKMJrncqSgkuiUe/toCZg9H4hPtrbSlZgQfEy0VClcsCpqj4YykRFzDNqv149WNg==",
-                            PhoneNumber = "773951604",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "4a7c59ed-0048-4956-81d5-f80ca66ba8f0",
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        });
-                });
+                b.HasData(
+                    new
+                    {
+                        Id = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
+                        AccessFailedCount = 0,
+                        ConcurrencyStamp = "d4d00e78-b183-4483-a6a5-b48970a96e09",
+                        Email = "vilem.cech@gmail.com",
+                        EmailConfirmed = true,
+                        LockoutEnabled = false,
+                        NormalizedEmail = "VILEM.CECH@GMAIL.COM",
+                        NormalizedUserName = "ADMIN",
+                        PasswordHash = "AQAAAAEAACcQAAAAEOZKMJrncqSgkuiUe/toCZg9H4hPtrbSlZgQfEy0VClcsCpqj4YykRFzDNqv149WNg==",
+                        PhoneNumber = "773951604",
+                        PhoneNumberConfirmed = true,
+                        SecurityStamp = "4a7c59ed-0048-4956-81d5-f80ca66ba8f0",
+                        TwoFactorEnabled = false,
+                        UserName = "admin"
+                    });
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("text");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
+                b.ToTable("AspNetUserClaims", (string)null);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            {
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("text");
 
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("text");
+                b.Property<string>("ProviderKey")
+                    .HasColumnType("text");
 
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("text");
+                b.Property<string>("ProviderDisplayName")
+                    .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
+                b.ToTable("AspNetUserLogins", (string)null);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("text");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("text");
+                b.Property<string>("RoleId")
+                    .HasColumnType("text");
 
-                    b.HasKey("UserId", "RoleId");
+                b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                b.ToTable("AspNetUserRoles", (string)null);
 
-                    b.HasData(
-                        new
-                        {
-                            UserId = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
-                            RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7"
-                        });
-                });
+                b.HasData(
+                    new
+                    {
+                        UserId = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406",
+                        RoleId = "b49e5e21-bcdb-4fac-b8ea-bfa2d81168f7"
+                    });
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("text");
 
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .HasColumnType("text");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("text");
+                b.Property<string>("Value")
+                    .HasColumnType("text");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
+                b.ToTable("AspNetUserTokens", (string)null);
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.AccidentImage", b =>
-                {
-                    b.HasBaseType("DataLayer.Entities.Files.Image");
+        modelBuilder.Entity("DataLayer.Entities.Files.AccidentImage", b =>
+            {
+                b.HasBaseType("DataLayer.Entities.Files.Image");
 
-                    b.Property<int>("AccidentId")
-                        .HasColumnType("integer");
+                b.Property<int>("AccidentId")
+                    .HasColumnType("integer");
 
-                    b.HasIndex("AccidentId");
+                b.HasIndex("AccidentId");
 
-                    b.HasDiscriminator().HasValue("Accident");
-                });
+                b.HasDiscriminator().HasValue("Accident");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.CarDocumentImage", b =>
-                {
-                    b.HasBaseType("DataLayer.Entities.Files.Image");
+        modelBuilder.Entity("DataLayer.Entities.Files.CarDocumentImage", b =>
+            {
+                b.HasBaseType("DataLayer.Entities.Files.Image");
 
-                    b.HasDiscriminator().HasValue("CarDocument");
-                });
+                b.HasDiscriminator().HasValue("CarDocument");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.OrderImage", b =>
-                {
-                    b.HasBaseType("DataLayer.Entities.Files.Image");
+        modelBuilder.Entity("DataLayer.Entities.Files.OrderImage", b =>
+            {
+                b.HasBaseType("DataLayer.Entities.Files.Image");
 
-                    b.Property<int>("CarImageType")
-                        .HasColumnType("integer");
+                b.Property<int>("CarImageType")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                b.Property<int>("OrderId")
+                    .HasColumnType("integer");
 
-                    b.HasIndex("OrderId");
+                b.HasIndex("OrderId");
 
-                    b.HasDiscriminator().HasValue("Order");
-                });
+                b.HasDiscriminator().HasValue("Order");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.UserDocumentImage", b =>
-                {
-                    b.HasBaseType("DataLayer.Entities.Files.Image");
+        modelBuilder.Entity("DataLayer.Entities.Files.UserDocumentImage", b =>
+            {
+                b.HasBaseType("DataLayer.Entities.Files.Image");
 
-                    b.HasDiscriminator().HasValue("UserDocument");
-                });
+                b.HasDiscriminator().HasValue("UserDocument");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Cars.CarInsurance", "CarInsurance")
-                        .WithMany()
-                        .HasForeignKey("CarInsuranceId");
+        modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
+            {
+                b.HasOne("DataLayer.Entities.Cars.CarInsurance", "CarInsurance")
+                    .WithMany()
+                    .HasForeignKey("CarInsuranceId");
 
-                    b.HasOne("DataLayer.Entities.Cars.CarSpecification", "CarSpecification")
-                        .WithMany()
-                        .HasForeignKey("CarSpecificationId");
+                b.HasOne("DataLayer.Entities.Cars.CarSpecification", "CarSpecification")
+                    .WithMany()
+                    .HasForeignKey("CarSpecificationId");
 
-                    b.HasOne("DataLayer.Entities.Files.Image", "ProfilePic")
-                        .WithMany()
-                        .HasForeignKey("ProfilePicId");
+                b.HasOne("DataLayer.Entities.Files.Image", "ProfilePic")
+                    .WithMany()
+                    .HasForeignKey("ProfilePicId");
 
-                    b.HasOne("DataLayer.Entities.Cars.CarDocument", "STK")
-                        .WithMany("STKUsers")
-                        .HasForeignKey("STKId");
+                b.HasOne("DataLayer.Entities.Cars.CarDocument", "STK")
+                    .WithMany("STKUsers")
+                    .HasForeignKey("STKId");
 
-                    b.HasOne("DataLayer.Entities.Cars.CarDocument", "TechnicLicense")
-                        .WithMany("TechnicLicenseUsers")
-                        .HasForeignKey("TechnicLicenseId");
+                b.HasOne("DataLayer.Entities.Cars.CarDocument", "TechnicLicense")
+                    .WithMany("TechnicLicenseUsers")
+                    .HasForeignKey("TechnicLicenseId");
 
-                    b.Navigation("CarInsurance");
+                b.Navigation("CarInsurance");
 
-                    b.Navigation("CarSpecification");
+                b.Navigation("CarSpecification");
 
-                    b.Navigation("ProfilePic");
+                b.Navigation("ProfilePic");
 
-                    b.Navigation("STK");
+                b.Navigation("STK");
 
-                    b.Navigation("TechnicLicense");
-                });
+                b.Navigation("TechnicLicense");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.CarDocument", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Files.CarDocumentImage", "BackSideImage")
-                        .WithMany("BackCarDocuments")
-                        .HasForeignKey("BackSideImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("DataLayer.Entities.Cars.CarDocument", b =>
+            {
+                b.HasOne("DataLayer.Entities.Files.CarDocumentImage", "BackSideImage")
+                    .WithMany("BackCarDocuments")
+                    .HasForeignKey("BackSideImageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("DataLayer.Entities.Files.CarDocumentImage", "FrontSideImage")
-                        .WithMany("FrontCarDocuments")
-                        .HasForeignKey("FrontSideImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("DataLayer.Entities.Files.CarDocumentImage", "FrontSideImage")
+                    .WithMany("FrontCarDocuments")
+                    .HasForeignKey("FrontSideImageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("BackSideImage");
+                b.Navigation("BackSideImage");
 
-                    b.Navigation("FrontSideImage");
-                });
+                b.Navigation("FrontSideImage");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.PDF", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
-                        .WithMany("Documantation")
-                        .HasForeignKey("AccidentId");
+        modelBuilder.Entity("DataLayer.Entities.Files.PDF", b =>
+            {
+                b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
+                    .WithMany("Documantation")
+                    .HasForeignKey("AccidentId");
 
-                    b.HasOne("DataLayer.Entities.Cars.Car", "Car")
-                        .WithMany("PurchaseContract")
-                        .HasForeignKey("CarId");
+                b.HasOne("DataLayer.Entities.Cars.Car", "Car")
+                    .WithMany("PurchaseContract")
+                    .HasForeignKey("CarId");
 
-                    b.HasOne("DataLayer.Entities.Cars.CarInsurance", "CarInsurance")
-                        .WithMany("Documents")
-                        .HasForeignKey("CarInsuranceId");
+                b.HasOne("DataLayer.Entities.Cars.CarInsurance", "CarInsurance")
+                    .WithMany("Documents")
+                    .HasForeignKey("CarInsuranceId");
 
-                    b.Navigation("Accident");
+                b.Navigation("Accident");
 
-                    b.Navigation("Car");
+                b.Navigation("Car");
 
-                    b.Navigation("CarInsurance");
-                });
+                b.Navigation("CarInsurance");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Cars.Car", "Car")
-                        .WithMany("Accidents")
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
+            {
+                b.HasOne("DataLayer.Entities.Cars.Car", "Car")
+                    .WithMany("Accidents")
+                    .HasForeignKey("CarId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("DataLayer.Entities.Orders.Order", "Order")
-                        .WithMany("Accidents")
-                        .HasForeignKey("OrderId");
+                b.HasOne("DataLayer.Entities.Orders.Order", "Order")
+                    .WithMany("Accidents")
+                    .HasForeignKey("OrderId");
 
-                    b.Navigation("Car");
+                b.Navigation("Car");
 
-                    b.Navigation("Order");
-                });
+                b.Navigation("Order");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
-                        .WithMany()
-                        .HasForeignKey("AccidentId");
+        modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
+            {
+                b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
+                    .WithMany()
+                    .HasForeignKey("AccidentId");
 
-                    b.HasOne("DataLayer.Entities.Cars.Car", "Car")
-                        .WithMany("Orders")
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("DataLayer.Entities.Cars.Car", "Car")
+                    .WithMany("Orders")
+                    .HasForeignKey("CarId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("DataLayer.Entities.User.ApplicationUser", "Customer")
-                        .WithMany("Orders")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("DataLayer.Entities.User.ApplicationUser", "Customer")
+                    .WithMany("Orders")
+                    .HasForeignKey("CustomerId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Accident");
+                b.Navigation("Accident");
 
-                    b.Navigation("Car");
+                b.Navigation("Car");
 
-                    b.Navigation("Customer");
-                });
+                b.Navigation("Customer");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Payment", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Orders.Order", "Order")
-                        .WithMany("Payments")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("DataLayer.Entities.Orders.Payment", b =>
+            {
+                b.HasOne("DataLayer.Entities.Orders.Order", "Order")
+                    .WithMany("Payments")
+                    .HasForeignKey("OrderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("DataLayer.Entities.User.PaymentCard", "PaymentCard")
-                        .WithMany()
-                        .HasForeignKey("PaymentCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("DataLayer.Entities.User.PaymentCard", "PaymentCard")
+                    .WithMany()
+                    .HasForeignKey("PaymentCardId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Order");
+                b.Navigation("Order");
 
-                    b.Navigation("PaymentCard");
-                });
+                b.Navigation("PaymentCard");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.User.ApplicationUser", b =>
-                {
-                    b.HasOne("DataLayer.Entities.User.UserDocument", "DriversLicense")
-                        .WithMany("DriverLicenseUsers")
-                        .HasForeignKey("DriversLicenseId");
+        modelBuilder.Entity("DataLayer.Entities.User.ApplicationUser", b =>
+            {
+                b.HasOne("DataLayer.Entities.User.UserDocument", "DriversLicense")
+                    .WithMany("DriverLicenseUsers")
+                    .HasForeignKey("DriversLicenseId");
 
-                    b.HasOne("DataLayer.Entities.User.UserDocument", "IdentificationCard")
-                        .WithMany("IdentificationLicenseUsers")
-                        .HasForeignKey("IdentificationCardId");
+                b.HasOne("DataLayer.Entities.User.UserDocument", "IdentificationCard")
+                    .WithMany("IdentificationLicenseUsers")
+                    .HasForeignKey("IdentificationCardId");
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId");
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
+                    .WithMany()
+                    .HasForeignKey("IdentityUserId");
 
-                    b.Navigation("DriversLicense");
+                b.Navigation("DriversLicense");
 
-                    b.Navigation("IdentificationCard");
+                b.Navigation("IdentificationCard");
 
-                    b.Navigation("IdentityUser");
-                });
+                b.Navigation("IdentityUser");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.User.UserDocument", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Files.UserDocumentImage", "BackSideImage")
-                        .WithMany("BackUserDocuments")
-                        .HasForeignKey("BackSideImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("DataLayer.Entities.User.UserDocument", b =>
+            {
+                b.HasOne("DataLayer.Entities.Files.UserDocumentImage", "BackSideImage")
+                    .WithMany("BackUserDocuments")
+                    .HasForeignKey("BackSideImageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("DataLayer.Entities.Files.UserDocumentImage", "FrontSideImage")
-                        .WithMany("FrontUserDocuments")
-                        .HasForeignKey("FrontSideImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("DataLayer.Entities.Files.UserDocumentImage", "FrontSideImage")
+                    .WithMany("FrontUserDocuments")
+                    .HasForeignKey("FrontSideImageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("BackSideImage");
+                b.Navigation("BackSideImage");
 
-                    b.Navigation("FrontSideImage");
-                });
+                b.Navigation("FrontSideImage");
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.AccidentImage", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
-                        .WithMany("PhotoDocumantation")
-                        .HasForeignKey("AccidentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("DataLayer.Entities.Files.AccidentImage", b =>
+            {
+                b.HasOne("DataLayer.Entities.Orders.Accident", "Accident")
+                    .WithMany("PhotoDocumantation")
+                    .HasForeignKey("AccidentId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Accident");
-                });
+                b.Navigation("Accident");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.OrderImage", b =>
-                {
-                    b.HasOne("DataLayer.Entities.Orders.Order", "Order")
-                        .WithMany("ReturningPhotos")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("DataLayer.Entities.Files.OrderImage", b =>
+            {
+                b.HasOne("DataLayer.Entities.Orders.Order", "Order")
+                    .WithMany("ReturningPhotos")
+                    .HasForeignKey("OrderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Order");
-                });
+                b.Navigation("Order");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
-                {
-                    b.Navigation("Accidents");
+        modelBuilder.Entity("DataLayer.Entities.Cars.Car", b =>
+            {
+                b.Navigation("Accidents");
 
-                    b.Navigation("Orders");
+                b.Navigation("Orders");
 
-                    b.Navigation("PurchaseContract");
-                });
+                b.Navigation("PurchaseContract");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.CarDocument", b =>
-                {
-                    b.Navigation("STKUsers");
+        modelBuilder.Entity("DataLayer.Entities.Cars.CarDocument", b =>
+            {
+                b.Navigation("STKUsers");
 
-                    b.Navigation("TechnicLicenseUsers");
-                });
+                b.Navigation("TechnicLicenseUsers");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Cars.CarInsurance", b =>
-                {
-                    b.Navigation("Documents");
-                });
+        modelBuilder.Entity("DataLayer.Entities.Cars.CarInsurance", b =>
+            {
+                b.Navigation("Documents");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
-                {
-                    b.Navigation("Documantation");
+        modelBuilder.Entity("DataLayer.Entities.Orders.Accident", b =>
+            {
+                b.Navigation("Documantation");
 
-                    b.Navigation("PhotoDocumantation");
-                });
+                b.Navigation("PhotoDocumantation");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
-                {
-                    b.Navigation("Accidents");
+        modelBuilder.Entity("DataLayer.Entities.Orders.Order", b =>
+            {
+                b.Navigation("Accidents");
 
-                    b.Navigation("Payments");
+                b.Navigation("Payments");
 
-                    b.Navigation("ReturningPhotos");
-                });
+                b.Navigation("ReturningPhotos");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.User.ApplicationUser", b =>
-                {
-                    b.Navigation("Orders");
-                });
+        modelBuilder.Entity("DataLayer.Entities.User.ApplicationUser", b =>
+            {
+                b.Navigation("Orders");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.User.UserDocument", b =>
-                {
-                    b.Navigation("DriverLicenseUsers");
+        modelBuilder.Entity("DataLayer.Entities.User.UserDocument", b =>
+            {
+                b.Navigation("DriverLicenseUsers");
 
-                    b.Navigation("IdentificationLicenseUsers");
-                });
+                b.Navigation("IdentificationLicenseUsers");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.CarDocumentImage", b =>
-                {
-                    b.Navigation("BackCarDocuments");
+        modelBuilder.Entity("DataLayer.Entities.Files.CarDocumentImage", b =>
+            {
+                b.Navigation("BackCarDocuments");
 
-                    b.Navigation("FrontCarDocuments");
-                });
+                b.Navigation("FrontCarDocuments");
+            });
 
-            modelBuilder.Entity("DataLayer.Entities.Files.UserDocumentImage", b =>
-                {
-                    b.Navigation("BackUserDocuments");
+        modelBuilder.Entity("DataLayer.Entities.Files.UserDocumentImage", b =>
+            {
+                b.Navigation("BackUserDocuments");
 
-                    b.Navigation("FrontUserDocuments");
-                });
+                b.Navigation("FrontUserDocuments");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using DTO;
 
-namespace CarRentalAPI.Models.File
+namespace CarRentalAPI.Models.File;
+
+public class GetUserDocumentPhotoModel
 {
-    public class GetUserDocumentPhotoModel
-    {
-        public string UserName { get; set; }
-        public UserDocumentImageType UserDocumentImageType { get; set; }
-    }
+    public string UserName { get; set; }
+    public UserDocumentImageType UserDocumentImageType { get; set; }
 }

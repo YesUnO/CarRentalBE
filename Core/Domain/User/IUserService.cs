@@ -3,17 +3,16 @@ using DTO;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace Core.Domain.User
+namespace Core.Domain.User;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
-        ApplicationUser GetSignedInUser();
-        Task<ApplicationUser> GetSignedInUserAsync();
-        Task<ApplicationUser> GetUserByName(string userName);
-        Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal);
-        List<UserDTO> GetUsers();
-        Task<bool> DeleteUser(IdentityUser user);
-        Task<bool> SoftDeleteUser(IdentityUser user);
-        Task<bool> RegisterCustomer(IdentityUser user, string email, string password);
-    }
+    ApplicationUser GetSignedInUser();
+    Task<ApplicationUser> GetSignedInUserAsync();
+    Task<ApplicationUser> GetUserByName(string userName);
+    Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal);
+    List<UserDTO> GetUsers();
+    Task<bool> DeleteUser(IdentityUser user);
+    Task<bool> SoftDeleteUser(IdentityUser user);
+    Task<bool> RegisterCustomer(IdentityUser user, string email, string password);
 }

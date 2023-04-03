@@ -1,12 +1,11 @@
 ﻿using DTO;
 using Microsoft.AspNetCore.Http;
 
-namespace Core.Infrastructure.Files
+namespace Core.Infrastructure.Files;
+
+public interface IFileService
 {
-    public interface IFileService
-    {
-        Task SaveCarReturningPhotoAsync(IFormFile file, int orderId, CarReturningImageType carReturningImageType);
-        Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType);
-        Task<FileStream> GetUserDocumentPhoto(string userName, UserDocumentImageType userDocumentImageType);
-    }
+    Task SaveCarReturningPhotoAsync(IFormFile file, int orderId, CarReturningImageType carReturningImageType);
+    Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType);
+    Task<FileStream> GetUserDocumentPhoto(string userName, UserDocumentImageType userDocumentImageType);
 }

@@ -8,23 +8,22 @@ using Core.Infrastructure.Files;
 using Core.Infrastructure.Options;
 using Core.Domain.Orders;
 
-namespace Core
+namespace Core;
+
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDataLayer(configuration);
+        services.AddDataLayer(configuration);
 
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<ICardService, CardService>();
-            services.AddTransient<ICarService, CarService>();
-            services.AddTransient<IPaymentService, PaymentService>();
-            services.AddTransient<IOrderService, OrderService>();
+        services.AddTransient<IUserService, UserService>();
+        services.AddTransient<ICardService, CardService>();
+        services.AddTransient<ICarService, CarService>();
+        services.AddTransient<IPaymentService, PaymentService>();
+        services.AddTransient<IOrderService, OrderService>();
 
-            services.AddTransient<IFileService, FileService>();
-            services.Configure<FileSettings>(configuration.GetSection("FileSettings"));
-            return services;
-        }
+        services.AddTransient<IFileService, FileService>();
+        services.Configure<FileSettings>(configuration.GetSection("FileSettings"));
+        return services;
     }
 }

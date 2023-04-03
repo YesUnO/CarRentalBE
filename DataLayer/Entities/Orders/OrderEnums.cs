@@ -1,17 +1,16 @@
 ﻿
-namespace DataLayer.Entities.Orders
+namespace DataLayer.Entities.Orders;
+
+public enum Currency
 {
-    public enum Currency
-    {
-        USD = 0,
-        EUR = 1,
-        CZK = 2,
-    }
+    USD = 0,
+    EUR = 1,
+    CZK = 2,
+}
 
-    //TODO: maybe?
-    public enum OrderState
-    {
-        Set = 0,
+//TODO: maybe?
+public enum OrderState
+{
+    Set = 0,
 
-    }
 }

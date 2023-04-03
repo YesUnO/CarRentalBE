@@ -1,8 +1,7 @@
-﻿namespace Core.Infrastructure.Options
+﻿namespace Core.Infrastructure.Options;
+
+public class FileSettings
 {
-    public class FileSettings
-    {
-        public string Root { get; set; } = string.Empty;
-        public string CloudmersiveApiKey { get; set; } = string.Empty;
-    }
+    public string Root { get; set; } = string.Empty;
+    public string CloudmersiveApiKey { get; set; } = string.Empty;
 }

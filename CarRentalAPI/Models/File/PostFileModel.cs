@@ -1,10 +1,9 @@
 ﻿using DTO;
 
-namespace CarRentalAPI.Models.File
+namespace CarRentalAPI.Models.File;
+
+public class PostCarReturningPhotoModel
 {
-    public class PostCarReturningPhotoModel
-    {
-        public IFormFile File { get; set; }
-        public CarReturningImageType CarReturningImageType { get; set; }
-    }
+    public IFormFile File { get; set; }
+    public CarReturningImageType CarReturningImageType { get; set; }
 }

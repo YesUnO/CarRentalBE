@@ -1,7 +1,6 @@
-﻿namespace DataLayer.Entities.User
+﻿namespace DataLayer.Entities.User;
+
+public class PaymentCard
 {
-    public class PaymentCard
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }

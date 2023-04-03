@@ -1,11 +1,10 @@
 ﻿using DataLayer.Entities.Orders;
 using DTO;
 
-namespace Core.Domain.Orders
+namespace Core.Domain.Orders;
+
+public interface IOrderService
 {
-    public interface IOrderService
-    {
-        Task<Order> GetSignedInUsersActiveOrder();
-        Task<bool> CreateOrder(OrderDTO model);
-    }
+    Task<Order> GetSignedInUsersActiveOrder();
+    Task<bool> CreateOrder(OrderDTO model);
 }

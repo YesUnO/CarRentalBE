@@ -1,8 +1,7 @@
 ﻿
-namespace DTO
+namespace DTO;
+
+public class OrderDTO
 {
-    public class OrderDTO
-    {
-        public int CarId { get; set; }
-    }
+    public int CarId { get; set; }
 }

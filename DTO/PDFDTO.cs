@@ -1,8 +1,7 @@
 ﻿
-namespace DTO
+namespace DTO;
+
+public class PDFDTO
 {
-    public class PDFDTO
-    {
-        public byte[] Content { get; set; } 
-    }
+    public byte[] Content { get; set; } 
 }

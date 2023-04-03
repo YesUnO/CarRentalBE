@@ -1,6 +1,5 @@
-﻿namespace Core.Domain.Payment
+﻿namespace Core.Domain.Payment;
+
+public class CardService : ICardService
 {
-    public class CardService : ICardService
-    {
-    }
 }
