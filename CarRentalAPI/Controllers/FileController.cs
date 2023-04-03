@@ -23,10 +23,9 @@ namespace CarRentalAPI.Controllers
         public async Task<IActionResult> GetUserDocumentPhoto([FromQuery] GetUserDocumentPhotoModel model)
         {
             var fileStream = await _fileService.GetUserDocumentPhoto(model.UserName,model.UserDocumentImageType);
-            //return Ok(File(fileStream,"application/octet-stream",model.UserDocumentImageType.ToString()));
             return new FileStreamResult(fileStream, "application/octet-stream")
             {
-                FileDownloadName = model.UserDocumentImageType.ToString()
+                FileDownloadName = model.UserDocumentImageType.ToString() + ".jpg"
             };
         }
 
