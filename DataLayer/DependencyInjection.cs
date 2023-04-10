@@ -31,6 +31,8 @@ public static class DependencyInjection
             new IdentityResources.Profile(),
         };
 
+        var client = configuration.GetSection("IdentityServer:Clients").Get<List<Client>>();
+
         services.AddIdentityServer(options =>
         {
             options.EmitStaticAudienceClaim = true;

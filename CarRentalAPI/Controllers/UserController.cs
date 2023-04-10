@@ -24,7 +24,7 @@ public class UserController: ControllerBase
     }
 
     [HttpDelete]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin", Policy = "")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> Delete(string name)
     {
         var user = await _userManager.FindByNameAsync(name);
@@ -59,5 +59,27 @@ public class UserController: ControllerBase
             return Ok();
         }
         return BadRequest();
+    }
+
+    public  class TestModel
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Test(TestModel testModel)
+    {
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Route("Protected")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    public async Task<IActionResult> TestProtected(TestModel testModel)
+    {
+
+        return Ok();
     }
 }

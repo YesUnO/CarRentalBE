@@ -1,7 +1,5 @@
 ﻿using Core;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 
 namespace CarRentalAPI;
 
@@ -12,6 +10,14 @@ public static class DependencyInjection
         services.AddCore(configuration);
 
         services.AddHttpContextAccessor();
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+        });
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

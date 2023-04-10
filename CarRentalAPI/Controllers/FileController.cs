@@ -29,7 +29,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("{orderId}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy", Roles = "Customer")]
     public async Task<IActionResult> PostCarReturningPhoto([FromRoute] int orderId, [FromForm] PostCarReturningPhotoModel model)
     {
         await _fileService.SaveCarReturningPhotoAsync(model.File, orderId, model.CarReturningImageType);
