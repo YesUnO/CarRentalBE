@@ -1,8 +1,10 @@
 ﻿using CarRentalAPI.Models.Auth;
 using Core.Domain.User;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Duende.IdentityServer;
 
 namespace CarRentalAPI.Controllers;
 
@@ -27,10 +29,17 @@ public class AuthController : ControllerBase
     {
         var user = new IdentityUser(model.UserName);
         var registerCustomer = await _userService.RegisterCustomer(user, model.Email, model.Password);
-        if(!registerCustomer)
+        if (!registerCustomer)
             return BadRequest();
         await _signInManager.SignInAsync(user, isPersistent: false);
-        return Ok();
+        var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
+        return Ok(new
+        {
+            access_token = response,
+            expires_in = 3600,
+            token_type = "Bearer",
+            scope = "email openid profile role"
+        });
     }
     //public async Task<IActionResult> Login(Login model)
     //{
