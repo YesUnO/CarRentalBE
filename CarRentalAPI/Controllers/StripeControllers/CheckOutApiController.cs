@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 using Stripe;
+using CarRentalAPI.Models.Stripe;
+using CarRentalAPI.Helpers;
 
 namespace CarRentalAPI.Controllers.StripeControllers;
 
@@ -17,14 +19,14 @@ public class CheckOutApiController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Create()
+    public async Task<IActionResult> Create(CreateCheckoutSessionRequest model)
     {
-        var domain = "http://localhost:4242";
+        var domain = Request.Headers["Referer"].ToString();
 
         var priceOptions = new PriceListOptions
         {
             LookupKeys = new List<string> {
-                    Request.Form["lookup_key"]
+                    model.ProductId
                 }
         };
         var priceService = new PriceService();
@@ -47,7 +49,7 @@ public class CheckOutApiController : ControllerBase
         var service = new SessionService();
         Session session = service.Create(options);
 
-        Response.Headers.Add("Location", session.Url);
-        return new StatusCodeResult(303);
+        //Response.Headers.Add("Location", session.Url);
+        return new SeeOther(session.Url);
     }
 }
