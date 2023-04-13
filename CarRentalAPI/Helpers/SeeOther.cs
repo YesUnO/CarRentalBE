@@ -13,20 +13,13 @@
             _location = location;
         }
 
-        //public override void ExecuteResult(ActionContext context)
-        //{
-        //    var response = context.HttpContext.Response;
-        //    response.StatusCode = StatusCodes.Status303SeeOther;
-        //    response.Headers.Location = _location;
-        //}
-
         public async Task ExecuteResultAsync(ActionContext context)
         {
             var response = context.HttpContext.Response;
             response.StatusCode = StatusCodes.Status303SeeOther;
             response.Headers.Location = _location;
 
-             await Task.CompletedTask;
+            await Task.CompletedTask;
         }
     }
 }

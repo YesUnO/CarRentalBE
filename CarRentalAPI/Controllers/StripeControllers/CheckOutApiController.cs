@@ -1,9 +1,6 @@
-﻿using Core.Infrastructure.StripePayment;
+﻿using CarRentalAPI.Helpers;
+using Core.Infrastructure.StripePayment;
 using Microsoft.AspNetCore.Mvc;
-using Stripe.Checkout;
-using Stripe;
-using CarRentalAPI.Models.Stripe;
-using CarRentalAPI.Helpers;
 
 namespace CarRentalAPI.Controllers.StripeControllers;
 
