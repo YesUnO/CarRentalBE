@@ -9,6 +9,7 @@ public static class DependencyInjection
     {
         services.AddCore(configuration);
 
+        //TODO: remove
         services.AddHttpContextAccessor();
 
         services.AddCors(options =>
