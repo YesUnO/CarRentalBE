@@ -1,4 +1,5 @@
 ﻿using CarRentalAPI.Helpers;
+using CarRentalAPI.Models.Stripe;
 using Core.Infrastructure.StripePayment;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,13 +16,14 @@ public class CheckOutApiController : ControllerBase
         _stripeService = stripeService;
     }
 
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> Create()
     {
         var domain = Request.Headers["Referer"].ToString();
 
         var sessionUrl = _stripeService.CheckCheckoutSession(domain);
 
-        return new SeeOther(sessionUrl);
+        return Ok(new CreateCheckoutSessionRasponse { Url = sessionUrl });
+        //return new SeeOther(sessionUrl);
     }
 }
