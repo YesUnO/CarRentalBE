@@ -14,7 +14,7 @@ public class StripeService : IStripeService
         _stripeSettings = stripeSettings.Value;
     }
 
-    public string CheckCheckoutSession(string feUrl)
+    public string CheckCheckoutSession(string feUrl, string clientMail)
     {
         var options = new SessionCreateOptions
         {
@@ -25,8 +25,10 @@ public class StripeService : IStripeService
                     Price = _stripeSettings.CarRentalPriceId,
                     Quantity = 1,
                   },
+                  
                 },
             Mode = "subscription",
+            ClientReferenceId = clientMail,
             SuccessUrl = feUrl + "?success=true&session_id={CHECKOUT_SESSION_ID}",
             CancelUrl = feUrl + "?canceled=true",
         };

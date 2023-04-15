@@ -17,11 +17,12 @@ public class CheckOutApiController : ControllerBase
     }
 
     [HttpGet]
+    //TODO implement authorization
     public async Task<IActionResult> Create()
     {
         var domain = Request.Headers["Referer"].ToString();
 
-        var sessionUrl = _stripeService.CheckCheckoutSession(domain);
+        var sessionUrl = _stripeService.CheckCheckoutSession(domain, "vilem@gmail.com");
 
         return Ok(new CreateCheckoutSessionRasponse { Url = sessionUrl });
         //return new SeeOther(sessionUrl);
