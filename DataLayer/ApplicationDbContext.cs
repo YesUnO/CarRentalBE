@@ -44,7 +44,7 @@ public class ApplicationDbContext : IdentityDbContext, IPersistedGrantDbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<Payment> Payments { get; set; }
 
-    public DbSet<PaymentCard> PaymentCards { get; set; }
+    public DbSet<StripeSubscription> StripeSubscriptions { get; set; }
     public DbSet<UserDocument> UserDocuments { get; set; }
 
 

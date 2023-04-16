@@ -21,7 +21,7 @@ public class FileController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> GetUserDocumentPhoto([FromQuery] GetUserDocumentPhotoModel model)
     {
-        var fileStream = await _fileService.GetUserDocumentPhoto(model.UserName, model.UserDocumentImageType);
+        var fileStream = await _fileService.GetUserDocumentPhoto(model.Mail, model.UserDocumentImageType);
         return new FileStreamResult(fileStream, "application/octet-stream")
         {
             FileDownloadName = model.UserDocumentImageType.ToString() + ".jpg"

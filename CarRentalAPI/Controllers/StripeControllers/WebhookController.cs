@@ -24,7 +24,7 @@ public class WebhookController : ControllerBase
         // If you are testing with the CLI, find the secret by running 'stripe listen'
         // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
         // at https://dashboard.stripe.com/webhooks
-        const string endpointSecret = "whsec_12345";
+        const string endpointSecret = "whsec_12096727fe2e79f76f75b27162f537212b0c4e4259e8891117ad8d47cb5c4823";
         try
         {
             var stripeEvent = EventUtility.ParseEvent(json);

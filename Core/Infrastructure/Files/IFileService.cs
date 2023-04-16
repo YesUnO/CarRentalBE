@@ -7,5 +7,5 @@ public interface IFileService
 {
     Task SaveCarReturningPhotoAsync(IFormFile file, int orderId, CarReturningImageType carReturningImageType);
     Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType);
-    Task<FileStream> GetUserDocumentPhoto(string userName, UserDocumentImageType userDocumentImageType);
+    Task<FileStream> GetUserDocumentPhoto(string mail, UserDocumentImageType userDocumentImageType);
 }

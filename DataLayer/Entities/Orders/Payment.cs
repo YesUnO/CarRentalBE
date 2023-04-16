@@ -5,7 +5,7 @@ namespace DataLayer.Entities.Orders;
 public class Payment
 {
     public int Id { get; set; }
-    public PaymentCard PaymentCard { get; set; }
+    public StripeSubscription PaymentCard { get; set; }
 
     //TOFO: maybe?
     //public ApplicationUser User { get; set; }

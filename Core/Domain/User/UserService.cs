@@ -98,7 +98,7 @@ public class UserService : IUserService
         {
             _logger.LogWarning("Unauthorize access?");
         }
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email); ;
+        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
     }
 
     public async Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal)
@@ -159,14 +159,24 @@ public class UserService : IUserService
         return result.IsKeySet;
     }
 
-    public async Task<ApplicationUser> GetUserByName(string userName)
+    //TODO: cleanup
+    public async Task<ApplicationUser> GetUserByMail(string mail, bool? includeDocuments = true)
     {
-        var identityUser = await _userManager.FindByNameAsync(userName);
-        var applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense.BackSideImage)
+        var identityUser = await _userManager.FindByEmailAsync(mail);
+        ApplicationUser applicationUser;
+        if (includeDocuments)
+        {
+            applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense.BackSideImage)
                                                                           .Include(x => x.DriversLicense.FrontSideImage)
                                                                           .Include(x => x.IdentificationCard.BackSideImage)
                                                                           .Include(x => x.IdentificationCard.FrontSideImage)
                                                                           .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+        }
+        else
+        {
+            applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+        }
+        
         if (applicationUser == null)
         {
             _logger.LogWarning("User doesnt exist");

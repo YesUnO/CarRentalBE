@@ -1,7 +1,7 @@
-﻿using CarRentalAPI.Helpers;
-using CarRentalAPI.Models.Stripe;
+﻿using CarRentalAPI.Models.Stripe;
 using Core.Infrastructure.StripePayment;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CarRentalAPI.Controllers.StripeControllers;
 
@@ -20,6 +20,7 @@ public class CheckOutApiController : ControllerBase
     //TODO implement authorization
     public async Task<IActionResult> Create()
     {
+        var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
         var domain = Request.Headers["Referer"].ToString();
 
         var sessionUrl = _stripeService.CheckCheckoutSession(domain, "vilem@gmail.com");
