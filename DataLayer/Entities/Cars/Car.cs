@@ -21,6 +21,6 @@ public class Car
     public CarInsurance? CarInsurance { get; set; }
     public CarState CarState { get; set; }
     public CarServiceState CarServiceState { get;set;}
-    public decimal BasicRentalPrice { get; set; }
+    public string StripePriceId { get; set; }
     public decimal PurchasePrice { get; set; }
 }

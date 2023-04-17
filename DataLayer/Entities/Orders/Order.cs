@@ -9,7 +9,7 @@ public class Order
     public int Id { get; set; }
     public ApplicationUser Customer { get; set; }
     public Car Car { get; set; }
-    public List<Payment> Payments { get; set; }
+    public List<StripeInvoice> Payments { get; set; }
     public List<Accident> Accidents { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }

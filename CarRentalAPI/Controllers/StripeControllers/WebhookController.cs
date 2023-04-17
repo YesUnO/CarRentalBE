@@ -8,9 +8,9 @@ namespace CarRentalAPI.Controllers.StripeControllers;
 [ApiController]
 public class WebhookController : ControllerBase
 {
-    private readonly IStripeService _stripeService;
+    private readonly IStripeSubscriptionService _stripeService;
 
-    public WebhookController(IStripeService stripeService)
+    public WebhookController(IStripeSubscriptionService stripeService)
     {
         _stripeService = stripeService;
     }
@@ -18,7 +18,6 @@ public class WebhookController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Index()
     {
-        _stripeService.Test();
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
         // Replace this endpoint secret with your endpoint's unique secret
         // If you are testing with the CLI, find the secret by running 'stripe listen'

@@ -7,4 +7,5 @@ public interface IOrderService
 {
     Task<Order> GetSignedInUsersActiveOrder();
     Task<bool> CreateOrder(OrderDTO model);
+    void PayOrder(int orderId, string clientMail);
 }

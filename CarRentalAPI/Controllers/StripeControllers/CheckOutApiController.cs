@@ -9,9 +9,9 @@ namespace CarRentalAPI.Controllers.StripeControllers;
 [ApiController]
 public class CheckOutApiController : ControllerBase
 {
-    private readonly IStripeService _stripeService;
+    private readonly IStripeSubscriptionService _stripeService;
 
-    public CheckOutApiController(IStripeService stripeService)
+    public CheckOutApiController(IStripeSubscriptionService stripeService)
     {
         _stripeService = stripeService;
     }

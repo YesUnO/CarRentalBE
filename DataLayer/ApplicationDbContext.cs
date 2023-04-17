@@ -42,7 +42,7 @@ public class ApplicationDbContext : IdentityDbContext, IPersistedGrantDbContext
 
     public DbSet<Accident> Accidents { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<Payment> Payments { get; set; }
+    public DbSet<StripeInvoice> Payments { get; set; }
 
     public DbSet<StripeSubscription> StripeSubscriptions { get; set; }
     public DbSet<UserDocument> UserDocuments { get; set; }

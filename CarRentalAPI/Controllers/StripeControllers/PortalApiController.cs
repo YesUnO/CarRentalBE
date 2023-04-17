@@ -8,9 +8,9 @@ namespace CarRentalAPI.Controllers.StripeControllers
     [ApiController]
     public class PortalApiController : ControllerBase
     {
-        private readonly IStripeService _stripeService;
+        private readonly IStripeSubscriptionService _stripeService;
 
-        public PortalApiController(IStripeService stripeService)
+        public PortalApiController(IStripeSubscriptionService stripeService)
         {
             _stripeService = stripeService;
         }

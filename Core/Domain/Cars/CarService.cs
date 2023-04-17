@@ -21,7 +21,7 @@ public class CarService : ICarService
             CurrentMileage = model.MileageAtPurchase,
             CarState = CarState.Parked,
             CarServiceState = CarServiceState.Fine,
-            BasicRentalPrice = 100,
+            StripePriceId = "",
             PurchasePrice = model.PurchasePrice,
             Name = model.Name,
             PurchasedAt = DateTime.UtcNow,

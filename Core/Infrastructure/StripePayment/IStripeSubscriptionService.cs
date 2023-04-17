@@ -3,9 +3,9 @@ using Stripe;
 
 namespace Core.Infrastructure.StripePayment;
 
-public interface IStripeService
+public interface IStripeSubscriptionService
 {
-    void Test();
     string CheckCheckoutSession(string feUrl, string clientMail);
     void ProcessStripeEvent(Event stripeEvent);
+    //string GetSubscriptionId(int applicationUserId);
 }

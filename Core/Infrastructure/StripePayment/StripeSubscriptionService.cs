@@ -2,7 +2,6 @@
 using Core.Infrastructure.StripePayment.Options;
 using DataLayer;
 using DataLayer.Entities.User;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -10,14 +9,14 @@ using Stripe.Checkout;
 
 namespace Core.Infrastructure.StripePayment;
 
-public class StripeService : IStripeService
+public class StripeSubscriptionService : IStripeSubscriptionService
 {
     private readonly StripeSettings _stripeSettings;
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly IUserService _userService;
-    private readonly ILogger<StripeService> _logger;
+    private readonly ILogger<StripeSubscriptionService> _logger;
 
-    public StripeService(IOptions<StripeSettings> stripeSettings, ApplicationDbContext applicationDbContext, IUserService userService, ILogger<StripeService> logger)
+    public StripeSubscriptionService(IOptions<StripeSettings> stripeSettings, ApplicationDbContext applicationDbContext, IUserService userService, ILogger<StripeSubscriptionService> logger)
     {
         _stripeSettings = stripeSettings.Value;
         _applicationDbContext = applicationDbContext;
@@ -70,11 +69,6 @@ public class StripeService : IStripeService
         return saveToDb != 0;
     }
 
-    public void Test()
-    {
-        var yo = "?";
-    }
-
     public void ProcessStripeEvent(Event stripeEvent)
     {
         try
@@ -124,8 +118,9 @@ public class StripeService : IStripeService
     {
         if (checkoutSession.Mode == "subscription" && checkoutSession.Status == "complete")
         {
-            var service = new SubscriptionService();
-            var subscription = service.Get(checkoutSession.SubscriptionId);
+            var subService = new SubscriptionService();
+            var subscription = subService.Get(checkoutSession.SubscriptionId);
+
             var dbSubscription = GetStripeSubscription(checkoutSession.ClientReferenceId);
             if (dbSubscription is null)
             {
@@ -135,12 +130,24 @@ public class StripeService : IStripeService
             {
                 throw new Exception("couldnt parse sub status");
             }
-            if (checkoutSession.SubscriptionId is null)
+            if (checkoutSession.SubscriptionId is null || checkoutSession.CustomerId is null)
             {
                 throw new Exception("couldnt parse subscription  id from webhook");
             }
             dbSubscription.StripeSubscriptionStatus = subscriptionStatus;
             dbSubscription.StripeSubscriptionId = checkoutSession.SubscriptionId;
+            dbSubscription.StripeCustomerId = checkoutSession.CustomerId;
+
+            var customerService = new CustomerService();
+            var paymentMethod = customerService.ListPaymentMethods(checkoutSession.CustomerId).OrderByDescending(x=>x.Created).FirstOrDefault();
+            if (paymentMethod is null)
+            {
+                throw new Exception("null payment method on sub... wtf");
+
+            }
+
+            subService.Update(subscription.Id, new SubscriptionUpdateOptions { DefaultPaymentMethod = paymentMethod.Id });
+
             _applicationDbContext.SaveChanges();
         }
     }
