@@ -50,7 +50,7 @@ public class FileService : IFileService
         await SaveOrderImageToDb(carReturningImageType, filePath);
 
     }
-    
+
     public async Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType)
     {
         var folderPath = GetUserDocumentFolderPath(imageType);
@@ -67,21 +67,21 @@ public class FileService : IFileService
     }
     public async Task<FileStream> GetUserDocumentPhoto(string mail, UserDocumentImageType userDocumentImageType)
     {
-        var user = await _userService.GetUserByMail(mail);
+        var user = await _userService.GetUserByMail(mail, true);
         Image entity;
         switch (userDocumentImageType)
         {
             case UserDocumentImageType.DriverseLicenseFrontImage:
-                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.DriversLicense.FrontSideImage.Id);
+                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x => x.Id == user.DriversLicense.FrontSideImage.Id);
                 break;
             case UserDocumentImageType.DriverseLicenseBackImage:
-                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.DriversLicense.BackSideImage.Id);
+                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x => x.Id == user.DriversLicense.BackSideImage.Id);
                 break;
             case UserDocumentImageType.IdentificationCardFrontImage:
-                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.IdentificationCard.FrontSideImage.Id);
+                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x => x.Id == user.IdentificationCard.FrontSideImage.Id);
                 break;
             case UserDocumentImageType.IdentificationCardBackImage:
-                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x=>x.Id == user.IdentificationCard.BackSideImage.Id);
+                entity = await _applicationDbContext.Images.FirstOrDefaultAsync(x => x.Id == user.IdentificationCard.BackSideImage.Id);
                 break;
             default: return null;
         }

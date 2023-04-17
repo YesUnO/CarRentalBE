@@ -159,8 +159,7 @@ public class UserService : IUserService
         return result.IsKeySet;
     }
 
-    //TODO: cleanup
-    public async Task<ApplicationUser> GetUserByMail(string mail, bool? includeDocuments = true)
+    public async Task<ApplicationUser> GetUserByMail(string mail, bool includeDocuments = false)
     {
         var identityUser = await _userManager.FindByEmailAsync(mail);
         ApplicationUser applicationUser;

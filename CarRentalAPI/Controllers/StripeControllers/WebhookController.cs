@@ -31,38 +31,9 @@ public class WebhookController : ControllerBase
             var signatureHeader = Request.Headers["Stripe-Signature"];
             stripeEvent = EventUtility.ConstructEvent(json,
                     signatureHeader, endpointSecret);
-            if (stripeEvent.Type == Events.CustomerSubscriptionDeleted)
-            {
-                var subscription = stripeEvent.Data.Object as Subscription;
-                Console.WriteLine("A subscription was canceled.", subscription.Id);
-                // Then define and call a method to handle the successful payment intent.
-                // handleSubscriptionCanceled(subscription);
-            }
-            else if (stripeEvent.Type == Events.CustomerSubscriptionUpdated)
-            {
-                var subscription = stripeEvent.Data.Object as Subscription;
-                Console.WriteLine("A subscription was updated.", subscription.Id);
-                // Then define and call a method to handle the successful payment intent.
-                // handleSubscriptionUpdated(subscription);
-            }
-            else if (stripeEvent.Type == Events.CustomerSubscriptionCreated)
-            {
-                var subscription = stripeEvent.Data.Object as Subscription;
-                Console.WriteLine("A subscription was created.", subscription.Id);
-                // Then define and call a method to handle the successful payment intent.
-                // handleSubscriptionUpdated(subscription);
-            }
-            else if (stripeEvent.Type == Events.CustomerSubscriptionTrialWillEnd)
-            {
-                var subscription = stripeEvent.Data.Object as Subscription;
-                Console.WriteLine("A subscription trial will end", subscription.Id);
-                // Then define and call a method to handle the successful payment intent.
-                // handleSubscriptionUpdated(subscription);
-            }
-            else
-            {
-                Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
-            }
+
+            _stripeService.ProcessStripeEvent(stripeEvent);
+            
             return Ok();
         }
         catch (StripeException e)

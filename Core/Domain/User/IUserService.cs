@@ -9,7 +9,7 @@ public interface IUserService
 {
     ApplicationUser GetSignedInUser();
     Task<ApplicationUser> GetSignedInUserAsync();
-    Task<ApplicationUser> GetUserByMail(string mail, bool? includeDocuments = true);
+    Task<ApplicationUser> GetUserByMail(string mail, bool includeDocuments = false);
     Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal);
     List<UserDTO> GetUsers();
     Task<bool> DeleteUser(IdentityUser user);
