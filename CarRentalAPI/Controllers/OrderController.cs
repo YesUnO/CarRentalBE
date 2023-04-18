@@ -35,7 +35,7 @@ public class OrderController : ControllerBase
         try
         {
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
-            _orderService.PayOrder(orderId, "vilem@gmail.com");
+            _orderService.PayOrder(orderId, "user@example.com");
             return Ok();
         }
         catch (Exception ex)

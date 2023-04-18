@@ -76,6 +76,8 @@ public class OrderService : IOrderService
                                                                          subscription.StripeSubscriptionId,
                                                                          subscription.StripeCustomerId);
 
+        invoice.Order = order;
+
         order.Payments.Add(invoice);
     }
 }

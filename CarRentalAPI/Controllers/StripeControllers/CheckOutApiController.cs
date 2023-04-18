@@ -10,22 +10,33 @@ namespace CarRentalAPI.Controllers.StripeControllers;
 public class CheckOutApiController : ControllerBase
 {
     private readonly IStripeSubscriptionService _stripeService;
+    private readonly ILogger<CheckOutApiController> _logger;
 
-    public CheckOutApiController(IStripeSubscriptionService stripeService)
+    public CheckOutApiController(IStripeSubscriptionService stripeService, ILogger<CheckOutApiController> logger)
     {
         _stripeService = stripeService;
+        _logger = logger;
     }
 
     [HttpGet]
     //TODO implement authorization
     public async Task<IActionResult> Create()
     {
-        var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
-        var domain = Request.Headers["Referer"].ToString();
+        try
+        {
+            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var domain = Request.Headers["Referer"].ToString();
 
-        var sessionUrl = _stripeService.CheckCheckoutSession(domain, "vilem@gmail.com");
+            var sessionUrl = _stripeService.CheckCheckoutSession(domain, "user@example.com");
 
-        return Ok(new CreateCheckoutSessionRasponse { Url = sessionUrl });
+            return Ok(new CreateCheckoutSessionRasponse { Url = sessionUrl });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "creating checkout session failed.");
+            return BadRequest("Checkout session couldnt be created cause of reasons.");
+        }
+        
         //return new SeeOther(sessionUrl);
     }
 }

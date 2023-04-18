@@ -1,4 +1,5 @@
-﻿using Core.Domain.User;
+﻿using Core.Domain.Helpers;
+using Core.Domain.User;
 using Core.Infrastructure.StripePayment.Options;
 using DataLayer;
 using DataLayer.Entities.User;
@@ -81,7 +82,17 @@ public class StripeSubscriptionService : IStripeSubscriptionService
                     break;
                 case Events.CustomerSubscriptionDeleted:
                     var subscription = stripeEvent.Data.Object as Subscription;
-                    SubscriptionDeleted(subscription);
+                    ProcessSubscriptionDeleted(subscription);
+                    break;
+                case Events.InvoicePaymentSucceeded:
+                    var invoice = stripeEvent.Data.Object as Invoice;
+                    _logger.LogInformation($"invoice {invoice.Id} payment succesfull.");
+                    ProcessInvoicePaymentSucceeded(invoice);
+                    break;
+                case Events.InvoicePaid:
+                    var invoicePaid = stripeEvent.Data.Object as Invoice;
+                    _logger.LogInformation($"invoice {invoicePaid.Id} paid.");
+                    ProcessInvoicePaymentSucceeded(invoicePaid);
                     break;
                 default:
                     break;
@@ -94,7 +105,24 @@ public class StripeSubscriptionService : IStripeSubscriptionService
         
     }
 
-    private void SubscriptionDeleted(Subscription subscriptionFromevent)
+    #region Event parsers
+
+    private void ProcessInvoicePaymentSucceeded (Invoice invoice)
+    {
+        var dbInvoice = _applicationDbContext.Payments.FirstOrDefault(x => x.StripeInvoiceId == invoice.Id);
+        if (dbInvoice != null) {
+            dbInvoice.StripeInvoiceStatus = StripeHelper.GetStripeInvoiceStatus(invoice.Status);
+            dbInvoice.AmountDue = invoice.AmountDue;
+            dbInvoice.AmountPaid = invoice.AmountPaid;
+            _applicationDbContext.SaveChanges();
+        }
+        else
+        {
+            _logger.LogInformation($"invoice {invoice.Id} hasnt been found");
+        }
+    }
+
+    private void ProcessSubscriptionDeleted(Subscription subscriptionFromevent)
     {
         var service = new SubscriptionService();
         var subscription = service.Get(subscriptionFromevent.Id);
@@ -151,4 +179,6 @@ public class StripeSubscriptionService : IStripeSubscriptionService
             _applicationDbContext.SaveChanges();
         }
     }
+    #endregion
+
 }

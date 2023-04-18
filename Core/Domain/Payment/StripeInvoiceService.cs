@@ -19,6 +19,8 @@ public class StripeInvoiceService : IStripeInvoiceService
         var invoiceService = new InvoiceService();
         var createOptions = new InvoiceCreateOptions
         {
+            AutoAdvance= true,
+            CollectionMethod = "charge_automatically",
             Customer = stripeCustomerId,
             Subscription = subscriptionId,
         };
@@ -36,7 +38,7 @@ public class StripeInvoiceService : IStripeInvoiceService
         };
         var invoiceItem = invoiceItemService.Create(options);
 
-        invoiceService.SendInvoice(invoice.Id);
+        //invoiceService.SendInvoice(invoice.Id);
 
         var dbInvoice = new StripeInvoice
         {
