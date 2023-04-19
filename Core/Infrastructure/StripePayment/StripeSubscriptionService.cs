@@ -17,7 +17,10 @@ public class StripeSubscriptionService : IStripeSubscriptionService
     private readonly IUserService _userService;
     private readonly ILogger<StripeSubscriptionService> _logger;
 
-    public StripeSubscriptionService(IOptions<StripeSettings> stripeSettings, ApplicationDbContext applicationDbContext, IUserService userService, ILogger<StripeSubscriptionService> logger)
+    public StripeSubscriptionService(IOptions<StripeSettings> stripeSettings,
+                                     ApplicationDbContext applicationDbContext,
+                                     IUserService userService,
+                                     ILogger<StripeSubscriptionService> logger)
     {
         _stripeSettings = stripeSettings.Value;
         _applicationDbContext = applicationDbContext;
@@ -168,13 +171,13 @@ public class StripeSubscriptionService : IStripeSubscriptionService
             dbSubscription.StripeCustomerId = checkoutSession.CustomerId;
 
             var customerService = new CustomerService();
-            var paymentMethod = customerService.ListPaymentMethods(checkoutSession.CustomerId).OrderByDescending(x=>x.Created).FirstOrDefault();
+            var paymentMethod = customerService.ListPaymentMethods(checkoutSession.CustomerId)
+                .OrderByDescending(x => x.Created)
+                .FirstOrDefault();
             if (paymentMethod is null)
             {
                 throw new Exception("null payment method on sub... wtf");
-
             }
-
             subService.Update(subscription.Id, new SubscriptionUpdateOptions { DefaultPaymentMethod = paymentMethod.Id });
 
             _applicationDbContext.SaveChanges();

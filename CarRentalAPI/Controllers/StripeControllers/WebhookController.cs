@@ -1,5 +1,9 @@
 ﻿using Core.Infrastructure.StripePayment;
+using Core.Infrastructure.StripePayment.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Stripe;
 
 namespace CarRentalAPI.Controllers.StripeControllers;
@@ -9,10 +13,12 @@ namespace CarRentalAPI.Controllers.StripeControllers;
 public class WebhookController : ControllerBase
 {
     private readonly IStripeSubscriptionService _stripeService;
+    private readonly StripeSettings _stripeSettings;
 
-    public WebhookController(IStripeSubscriptionService stripeService)
+    public WebhookController(IStripeSubscriptionService stripeService, IOptions<StripeSettings> stripeOptions)
     {
         _stripeService = stripeService;
+        _stripeSettings = stripeOptions.Value;
     }
 
     [HttpPost]
@@ -30,6 +36,10 @@ public class WebhookController : ControllerBase
             var signatureHeader = Request.Headers["Stripe-Signature"];
             stripeEvent = EventUtility.ConstructEvent(json,
                     signatureHeader, endpointSecret);
+
+            //TODO: use secret from appsettings on release
+            //stripeEvent = EventUtility.ConstructEvent(json,
+            //        signatureHeader, _stripeSettings.EndpointSecret);
 
             _stripeService.ProcessStripeEvent(stripeEvent);
             

@@ -1,5 +1,7 @@
 ﻿using CarRentalAPI.Models.Stripe;
 using Core.Infrastructure.StripePayment;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -19,7 +21,7 @@ public class CheckOutApiController : ControllerBase
     }
 
     [HttpGet]
-    //TODO implement authorization
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
     public async Task<IActionResult> Create()
     {
         try
@@ -27,8 +29,10 @@ public class CheckOutApiController : ControllerBase
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             var domain = Request.Headers["Referer"].ToString();
 
-            var sessionUrl = _stripeService.CheckCheckoutSession(domain, "vilem@gmail.com");
+            var sessionUrl = _stripeService.CheckCheckoutSession(domain, loggedinUserMail);
 
+            //TODO try to implement redirect on release
+            //return new SeeOther(sessionUrl);
             return Ok(new CreateCheckoutSessionRasponse { Url = sessionUrl });
         }
         catch (Exception ex)
@@ -37,6 +41,5 @@ public class CheckOutApiController : ControllerBase
             return BadRequest("Checkout session couldnt be created cause of reasons.");
         }
         
-        //return new SeeOther(sessionUrl);
     }
 }
