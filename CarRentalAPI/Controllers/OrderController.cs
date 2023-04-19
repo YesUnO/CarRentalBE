@@ -30,12 +30,13 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost("{orderId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy", Roles = "Customer")]
     public async Task<IActionResult> PayOrder(int orderId)
     {
         try
         {
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
-            _orderService.PayOrder(orderId, "user@example.com");
+            _orderService.PayOrder(orderId, loggedinUserMail);
             return Ok();
         }
         catch (Exception ex)

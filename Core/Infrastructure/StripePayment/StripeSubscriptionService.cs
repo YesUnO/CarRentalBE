@@ -27,6 +27,7 @@ public class StripeSubscriptionService : IStripeSubscriptionService
 
     public string CheckCheckoutSession(string feUrl, string clientMail)
     {
+        var clientReferenceId = Guid.NewGuid().ToString();
         var options = new SessionCreateOptions
         {
             LineItems = new List<SessionLineItemOptions>
@@ -39,13 +40,13 @@ public class StripeSubscriptionService : IStripeSubscriptionService
 
                 },
             Mode = "subscription",
-            ClientReferenceId = clientMail,
+            ClientReferenceId = clientReferenceId,
             SuccessUrl = feUrl + "?success=true&session_id={CHECKOUT_SESSION_ID}",
             CancelUrl = feUrl + "?canceled=true",
         };
         var service = new SessionService();
         Session session = service.Create(options);
-        CreateStripeSubscriptionFromCheckoutSession(clientMail);
+        CreateStripeSubscriptionFromCheckoutSession(clientReferenceId, clientMail);
         return session.Url;
     }
 
@@ -55,14 +56,14 @@ public class StripeSubscriptionService : IStripeSubscriptionService
         return subscription;
     }
 
-    private bool CreateStripeSubscriptionFromCheckoutSession(string clientMail)
+    private bool CreateStripeSubscriptionFromCheckoutSession(string clientReferenceId, string clientMail)
     {
         var loggedinUser = _userService.GetUserByMail(clientMail).Result;
         var stripeSubscription = new StripeSubscription
         {
             ApplicationUser = loggedinUser,
             StripeSubscriptionStatus = StripeSubscriptionStatus.incomplete,
-            CheckoutSessionReferenceId = clientMail,
+            CheckoutSessionReferenceId = clientReferenceId,
         };
 
         _applicationDbContext.Add(stripeSubscription);

@@ -38,7 +38,7 @@ public class StripeInvoiceService : IStripeInvoiceService
         };
         var invoiceItem = invoiceItemService.Create(options);
 
-        //invoiceService.SendInvoice(invoice.Id);
+        invoice = invoiceService.Get(invoice.Id);
 
         var dbInvoice = new StripeInvoice
         {

@@ -52,7 +52,7 @@ public class OrderService : IOrderService
 
     public void PayOrder(int orderId, string clientMail)
     {
-        var order = _applicationDbContext.Orders.Include(x=>x.Car).FirstOrDefault(x => x.Id == orderId);
+        var order = _applicationDbContext.Orders.Include(x=>x.Car).Include(x=>x.Payments).FirstOrDefault(x => x.Id == orderId);
         if (order is null)
         {
             throw new Exception("Order doesnt exist");
@@ -76,8 +76,14 @@ public class OrderService : IOrderService
                                                                          subscription.StripeSubscriptionId,
                                                                          subscription.StripeCustomerId);
 
-        invoice.Order = order;
-
-        order.Payments.Add(invoice);
+        if (order.Payments is null)
+        {
+            order.Payments = new List<StripeInvoice> { invoice };
+        }
+        else
+        {
+            order.Payments.Add(invoice);
+        }
+        _applicationDbContext.SaveChanges();
     }
 }

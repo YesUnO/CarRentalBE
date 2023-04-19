@@ -27,7 +27,7 @@ public class CheckOutApiController : ControllerBase
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             var domain = Request.Headers["Referer"].ToString();
 
-            var sessionUrl = _stripeService.CheckCheckoutSession(domain, "user@example.com");
+            var sessionUrl = _stripeService.CheckCheckoutSession(domain, "vilem@gmail.com");
 
             return Ok(new CreateCheckoutSessionRasponse { Url = sessionUrl });
         }
