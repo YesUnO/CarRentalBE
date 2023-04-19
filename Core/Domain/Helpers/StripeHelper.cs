@@ -1,5 +1,4 @@
-﻿
-using DataLayer.Entities.Orders;
+﻿using DataLayer.Entities.Orders;
 
 namespace Core.Domain.Helpers
 {

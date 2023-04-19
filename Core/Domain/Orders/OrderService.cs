@@ -36,6 +36,8 @@ public class OrderService : IOrderService
         {
             Customer = signedInUser,
             CreatedAt = DateTime.UtcNow,
+            StartDate = model.StartDate,
+            EndDate= model.EndDate,
             Car = car
         };
         await _applicationDbContext.AddAsync(order);

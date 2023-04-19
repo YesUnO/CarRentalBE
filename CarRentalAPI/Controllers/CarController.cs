@@ -24,4 +24,11 @@ public class CarController : ControllerBase
         await _carService.CreateCarAsync(model);
         return Ok();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetCars()
+    {
+        var cars = _carService.GetCars();
+        return Ok(cars);
+    }
 }
