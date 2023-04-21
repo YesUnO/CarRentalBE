@@ -1,6 +1,6 @@
 ﻿using DTO;
 
-namespace CarRentalAPI.Models.File;
+namespace Core.ControllerModels.File;
 
 public class GetUserDocumentPhotoModel
 {

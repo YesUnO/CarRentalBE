@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CarRentalAPI.Models.Auth;
+namespace Core.ControllerModels.Auth;
 
 public class RegisterModel
 {
@@ -21,5 +21,5 @@ public class RegisterModel
 
     [Required]
     [DataType(DataType.PhoneNumber)]
-    public string PhoneNumber { get; set; } 
+    public string PhoneNumber { get; set; }
 }

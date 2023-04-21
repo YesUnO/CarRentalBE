@@ -24,9 +24,9 @@ public class OrderService : IOrderService
         _stripeInvoiceService = stripeInvoiceService;
     }
 
-    public async Task<bool> CreateOrder(OrderDTO model)
+    public async Task<bool> CreateOrder(OrderDTO model, string clientMail)
     {
-        var signedInUser = await _userService.GetSignedInUserAsync();
+        var signedInUser = await _userService.GetUserByMailAsync(clientMail);
         var car = await _applicationDbContext.FindAsync<Car>(model.CarId);
         if (car == null)
         {
@@ -60,7 +60,7 @@ public class OrderService : IOrderService
             throw new Exception("Order doesnt exist");
         }
 
-        var signedInUser = _userService.GetUserByMail(clientMail).Result;
+        var signedInUser = _userService.GetUserByMailAsync(clientMail).Result;
         var subscription = _applicationDbContext.StripeSubscriptions.FirstOrDefault(x =>
             x.StripeSubscriptionStatus == DataLayer.Entities.User.StripeSubscriptionStatus.active
             && x.ApplicationUser == signedInUser);

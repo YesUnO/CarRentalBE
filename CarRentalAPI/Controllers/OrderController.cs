@@ -25,8 +25,17 @@ public class OrderController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
     public async Task<IActionResult> Create(OrderDTO model)
     {
-        await _orderService.CreateOrder(model);
-        return Ok();
+        try
+        {
+            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            await _orderService.CreateOrder(model, loggedinUserMail);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("{orderId}")]

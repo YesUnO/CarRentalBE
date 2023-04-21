@@ -1,4 +1,4 @@
-﻿using CarRentalAPI.Models.File;
+﻿using Core.ControllerModels.File;
 using Core.Infrastructure.Files;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

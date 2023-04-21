@@ -1,4 +1,4 @@
-﻿namespace CarRentalAPI.Models.Auth;
+﻿namespace Core.ControllerModels.Auth;
 
 public class LoginModel
 {

@@ -1,6 +1,7 @@
 ﻿using DTO;
+using Microsoft.AspNetCore.Http;
 
-namespace CarRentalAPI.Models.File;
+namespace Core.ControllerModels.File;
 
 public class PostUserDocumentImageModel
 {

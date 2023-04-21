@@ -61,7 +61,7 @@ public class StripeSubscriptionService : IStripeSubscriptionService
 
     private bool CreateStripeSubscriptionFromCheckoutSession(string clientReferenceId, string clientMail)
     {
-        var loggedinUser = _userService.GetUserByMail(clientMail).Result;
+        var loggedinUser = _userService.GetUserByMailAsync(clientMail).Result;
         var stripeSubscription = new StripeSubscription
         {
             ApplicationUser = loggedinUser,

@@ -1,10 +1,10 @@
-﻿using CarRentalAPI.Models.Auth;
-using Core.Domain.User;
+﻿using Core.Domain.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Duende.IdentityServer;
+using Core.ControllerModels.Auth;
 
 namespace CarRentalAPI.Controllers;
 

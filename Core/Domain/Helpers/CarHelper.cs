@@ -22,6 +22,7 @@ namespace Core.Domain.Helpers
 
             var carDTO = new CarDTO
             {
+                Id= car.Id,
                 Name = car.Name,
                 Unavailable= unavailable,
             };

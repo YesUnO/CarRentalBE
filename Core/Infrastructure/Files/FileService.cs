@@ -67,7 +67,7 @@ public class FileService : IFileService
     }
     public async Task<FileStream> GetUserDocumentPhoto(string mail, UserDocumentImageType userDocumentImageType)
     {
-        var user = await _userService.GetUserByMail(mail, true);
+        var user = await _userService.GetUserByMailAsync(mail, true);
         Image entity;
         switch (userDocumentImageType)
         {

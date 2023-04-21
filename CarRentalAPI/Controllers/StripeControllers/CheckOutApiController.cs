@@ -1,4 +1,4 @@
-﻿using CarRentalAPI.Models.Stripe;
+﻿using Core.ControllerModels.Stripe;
 using Core.Infrastructure.StripePayment;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
