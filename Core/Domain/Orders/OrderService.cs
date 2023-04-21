@@ -1,4 +1,6 @@
-﻿using Core.Domain.Payment;
+﻿using Core.ControllerModels.Order;
+using Core.Domain.Helpers;
+using Core.Domain.Payment;
 using Core.Domain.User;
 using DataLayer;
 using DataLayer.Entities.Cars;
@@ -6,6 +8,7 @@ using DataLayer.Entities.Orders;
 using DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Stripe;
 
 namespace Core.Domain.Orders;
 
@@ -24,13 +27,13 @@ public class OrderService : IOrderService
         _stripeInvoiceService = stripeInvoiceService;
     }
 
-    public async Task<bool> CreateOrder(OrderDTO model, string clientMail)
+    public async Task<CreateOrderResponseModel> CreateOrder(OrderDTO model, string clientMail)
     {
         var signedInUser = await _userService.GetUserByMailAsync(clientMail);
         var car = await _applicationDbContext.FindAsync<Car>(model.CarId);
         if (car == null)
         {
-            return false;
+            throw new Exception("car couldnt be found in db");
         }
         var order = new Order
         {
@@ -40,9 +43,22 @@ public class OrderService : IOrderService
             EndDate= model.EndDate,
             Car = car
         };
-        await _applicationDbContext.AddAsync(order);
+        var dbOrder = await _applicationDbContext.AddAsync(order);
         await _applicationDbContext.SaveChangesAsync();
-        return true;
+
+        var stripePriceService = new PriceService();
+        var stripePriceObj = await stripePriceService.GetAsync(car.StripePriceId);
+        var price = stripePriceObj.UnitAmount;
+        if (price is null)
+        {
+            throw new Exception("price couldnt be retrieved from stripe");
+        }
+        else
+        {
+            var result = OrderHelper.CreateOrderResponseModelFromOrder(dbOrder.Entity, (long)price);
+            return result;
+
+        }
     }
 
     public async Task<Order> GetSignedInUsersActiveOrder()

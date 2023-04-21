@@ -1,7 +1,7 @@
-﻿using Core.Domain.Helpers;
+﻿using Core.ControllerModels.Car;
+using Core.Domain.Helpers;
 using DataLayer;
 using DataLayer.Entities.Cars;
-using DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Domain.Cars;
@@ -15,7 +15,7 @@ public class CarService : ICarService
         _applicationDbContext = applicationDbContext;
     }
 
-    public async Task<bool> CreateCarAsync(CarDTO model)
+    public async Task<CarDTO> CreateCarAsync(CreateCarRequestModel model)
     {
         var car = new Car
         {
@@ -30,7 +30,7 @@ public class CarService : ICarService
         };
         await _applicationDbContext.AddAsync(car);
         await _applicationDbContext.SaveChangesAsync();
-        return true;
+        return CarHelper.GetCarDTOFromDbObject(car);
     }
 
     public List<CarDTO> GetCars()

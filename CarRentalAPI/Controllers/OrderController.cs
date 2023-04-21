@@ -28,8 +28,8 @@ public class OrderController : ControllerBase
         try
         {
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
-            await _orderService.CreateOrder(model, loggedinUserMail);
-            return Ok();
+            var order = await _orderService.CreateOrder(model, loggedinUserMail);
+            return Ok(order);
         }
         catch (Exception ex)
         {

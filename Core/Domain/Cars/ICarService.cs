@@ -1,9 +1,9 @@
-﻿using DTO;
+﻿using Core.ControllerModels.Car;
 
 namespace Core.Domain.Cars;
 
 public interface ICarService
 {
-    Task<bool> CreateCarAsync(CarDTO model);
+    Task<CarDTO> CreateCarAsync(CreateCarRequestModel model);
     List<CarDTO> GetCars();
 }

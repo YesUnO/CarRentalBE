@@ -1,5 +1,5 @@
-﻿using DataLayer.Entities.Cars;
-using DTO;
+﻿using Core.ControllerModels.Car;
+using DataLayer.Entities.Cars;
 
 namespace Core.Domain.Helpers
 {
@@ -18,13 +18,13 @@ namespace Core.Domain.Helpers
                     }
                 }
             }
-            
+
 
             var carDTO = new CarDTO
             {
-                Id= car.Id,
+                Id = car.Id,
                 Name = car.Name,
-                Unavailable= unavailable,
+                Unavailable = unavailable,
             };
             return carDTO;
         }

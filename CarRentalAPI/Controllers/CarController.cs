@@ -1,5 +1,5 @@
-﻿using Core.Domain.Cars;
-using DTO;
+﻿using Core.ControllerModels.Car;
+using Core.Domain.Cars;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +19,10 @@ public class CarController : ControllerBase
 
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> Create(CarDTO model)
+    public async Task<IActionResult> Create(CreateCarRequestModel model)
     {
-        await _carService.CreateCarAsync(model);
-        return Ok();
+        var car = await _carService.CreateCarAsync(model);
+        return Ok(car);
     }
 
     [HttpGet]
