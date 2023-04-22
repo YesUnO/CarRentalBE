@@ -1,12 +1,10 @@
-﻿using Core.Domain.Helpers;
-using Core.Domain.Payment.Options;
+﻿using Core.Domain.Payment.Options;
 using Core.Domain.StripePayments.Interfaces;
 using Core.Domain.User;
 using DataLayer;
 using DataLayer.Entities.User;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Stripe;
 using Stripe.Checkout;
 
 namespace Core.Domain.StripePayments;

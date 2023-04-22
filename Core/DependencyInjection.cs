@@ -20,9 +20,11 @@ public static class DependencyInjection
 
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<ICarService, CarService>();
+        services.AddTransient<IOrderService, OrderService>();
+
         services.AddTransient<IStripeInvoiceService, StripeInvoiceService>();
         services.AddTransient<IStripeWebhookService, StripeWebhookService>();
-        services.AddTransient<IOrderService, OrderService>();
+        services.AddTransient<IStripeProductService, StripeProductService>();
 
         services.AddTransient<IStripeSubscriptionService, StripeSubscriptionService>();
         services.Configure<StripeSettings>(configuration.GetSection("StripeSettings"));

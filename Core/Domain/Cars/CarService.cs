@@ -1,5 +1,6 @@
 ﻿using Core.ControllerModels.Car;
 using Core.Domain.Helpers;
+using Core.Domain.StripePayments.Interfaces;
 using DataLayer;
 using DataLayer.Entities.Cars;
 using Microsoft.EntityFrameworkCore;
@@ -10,23 +11,26 @@ namespace Core.Domain.Cars;
 public class CarService : ICarService
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IStripeProductService _stripeProductService;
     private readonly ILogger<CarService> _logger;
 
-    public CarService(ApplicationDbContext applicationDbContext, ILogger<CarService> logger)
+    public CarService(ApplicationDbContext applicationDbContext, ILogger<CarService> logger, IStripeProductService stripeProductService)
     {
         _applicationDbContext = applicationDbContext;
         _logger = logger;
+        _stripeProductService = stripeProductService;
     }
 
     public async Task<CarDTO> CreateCarAsync(CreateCarRequestModel model)
     {
+        var priceId = _stripeProductService.CreateStripeProductForCar(model.Price, model.Name);
         var car = new Car
         {
             MileageAtPurchase = model.MileageAtPurchase,
             CurrentMileage = model.MileageAtPurchase,
             CarState = CarState.Parked,
             CarServiceState = CarServiceState.Fine,
-            StripePriceId = "",
+            StripePriceId = priceId,
             PurchasePrice = model.PurchasePrice,
             Name = model.Name,
             PurchasedAt = DateTime.UtcNow,
