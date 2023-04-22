@@ -61,13 +61,6 @@ public class OrderService : IOrderService
         }
     }
 
-    public async Task<Order> GetSignedInUsersActiveOrder()
-    {
-        var signedInUser = await _userService.GetSignedInUserAsync();
-        var activeOrder = _applicationDbContext.Orders.FirstOrDefault(x => x.Customer == signedInUser);
-        throw new NotImplementedException();
-    }
-
     public void PayOrder(int orderId, string clientMail)
     {
         var order = _applicationDbContext.Orders.Include(x=>x.Car).Include(x=>x.Payments).FirstOrDefault(x => x.Id == orderId);

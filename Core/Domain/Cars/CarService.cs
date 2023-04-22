@@ -3,16 +3,19 @@ using Core.Domain.Helpers;
 using DataLayer;
 using DataLayer.Entities.Cars;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Core.Domain.Cars;
 
 public class CarService : ICarService
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly ILogger<CarService> _logger;
 
-    public CarService(ApplicationDbContext applicationDbContext)
+    public CarService(ApplicationDbContext applicationDbContext, ILogger<CarService> logger)
     {
         _applicationDbContext = applicationDbContext;
+        _logger = logger;
     }
 
     public async Task<CarDTO> CreateCarAsync(CreateCarRequestModel model)

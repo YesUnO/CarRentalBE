@@ -6,7 +6,6 @@ namespace Core.Domain.Orders;
 
 public interface IOrderService
 {
-    Task<Order> GetSignedInUsersActiveOrder();
     Task<CreateOrderResponseModel> CreateOrder(OrderDTO model, string clientMail);
     void PayOrder(int orderId, string clientMail);
 }

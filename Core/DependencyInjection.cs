@@ -19,7 +19,6 @@ public static class DependencyInjection
         services.AddDataLayer(configuration);
 
         services.AddTransient<IUserService, UserService>();
-        services.AddTransient<ICardService, CardService>();
         services.AddTransient<ICarService, CarService>();
         services.AddTransient<IStripeInvoiceService, StripeInvoiceService>();
         services.AddTransient<IOrderService, OrderService>();

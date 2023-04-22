@@ -11,24 +11,42 @@ namespace CarRentalAPI.Controllers;
 public class CarController : ControllerBase
 {
     private readonly ICarService _carService;
+    private readonly ILogger<CarController> _logger;
 
-    public CarController(ICarService carService)
+    public CarController(ICarService carService, ILogger<CarController> logger)
     {
         _carService = carService;
+        _logger = logger;
     }
 
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> Create(CreateCarRequestModel model)
     {
-        var car = await _carService.CreateCarAsync(model);
-        return Ok(car);
+        try
+        {
+            var car = await _carService.CreateCarAsync(model);
+            return Ok(car);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Creating car failed cause:");
+            return BadRequest();
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetCars()
     {
-        var cars = _carService.GetCars();
-        return Ok(cars);
+        try
+        {
+            var cars = _carService.GetCars();
+            return Ok(cars);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Getting cars failed cause:");
+            return BadRequest();
+        }
     }
 }
