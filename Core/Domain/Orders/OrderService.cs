@@ -1,6 +1,6 @@
 ﻿using Core.ControllerModels.Order;
 using Core.Domain.Helpers;
-using Core.Domain.Payment;
+using Core.Domain.StripePayments.Interfaces;
 using Core.Domain.User;
 using DataLayer;
 using DataLayer.Entities.Cars;

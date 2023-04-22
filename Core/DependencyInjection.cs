@@ -3,12 +3,12 @@ using DataLayer;
 using Microsoft.Extensions.Configuration;
 using Core.Domain.Cars;
 using Core.Domain.User;
-using Core.Domain.Payment;
 using Core.Infrastructure.Files;
 using Core.Domain.Orders;
 using Core.Infrastructure.Files.Options;
-using Core.Infrastructure.StripePayment;
-using Core.Infrastructure.StripePayment.Options;
+using Core.Domain.Payment.Options;
+using Core.Domain.StripePayments;
+using Core.Domain.StripePayments.Interfaces;
 
 namespace Core;
 
@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<ICarService, CarService>();
         services.AddTransient<IStripeInvoiceService, StripeInvoiceService>();
+        services.AddTransient<IStripeWebhookService, StripeWebhookService>();
         services.AddTransient<IOrderService, OrderService>();
 
         services.AddTransient<IStripeSubscriptionService, StripeSubscriptionService>();

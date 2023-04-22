@@ -1,5 +1,4 @@
-﻿
-namespace Core.Infrastructure.StripePayment.Options;
+﻿namespace Core.Domain.Payment.Options;
 
 public class StripeSettings
 {

@@ -1,9 +1,10 @@
 ﻿using Core.Domain.Helpers;
+using Core.Domain.StripePayments.Interfaces;
 using DataLayer.Entities.Orders;
 using Microsoft.Extensions.Logging;
 using Stripe;
 
-namespace Core.Domain.Payment;
+namespace Core.Domain.StripePayments;
 
 public class StripeInvoiceService : IStripeInvoiceService
 {
@@ -19,7 +20,7 @@ public class StripeInvoiceService : IStripeInvoiceService
         var invoiceService = new InvoiceService();
         var createOptions = new InvoiceCreateOptions
         {
-            AutoAdvance= true,
+            AutoAdvance = true,
             CollectionMethod = "charge_automatically",
             Customer = stripeCustomerId,
             Subscription = subscriptionId,
@@ -34,7 +35,7 @@ public class StripeInvoiceService : IStripeInvoiceService
             Subscription = subscriptionId,
             Price = stripePriceId,
             Invoice = invoice.Id,
-            
+
         };
         var invoiceItem = invoiceItemService.Create(options);
 
@@ -42,10 +43,10 @@ public class StripeInvoiceService : IStripeInvoiceService
 
         var dbInvoice = new StripeInvoice
         {
-            StripeInvoiceId= invoice.Id,
+            StripeInvoiceId = invoice.Id,
             StripeInvoiceStatus = StripeHelper.GetStripeInvoiceStatus(invoice.Status),
             AmountDue = invoice.AmountDue,
-            AmountPaid= invoice.AmountPaid,
+            AmountPaid = invoice.AmountPaid,
         };
         return dbInvoice;
     }

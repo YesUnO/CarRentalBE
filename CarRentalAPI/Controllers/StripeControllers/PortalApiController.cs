@@ -1,4 +1,4 @@
-﻿using Core.Infrastructure.StripePayment;
+﻿using Core.Domain.StripePayments.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 

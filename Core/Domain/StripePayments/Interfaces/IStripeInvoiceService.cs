@@ -1,6 +1,6 @@
 ﻿using DataLayer.Entities.Orders;
 
-namespace Core.Domain.Payment;
+namespace Core.Domain.StripePayments.Interfaces;
 
 public interface IStripeInvoiceService
 {
