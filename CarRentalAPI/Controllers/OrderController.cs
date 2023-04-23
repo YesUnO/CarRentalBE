@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DTO;
 using System.Security.Claims;
+using Core.ControllerModels.Order;
 
 namespace CarRentalAPI.Controllers;
 
@@ -30,6 +31,23 @@ public class OrderController : ControllerBase
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             var order = await _orderService.CreateOrder(model, loggedinUserMail);
             return Ok(order);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    public async Task<IActionResult> GetOrdes()
+    {
+        try
+        {
+            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            List< OrderResponseModel> orders = await _orderService.GetCustomersOrders(loggedinUserMail);
+            return Ok(orders);
         }
         catch (Exception ex)
         {

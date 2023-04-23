@@ -5,16 +5,17 @@ namespace Core.Domain.Helpers
 {
     public static class OrderHelper
     {
-        public static CreateOrderResponseModel CreateOrderResponseModelFromOrder(Order order, long price)
+        public static OrderResponseModel OrderResponseModelFromOrder(Order order, long price)
         {
-            var dayCount = (order.EndDate - order.StartDate).Days;
-            return new CreateOrderResponseModel
+            var dayCount = (order.EndDate - order.StartDate).Days +1;
+            return new OrderResponseModel
             {
                 Car  = CarHelper.GetCarDTOFromDbObject(order.Car) ,
                 EndDate= order.EndDate,
                 StartDate= order.StartDate,
                 Id= order.Id,
-                Price = dayCount*price
+                Price = dayCount*price,
+                Paid = order.HasBeenPayed
             };
         }
     }

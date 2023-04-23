@@ -27,7 +27,7 @@ public class OrderService : IOrderService
         _stripeInvoiceService = stripeInvoiceService;
     }
 
-    public async Task<CreateOrderResponseModel> CreateOrder(OrderDTO model, string clientMail)
+    public async Task<OrderResponseModel> CreateOrder(OrderDTO model, string clientMail)
     {
         var signedInUser = await _userService.GetUserByMailAsync(clientMail);
         var car = await _applicationDbContext.FindAsync<Car>(model.CarId);
@@ -40,30 +40,37 @@ public class OrderService : IOrderService
             Customer = signedInUser,
             CreatedAt = DateTime.UtcNow,
             StartDate = model.StartDate,
-            EndDate= model.EndDate,
+            EndDate = model.EndDate,
             Car = car
         };
         var dbOrder = await _applicationDbContext.AddAsync(order);
         await _applicationDbContext.SaveChangesAsync();
 
-        var stripePriceService = new PriceService();
-        var stripePriceObj = await stripePriceService.GetAsync(car.StripePriceId);
-        var price = stripePriceObj.UnitAmount;
-        if (price is null)
-        {
-            throw new Exception("price couldnt be retrieved from stripe");
-        }
-        else
-        {
-            var result = OrderHelper.CreateOrderResponseModelFromOrder(dbOrder.Entity, (long)price);
-            return result;
+        var price = await GetStripePriceOfOrder(car);
+        var result = OrderHelper.OrderResponseModelFromOrder(dbOrder.Entity, (long)price);
+        return result;
 
+    }
+
+    public async Task<List<OrderResponseModel>> GetCustomersOrders(string loggedinUserMail)
+    {
+        var signedInUser = await _userService.GetUserByMailAsync(loggedinUserMail);
+        var orders = await _applicationDbContext.Orders.Where(x => x.Customer == signedInUser).Include(x=>x.Car).ToListAsync();
+        var result = new List<OrderResponseModel>();
+        foreach (var order in orders)
+        {
+            if (order is not null)
+            {
+                var price = await GetStripePriceOfOrder(order.Car);
+                result.Add(OrderHelper.OrderResponseModelFromOrder(order, price));
+            }
         }
+        return result;
     }
 
     public void PayOrder(int orderId, string clientMail)
     {
-        var order = _applicationDbContext.Orders.Include(x=>x.Car).Include(x=>x.Payments).FirstOrDefault(x => x.Id == orderId);
+        var order = _applicationDbContext.Orders.Include(x => x.Car).Include(x => x.Payments).FirstOrDefault(x => x.Id == orderId);
         if (order is null)
         {
             throw new Exception("Order doesnt exist");
@@ -96,5 +103,17 @@ public class OrderService : IOrderService
             order.Payments.Add(invoice);
         }
         _applicationDbContext.SaveChanges();
+    }
+
+    private async Task<long> GetStripePriceOfOrder(Car car)
+    {
+        var stripePriceService = new PriceService();
+        var stripePriceObj = await stripePriceService.GetAsync(car.StripePriceId);
+        var price = stripePriceObj.UnitAmount;
+        if (price is null)
+        {
+            throw new Exception("price couldnt be retrieved from stripe");
+        }
+        return (long)price/100;
     }
 }

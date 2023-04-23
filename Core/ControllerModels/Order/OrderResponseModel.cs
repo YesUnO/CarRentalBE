@@ -2,7 +2,7 @@
 
 namespace Core.ControllerModels.Order;
 
-public class CreateOrderResponseModel
+public class OrderResponseModel
 {
     public int Id { get; set; }
     public CarDTO Car {get; set; }
