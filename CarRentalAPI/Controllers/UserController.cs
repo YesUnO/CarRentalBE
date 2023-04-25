@@ -65,7 +65,7 @@ public class UserController: ControllerBase
         return BadRequest();
     }
 
-    [HttpDelete]
+    [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
     public async Task<IActionResult> GetUser()
     {
@@ -82,25 +82,4 @@ public class UserController: ControllerBase
         }
     }
 
-    public  class TestModel
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Test(TestModel testModel)
-    {
-
-        return Ok();
-    }
-
-    [HttpPost]
-    [Route("Protected")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
-    public async Task<IActionResult> TestProtected(TestModel testModel)
-    {
-
-        return Ok();
-    }
 }
