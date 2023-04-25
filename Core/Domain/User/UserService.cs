@@ -1,4 +1,5 @@
-﻿using Core.Domain.Helpers;
+﻿using Core.ControllerModels.User;
+using Core.Domain.Helpers;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Entities.User;
@@ -63,54 +64,12 @@ public class UserService : IUserService
         return true;
     }
 
+    //TODO: cleanup
     public ApplicationUser GetSignedInUser()
     {
-        var email = GetEmailFromHttpContext();
-        var identityUser = _userManager.FindByEmailAsync(email).Result;
-        var applicationUser = _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
-                                                                    .Include(x => x.IdentificationCard)
-                                                                    .FirstOrDefault(x => x.IdentityUser == identityUser);
-        if (applicationUser == null)
-        {
-            _logger.LogWarning("Unauthorize access?");
-            return null;
-        }
-        return applicationUser;
+        return new ApplicationUser();
     }
 
-    public async Task<ApplicationUser> GetSignedInUserAsync()
-    {
-        var email = GetEmailFromHttpContext();
-        var identityUser = await _userManager.FindByEmailAsync(email);
-        var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
-        if (applicationUser == null)
-        {
-            _logger.LogWarning("Unauthorize access?");
-            return null;
-        }
-        return applicationUser;
-    }
-
-    private string GetEmailFromHttpContext()
-    {
-        //TODO: maybe??
-        if (_httpContextAccessor.HttpContext.User.Identity is null)
-        {
-            _logger.LogWarning("Unauthorize access?");
-        }
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
-    }
-
-    public async Task<UserDTO> GetUser(ClaimsPrincipal claimsPrincipal)
-    {
-        var identity = await _userManager.GetUserAsync(claimsPrincipal);
-        return UserHelper.GetUserFromIdentity(identity);
-    }
-
-    public List<UserDTO> GetUsers()
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task<bool> RegisterCustomer(IdentityUser user, string email, string password)
     {
@@ -140,6 +99,56 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
+    public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
+    {
+        var identityUser = await _userManager.FindByEmailAsync(mail);
+        ApplicationUser applicationUser;
+        if (includeDocuments)
+        {
+            applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense.BackSideImage)
+                                                                          .Include(x => x.DriversLicense.FrontSideImage)
+                                                                          .Include(x => x.IdentificationCard.BackSideImage)
+                                                                          .Include(x => x.IdentificationCard.FrontSideImage)
+                                                                          .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+        }
+        else
+        {
+            applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+        }
+
+        if (applicationUser == null)
+        {
+            _logger.LogWarning("User doesnt exist");
+            return null;
+        }
+        return applicationUser;
+    }
+
+    public async Task<UserResponseModel> GetUserDTOByMailAsync(string loggedinUserMail)
+    {
+        var identityUser = await _userManager.FindByEmailAsync(loggedinUserMail);
+        var applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
+            .Include(x => x.IdentificationCard)
+            .Include(x => x.StripeSubscriptions)
+            .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+        if (applicationUser is null)
+        {
+            throw new Exception("User doesnt have profile... damn");
+        }
+        var result = new UserResponseModel
+        {
+            Email = loggedinUserMail,
+            IsApprooved = applicationUser.Approved,
+            HasEmailVerified = identityUser.EmailConfirmed,
+            HasDrivingLicense = applicationUser.DriversLicense != null,
+            HasDrivingLicenseVerified = applicationUser.DriversLicense != null && applicationUser.DriversLicense.Checked,
+            HasIdCard = applicationUser.IdentificationCard != null,
+            HasIdCardVerified = applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.Checked,
+            HasActivePaymentCard = applicationUser.StripeSubscriptions.Any(x => x.StripeSubscriptionStatus == StripeSubscriptionStatus.active),
+        };
+        return result;
+    }
+
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
     {
         var applicationUser = new ApplicationUser { IdentityUser = user };
@@ -157,30 +166,5 @@ public class UserService : IUserService
         }
         var result = _applicationDbContext.ApplicationUsers.Remove(applicationUser);
         return result.IsKeySet;
-    }
-
-    public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
-    {
-        var identityUser = await _userManager.FindByEmailAsync(mail);
-        ApplicationUser applicationUser;
-        if (includeDocuments)
-        {
-            applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense.BackSideImage)
-                                                                          .Include(x => x.DriversLicense.FrontSideImage)
-                                                                          .Include(x => x.IdentificationCard.BackSideImage)
-                                                                          .Include(x => x.IdentificationCard.FrontSideImage)
-                                                                          .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
-        }
-        else
-        {
-            applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
-        }
-        
-        if (applicationUser == null)
-        {
-            _logger.LogWarning("User doesnt exist");
-            return null;
-        }
-        return applicationUser;
     }
 }
