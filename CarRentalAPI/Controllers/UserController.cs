@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Core.Domain.User;
 using Core.Infrastructure.Files;
 using System.Security.Claims;
-using Core.ControllerModels.User;
+
 
 namespace CarRentalAPI.Controllers;
 
@@ -81,5 +81,4 @@ public class UserController: ControllerBase
             return BadRequest();
         }
     }
-
 }
