@@ -44,7 +44,7 @@ public class CarController : ControllerBase
     {
         try
         {
-            await _fileService.SaveCarProfilePicAsync(carId, model.File);
+            await _fileService.SaveCarProfilePickAsync(carId, model.File);
             return Ok();
         }
         catch (Exception ex)

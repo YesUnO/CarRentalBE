@@ -73,9 +73,23 @@ public class FileService : IFileService
         await SaveUserDocumentImageToDb(imageType, fileUrl, loggedinUserMail);
     }
 
-    public async Task SaveCarProfilePicAsync(int carId, IFormFile file)
+    public async Task SaveCarProfilePickAsync(int carId, IFormFile file)
     {
-        throw new NotImplementedException();
+        var fileName = GetCarProfilePicFileName(carId);
+        var fileUrl = "";
+
+        using (Stream stream = file.OpenReadStream())
+        {
+            fileUrl = await UploadFileToStorage(stream, fileName, true);
+        }
+
+
+        if (string.IsNullOrEmpty(fileUrl))
+        {
+            throw new Exception("Saving image to blob failed");
+        }
+
+        await SaveCarPickImageToDb(carId, fileUrl);
     }
 
     public async Task<FileStream> GetUserDocumentPhoto(string mail, UserDocumentImageType userDocumentImageType)
@@ -208,6 +222,17 @@ public class FileService : IFileService
         return true;
     }
 
+    private async Task SaveCarPickImageToDb(int carId, string filePath)
+    {
+        var car = await _applicationDbContext.Cars.FirstOrDefaultAsync(x=>x.Id == carId);
+        if (car is null)
+        {
+            throw new Exception("couldnt find car in db");
+        }
+        car.ProfilePic = new Image { RelativePath = filePath };
+        await _applicationDbContext.SaveChangesAsync();
+    }
+
     private async Task<bool> SaveOrderImageToDb(CarReturningImageType carReturningImageType, string filePath)
     {
         var dbEntity = GetOrderImageDbEntitity(carReturningImageType, filePath);
@@ -230,6 +255,12 @@ public class FileService : IFileService
         var signedInUser = GetAndSetIfNullApplicationUser(loggedinUserMail);
         var id = FileHelper.GetDateShortId();
         return $"{userDocumentImageType.ToString()}{id}{signedInUser}.jpg";
+    }
+
+    private string GetCarProfilePicFileName(int carId)
+    {
+        var id = FileHelper.GetDateShortId();
+        return $"{carId}carPic{id}.jpg";
     }
 
     private ApplicationUser GetAndSetIfNullApplicationUser(string mail)
