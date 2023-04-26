@@ -25,6 +25,7 @@ namespace Core.Domain.Helpers
                 Id = car.Id,
                 Name = car.Name,
                 Unavailable = unavailable,
+                PictureUrl = car.ProfilePic is not null? car.ProfilePic.RelativePath : ""
             };
             return carDTO;
         }

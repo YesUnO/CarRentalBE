@@ -46,7 +46,7 @@ public static class DIServiceUtilities
     {
         var user = desiredUser is null ? new ApplicationUser() : desiredUser;
         var userServicceMock = new Mock<IUserService>();
-        userServicceMock.Setup(x => x.GetSignedInUser()).Returns(user);
+        userServicceMock.Setup(x => x.GetUserByMailAsync("", false)).Returns(Task.FromResult(user));
         services.AddSingleton(userServicceMock.Object);
 
         var serviceProvider = services.BuildServiceProvider();
@@ -73,6 +73,7 @@ public static class DIServiceUtilities
             var car = new Car
             {
                 Name = "yo",
+                StripePriceId="yo"
             };
             if (customer is null)
             {
@@ -99,10 +100,13 @@ public static class DIServiceUtilities
         services.AddInMemoryDbContext();
         services.AddUserServiceMockWithSignedInUser(desiredUser);
         services.AddSingleton<FileService>();
-        var options = Options.Create(new FileSettings
+        var options = Options.Create(new AzureStorageConfig 
         {
-            CloudmersiveApiKey = "8c6027b2-7bef-487d-977f-f22fb2e14579",
-            Root = "C:\\vilem\\work\\test\\StoragetTest"
+            AccountName = "carrentalblobstorage",
+            AccountKey = "EyYC1yKjRE+yvseQROPvU4+dpEJ9vRXuwyg+L9/+ilvvE5lF6VTPP5iC26Wv3n/36OY5B//WGrAL+AStWLfKsQ==",
+            DocumentImageContainer = "documents",
+            ImageContainer = "images",
+            ThumbnailContainer = "thumbnails"
         });
         services.AddSingleton(options);
         return services;

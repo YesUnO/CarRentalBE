@@ -42,7 +42,7 @@ public class CarService : ICarService
 
     public List<CarDTO> GetCars()
     {
-        var cars = _applicationDbContext.Cars.Include(x=>x.Orders).ToList();
+        var cars = _applicationDbContext.Cars.Include(x=>x.Orders).Include(x=>x.ProfilePic).ToList();
         var carsList = new List<CarDTO>();
         foreach (var car in cars)
         {

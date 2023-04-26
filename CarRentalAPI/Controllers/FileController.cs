@@ -3,6 +3,7 @@ using Core.Infrastructure.Files;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CarRentalAPI.Controllers;
 
@@ -11,10 +12,12 @@ namespace CarRentalAPI.Controllers;
 public class FileController : ControllerBase
 {
     private readonly IFileService _fileService;
+    private readonly ILogger<FileController> _logger;
 
-    public FileController(IFileService fileService)
+    public FileController(IFileService fileService, ILogger<FileController> logger)
     {
         _fileService = fileService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -32,17 +35,35 @@ public class FileController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy", Roles = "Customer")]
     public async Task<IActionResult> PostCarReturningPhoto([FromRoute] int orderId, [FromForm] PostCarReturningPhotoModel model)
     {
-        await _fileService.SaveCarReturningPhotoAsync(model.File, orderId, model.CarReturningImageType);
-        return Ok();
-        //return BadRequest();
+        try
+        {
+            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+
+            await _fileService.SaveCarReturningPhotoAsync(model.File, orderId, model.CarReturningImageType, loggedinUserMail);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
     public async Task<IActionResult> PostUserDocumentImage([FromForm] PostUserDocumentImageModel model)
     {
-        await _fileService.SaveUserDocumentPhotoAsync(model.File, model.UserDocumentImageType);
-        return Ok();
-        //return BadRequest();
+        try
+        {
+            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+
+            await _fileService.SaveUserDocumentPhotoAsync(model.File, model.UserDocumentImageType, loggedinUserMail);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,ex.Message);
+            return BadRequest(ex.Message);
+        }
     }
 }

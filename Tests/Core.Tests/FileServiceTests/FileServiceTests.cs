@@ -1,4 +1,3 @@
-using Cloudmersive.APIClient.NETCore.VirusScan.Model;
 using Core.Infrastructure.Files;
 using DataLayer;
 using Microsoft.AspNetCore.Http;
@@ -31,27 +30,6 @@ public class FileServiceTests
         Assert.NotNull(user.DriversLicense.BackSideImage);
     }
 
-    [Fact]
-    public void CheckFileForVirus()
-    {
-        //Arrange
-        var fileService = DIServiceUtilities.GetFileService();
-
-        //Act
-        VirusScanResult? result = null;
-        using var memoryStream = new MemoryStream();
-
-        using (var fileStream = new FileStream("C:\\vilem\\work\\test\\yo.jpg", FileMode.Open))
-        {
-            fileStream.CopyTo(memoryStream);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            //result = fileService.CheckFileForVirus(memoryStream);
-        }
-
-        //Assert
-        Assert.NotNull(result);
-        Assert.True(result.CleanResult);
-    }
 
     [Fact]
     public async Task SaveFileToDiskAsync()
@@ -68,7 +46,8 @@ public class FileServiceTests
         using (var filesStream = new FileStream("C:\\vilem\\work\\test\\yo.jpg", FileMode.Open))
         {
             IFormFile file = new FormFile(filesStream, 0, filesStream.Length, null, "yo");
-            await fileService.SaveCarReturningPhotoAsync(file, orderId, DTO.CarReturningImageType.CarBackImage);
+            //TODO figure out mail and user
+            await fileService.SaveCarReturningPhotoAsync(file, orderId, DTO.CarReturningImageType.CarBackImage, "");
         }
 
 

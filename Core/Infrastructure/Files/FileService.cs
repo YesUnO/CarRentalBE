@@ -2,69 +2,82 @@
 using DataLayer.Entities.Files;
 using DTO;
 using Microsoft.AspNetCore.Http;
-using Cloudmersive.APIClient.NETCore.VirusScan.Client;
 using Microsoft.Extensions.Options;
-using Cloudmersive.APIClient.NETCore.VirusScan.Api;
 using Microsoft.Extensions.Logging;
-using Cloudmersive.APIClient.NETCore.VirusScan.Model;
 using Microsoft.EntityFrameworkCore;
 using Core.Domain.User;
 using DataLayer.Entities.User;
 using DataLayer.Entities.Orders;
 using Core.Infrastructure.Files.Options;
+using Azure.Storage;
+using Azure.Storage.Blobs;
+using Core.Infrastructure.Helpers;
 
 namespace Core.Infrastructure.Files;
 
 public class FileService : IFileService
 {
     private readonly ApplicationDbContext _applicationDbContext;
-    private readonly FileSettings _fileSettingsOptions;
+    private readonly AzureStorageConfig _azureStorageConfig;
     private readonly ILogger<FileService> _logger;
     private readonly IUserService _userService;
     private ApplicationUser? _applicationUser;
     private Order? _order;
 
     public FileService(ApplicationDbContext applicationDbContext,
-                       IOptions<FileSettings> fileSettingsOptions,
+                       IOptions<AzureStorageConfig> azureStorageConfig,
                        ILogger<FileService> logger,
                        IUserService userService)
     {
         _applicationDbContext = applicationDbContext;
-        _fileSettingsOptions = fileSettingsOptions.Value;
+        _azureStorageConfig = azureStorageConfig.Value;
         _logger = logger;
         _userService = userService;
     }
 
 
-    public async Task SaveCarReturningPhotoAsync(IFormFile file, int orderId, CarReturningImageType carReturningImageType)
+    public async Task SaveCarReturningPhotoAsync(IFormFile file, int orderId, CarReturningImageType carReturningImageType, string loggedinUserMail)
     {
-        var folderPath = GetReturningPhotoFolderPath(orderId);
-        var fileName = carReturningImageType.ToString() + ".jpg";
-        var filePath = await SaveFileToDiskAsync(file, folderPath, fileName);
+        var fileName = GetReturningPhotoFileName(orderId, carReturningImageType);
+        var fileUrl = "";
 
-        if (string.IsNullOrEmpty(filePath))
+        using (Stream stream = file.OpenReadStream())
         {
-            return;
+            fileUrl = await UploadFileToStorage(stream, fileName, false);
         }
 
-        await SaveOrderImageToDb(carReturningImageType, filePath);
+        if (string.IsNullOrEmpty(fileUrl))
+        {
+            throw new Exception("Saving image to blob failed");
+        }
 
+        await SaveOrderImageToDb(carReturningImageType, fileUrl);
     }
 
-    public async Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType)
+    public async Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType, string loggedinUserMail)
     {
-        var folderPath = GetUserDocumentFolderPath(imageType);
-        var fileName = imageType.ToString() + ".jpg";
-        var filePath = await SaveFileToDiskAsync(file, folderPath, fileName);
+        var fileName = GetUserDocumentFileName(imageType, loggedinUserMail);
+        var fileUrl = "";
 
-        if (string.IsNullOrEmpty(filePath))
+        using (Stream stream = file.OpenReadStream())
         {
-            return;
+            fileUrl = await UploadFileToStorage(stream, fileName, true);
         }
 
 
-        await SaveUserDocumentImageToDb(imageType, filePath);
+        if (string.IsNullOrEmpty(fileUrl))
+        {
+            throw new Exception("Saving image to blob failed");
+        }
+
+        await SaveUserDocumentImageToDb(imageType, fileUrl, loggedinUserMail);
     }
+
+    public async Task SaveCarProfilePicAsync(int carId, IFormFile file)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<FileStream> GetUserDocumentPhoto(string mail, UserDocumentImageType userDocumentImageType)
     {
         var user = await _userService.GetUserByMailAsync(mail, true);
@@ -94,34 +107,26 @@ public class FileService : IFileService
     }
 
     #region private
-    private async Task<string> SaveFileToDiskAsync(IFormFile file, string folderPath, string fileName)
+
+    private async Task<string> UploadFileToStorage(Stream fileStream, string fileName, bool secret)
     {
-        var filePath = Path.Combine(folderPath, fileName);
+        string container = secret ? _azureStorageConfig.DocumentImageContainer : _azureStorageConfig.ImageContainer;
 
-        if (File.Exists(filePath))
-        {
-            return string.Empty;
-        }
+        Uri blobUri = new Uri("https://" +
+                                  _azureStorageConfig.AccountName +
+                                  ".blob.core.windows.net/" +
+                                  container +
+                                  "/" + fileName);
 
-        //VirusScanResult? scanResult = null;
+        StorageSharedKeyCredential storageCredentials =
+                new StorageSharedKeyCredential(_azureStorageConfig.AccountName, _azureStorageConfig.AccountKey);
 
-        //using (var memoryStream = new MemoryStream())
-        //{
-        //    await file.CopyToAsync(memoryStream);
-        //    memoryStream.Seek(0, SeekOrigin.Begin);
-        //    scanResult = CheckFileForVirus(memoryStream);
-        //}
+        BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
 
-        //if (scanResult is null || !scanResult.CleanResult.HasValue || !scanResult.CleanResult.Value)
-        //{
-        //    return string.Empty;
-        //}
+        // Upload the file
+        await blobClient.UploadAsync(fileStream);
 
-        using (var fileStream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(fileStream);
-        }
-        return filePath;
+        return await Task.FromResult(blobUri.ToString());
     }
 
     private OrderImage GetOrderImageDbEntitity(CarReturningImageType carReturningImageType, string filePath) => carReturningImageType switch
@@ -136,10 +141,10 @@ public class FileService : IFileService
         _ => throw new NotImplementedException(),
     };
 
-    private async Task<bool> SaveUserDocumentImageToDb(UserDocumentImageType userDocumentImageType, string filePath)
+    private async Task<bool> SaveUserDocumentImageToDb(UserDocumentImageType userDocumentImageType, string filePath, string loggedinUsermail)
     {
         var dbEntity = new UserDocumentImage { RelativePath = filePath };
-        var user = GetAndSetIfNullApplicationUser();
+        var user = GetAndSetIfNullApplicationUser(loggedinUsermail);
 
         switch (userDocumentImageType)
         {
@@ -213,60 +218,25 @@ public class FileService : IFileService
 
     }
 
-    private string GetReturningPhotoFolderPath(int orderId)
+    private string GetReturningPhotoFileName(int orderId, CarReturningImageType carReturningImageType)
     {
         var order = GetAndSetIfNullOrder(orderId);
-        if (order is null)
-        {
-            return string.Empty;
-        }
-
-        var year = DateTime.Now.Year.ToString();
-        var month = DateTime.Now.Month.ToString();
-        var day = DateTime.Now.Day.ToString();
-        var carName = order.Car.Name;
-
-        var path = Path.Combine(_fileSettingsOptions.Root, "Cars", carName, year, month, "Orders", order.Id.ToString());
-        if (!Directory.Exists(path))
-        {
-            Directory.CreateDirectory(path);
-        }
-
-        return path;
+        var id = FileHelper.GetDateShortId();
+        return $"{carReturningImageType}{id}{orderId}.jpg";
     }
 
-    private string GetUserDocumentFolderPath(UserDocumentImageType userDocumentImageType)
+    private string GetUserDocumentFileName(UserDocumentImageType userDocumentImageType, string loggedinUserMail)
     {
-        var signedInUser = GetAndSetIfNullApplicationUser();
-        string? documentType;
-        if (userDocumentImageType is UserDocumentImageType.DriverseLicenseBackImage or UserDocumentImageType.DriverseLicenseFrontImage)
-        {
-            documentType = "DriverseLicense";
-        }
-
-        else if (userDocumentImageType is UserDocumentImageType.IdentificationCardBackImage or UserDocumentImageType.IdentificationCardFrontImage)
-        {
-            documentType = "IdentificationCard";
-        }
-        else
-        {
-            return string.Empty;
-        }
-
-        var path = Path.Combine(_fileSettingsOptions.Root, "Users", signedInUser.Id.ToString(), documentType);
-        if (!Directory.Exists(path))
-        {
-            Directory.CreateDirectory(path);
-        }
-
-        return path;
+        var signedInUser = GetAndSetIfNullApplicationUser(loggedinUserMail);
+        var id = FileHelper.GetDateShortId();
+        return $"{userDocumentImageType.ToString()}{id}{signedInUser}.jpg";
     }
 
-    private ApplicationUser GetAndSetIfNullApplicationUser()
+    private ApplicationUser GetAndSetIfNullApplicationUser(string mail)
     {
         if (_applicationUser is null)
         {
-            _applicationUser = _userService.GetSignedInUser();
+            _applicationUser = _userService.GetUserByMailAsync(mail).Result;
         }
         return _applicationUser;
     }
@@ -275,31 +245,11 @@ public class FileService : IFileService
     {
         if (_order is null)
         {
-            _order = _applicationDbContext.Orders.Include(x => x.Car).FirstOrDefault(x => x.Id == orderID);
+            _order = _applicationDbContext.Orders.FirstOrDefault(x => x.Id == orderID);
         }
 
         return _order;
     }
 
-    private VirusScanResult CheckFileForVirus(MemoryStream fileStream)
-    {
-
-        try
-        {
-            Configuration.Default.AddApiKey("Apikey", _fileSettingsOptions.CloudmersiveApiKey);
-
-            var apiInstance = new ScanApi();
-            var scanResult = apiInstance.ScanFile(fileStream);
-            return scanResult;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Cloudmersive scan for virus failed");
-            return null;
-        }
-
-        //var path = file.Get
-        //var scanner = new AntiVirus.Scanner();
-    }
     #endregion
 }

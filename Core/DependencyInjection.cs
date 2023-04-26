@@ -30,7 +30,7 @@ public static class DependencyInjection
         services.Configure<StripeSettings>(configuration.GetSection("StripeSettings"));
 
         services.AddTransient<IFileService, FileService>();
-        services.Configure<FileSettings>(configuration.GetSection("FileSettings"));
+        services.Configure<AzureStorageConfig>(configuration.GetSection("AzureStorageConfig"));
         return services;
     }
 }
