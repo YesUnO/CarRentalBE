@@ -80,7 +80,7 @@ public class FileService : IFileService
 
         using (Stream stream = file.OpenReadStream())
         {
-            fileUrl = await UploadFileToStorage(stream, fileName, true);
+            fileUrl = await UploadFileToStorage(stream, fileName, false);
         }
 
 
