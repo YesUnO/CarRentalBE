@@ -1,14 +1,11 @@
 ﻿using Core.ControllerModels.User;
 using Core.Domain.Helpers;
 using DataLayer;
-using DataLayer.Entities;
 using DataLayer.Entities.User;
-using DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Security.Claims;
 
 namespace Core.Domain.User;
 
@@ -18,16 +15,19 @@ public class UserService : IUserService
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<UserService> _logger;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
     public UserService(UserManager<IdentityUser> userManager,
                        ApplicationDbContext applicationDbContext,
                        IHttpContextAccessor httpContextAccessor,
-                       ILogger<UserService> logger)
+                       ILogger<UserService> logger,
+                       RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _applicationDbContext = applicationDbContext;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
+        _roleManager = roleManager;
     }
 
     public async Task<bool> DeleteUser(IdentityUser user)
@@ -128,6 +128,7 @@ public class UserService : IUserService
     {
         var identityUser = await _userManager.FindByEmailAsync(loggedinUserMail);
         var applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
+            .Include(x => x.IdentityUser)
             .Include(x => x.IdentificationCard)
             .Include(x => x.StripeSubscriptions)
             .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
@@ -135,18 +136,30 @@ public class UserService : IUserService
         {
             throw new Exception("User doesnt have profile... damn");
         }
-        var result = new UserResponseModel
+        return UserHelper.GetUserResponseModelFromApplicationUser(applicationUser);
+    }
+
+    public async Task<List<UserResponseModel>> GetCustomerListAsync()
+    {
+        var customerRole = _roleManager.Roles.FirstOrDefault(x=>x.NormalizedName == "CUSTOMER");
+        if (customerRole is null)
         {
-            Email = loggedinUserMail,
-            IsApprooved = applicationUser.Approved,
-            HasEmailVerified = identityUser.EmailConfirmed,
-            HasDrivingLicense = applicationUser.DriversLicense != null,
-            HasDrivingLicenseVerified = applicationUser.DriversLicense != null && applicationUser.DriversLicense.Checked,
-            HasIdCard = applicationUser.IdentificationCard != null,
-            HasIdCardVerified = applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.Checked,
-            HasActivePaymentCard = applicationUser.StripeSubscriptions.Any(x => x.StripeSubscriptionStatus == StripeSubscriptionStatus.active),
-        };
-        return result;
+            throw new Exception("User role wasnt find... damn");
+        }
+
+        var applicationUsersList = await _applicationDbContext.ApplicationUsers
+            .Join(_applicationDbContext.UserRoles,
+            user => user.IdentityUser.Id,
+            userRole => userRole.UserId,
+            (user, userRole) => new { User = user, UserRole = userRole })
+            .Where(x => x.UserRole.RoleId == customerRole.Id)
+            .Select(x=>x.User)
+            .Include(x => x.DriversLicense)
+            .Include(x => x.IdentityUser)
+            .Include(x => x.IdentificationCard)
+            .Include(x => x.StripeSubscriptions)
+            .ToListAsync();
+        return applicationUsersList.Select(x=> UserHelper.GetUserResponseModelFromApplicationUser(x)).ToList();
     }
 
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
@@ -167,4 +180,5 @@ public class UserService : IUserService
         var result = _applicationDbContext.ApplicationUsers.Remove(applicationUser);
         return result.IsKeySet;
     }
+
 }

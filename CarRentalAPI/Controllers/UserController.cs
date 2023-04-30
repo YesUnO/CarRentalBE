@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Core.Domain.User;
 using Core.Infrastructure.Files;
 using System.Security.Claims;
-
+using Core.ControllerModels.User;
 
 namespace CarRentalAPI.Controllers;
 
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController: ControllerBase
+public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IFileService _fileService;
@@ -73,6 +73,23 @@ public class UserController: ControllerBase
         {
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             var result = await _userService.GetUserDTOByMailAsync(loggedinUserMail);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return BadRequest();
+        }
+    }
+
+    [HttpGet]
+    [Route("List")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    public async Task<IActionResult> GetUsers()
+    {
+        try
+        {
+            var result = await _userService.GetCustomerListAsync();
             return Ok(result);
         }
         catch (Exception ex)
