@@ -141,25 +141,37 @@ public class UserService : IUserService
 
     public async Task<List<UserResponseModel>> GetCustomerListAsync()
     {
-        var customerRole = _roleManager.Roles.FirstOrDefault(x=>x.NormalizedName == "CUSTOMER");
-        if (customerRole is null)
+        try
         {
-            throw new Exception("User role wasnt find... damn");
-        }
-
-        var applicationUsersList = await _applicationDbContext.ApplicationUsers
+            var applicationUserIdentityUserRoleJoin = _applicationDbContext.ApplicationUsers
             .Join(_applicationDbContext.UserRoles,
             user => user.IdentityUser.Id,
             userRole => userRole.UserId,
-            (user, userRole) => new { User = user, UserRole = userRole })
-            .Where(x => x.UserRole.RoleId == customerRole.Id)
-            .Select(x=>x.User)
-            .Include(x => x.DriversLicense)
-            .Include(x => x.IdentityUser)
-            .Include(x => x.IdentificationCard)
-            .Include(x => x.StripeSubscriptions)
-            .ToListAsync();
-        return applicationUsersList.Select(x=> UserHelper.GetUserResponseModelFromApplicationUser(x)).ToList();
+            (user, userRole) => new { User = user, UserRole = userRole });
+
+            var userRoleNameJoin = applicationUserIdentityUserRoleJoin
+                .Join(_applicationDbContext.Roles,
+                userRole => userRole.UserRole.RoleId,
+                role => role.Id,
+                (userRole, role) => new { User = userRole.User, RoleNameNormalized = role.NormalizedName });
+
+            var applicationUsersList = await userRoleNameJoin
+                .Where(x => x.RoleNameNormalized == "CUSTOMER")
+                .Select(x => x.User)
+                .Include(x => x.DriversLicense)
+                .Include(x => x.IdentityUser)
+                .Include(x => x.IdentificationCard)
+                .Include(x => x.StripeSubscriptions)
+                .ToListAsync();
+
+            return applicationUsersList.Select(x => UserHelper.GetUserResponseModelFromApplicationUser(x)).ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Retrieving customer list from Db failed");
+            throw;
+        }
+        
     }
 
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
