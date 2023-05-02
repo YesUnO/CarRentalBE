@@ -1,11 +1,14 @@
 ﻿using Core.ControllerModels.User;
 using Core.Domain.Helpers;
+using Core.Infrastructure.Emails;
 using DataLayer;
 using DataLayer.Entities.User;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System.Web;
 
 namespace Core.Domain.User;
 
@@ -13,21 +16,20 @@ public class UserService : IUserService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ApplicationDbContext _applicationDbContext;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<UserService> _logger;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IEmailService _emailService;
 
-    public UserService(UserManager<IdentityUser> userManager,
-                       ApplicationDbContext applicationDbContext,
-                       IHttpContextAccessor httpContextAccessor,
-                       ILogger<UserService> logger,
-                       RoleManager<IdentityRole> roleManager)
+    public UserService(
+            UserManager<IdentityUser> userManager,
+            ApplicationDbContext applicationDbContext,
+            ILogger<UserService> logger
+,
+            IEmailService emailService)
     {
         _userManager = userManager;
         _applicationDbContext = applicationDbContext;
-        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
-        _roleManager = roleManager;
+        _emailService = emailService;
     }
 
     public async Task<bool> DeleteUser(IdentityUser user)
@@ -71,7 +73,7 @@ public class UserService : IUserService
     }
 
 
-    public async Task<bool> RegisterCustomer(IdentityUser user, string email, string password)
+    public async Task<bool> RegisterCustomer(IdentityUser user, string email, string password, string baseUrl)
     {
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
@@ -85,6 +87,7 @@ public class UserService : IUserService
 
                 await _userManager.AddToRoleAsync(user, "customer");
                 await _userManager.SetEmailAsync(user, email);
+                await SendConfirmationMailAsync(user, baseUrl);
             }
             else
                 return false;
@@ -171,7 +174,7 @@ public class UserService : IUserService
             _logger.LogError(ex, "Retrieving customer list from Db failed");
             throw;
         }
-        
+
     }
 
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
@@ -191,6 +194,17 @@ public class UserService : IUserService
         }
         var result = _applicationDbContext.ApplicationUsers.Remove(applicationUser);
         return result.IsKeySet;
+    }
+
+    private async Task SendConfirmationMailAsync(IdentityUser user, string baseUrl)
+    {
+        var subject = "Account confirmation";
+        var confirmAccountToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var tokenEncoded = HttpUtility.UrlEncode(confirmAccountToken);
+        var link = $"{baseUrl}?token={tokenEncoded}&email={user.Email}";
+        var body = $"Hello {user.UserName}," +
+            $"<p>Confirm your mail address with this link: <a href=\"{link}\">confirm mail link</a></p>";
+        await _emailService.SendEmailAsync(user.Email, subject, body);
     }
 
 }

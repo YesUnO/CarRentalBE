@@ -22,7 +22,8 @@ public static class DependencyInjection
 
         services.AddIdentity<IdentityUser, IdentityRole>()
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
 
         var identityResources = new List<IdentityResource>

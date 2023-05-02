@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Duende.IdentityServer;
 using Core.ControllerModels.Auth;
+using Core.Infrastructure.Emails;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Web;
 
 namespace CarRentalAPI.Controllers;
 
@@ -15,12 +19,17 @@ public class AuthController : ControllerBase
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IUserService userService)
+    public AuthController(SignInManager<IdentityUser> signInManager,
+                          UserManager<IdentityUser> userManager,
+                          IUserService userService,
+                          ILogger<AuthController> logger)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _userService = userService;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -28,7 +37,9 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register(RegisterModel model)
     {
         var user = new IdentityUser(model.UserName);
-        var registerCustomer = await _userService.RegisterCustomer(user, model.Email, model.Password);
+        var action = Url.Action("ConfirmMail");
+        var url = $"{Request.Scheme}://{Request.Host}{action}";
+        var registerCustomer = await _userService.RegisterCustomer(user, model.Email, model.Password, url);
         if (!registerCustomer)
             return BadRequest();
         await _signInManager.SignInAsync(user, isPersistent: false);
@@ -41,6 +52,27 @@ public class AuthController : ControllerBase
             scope = "email openid profile role"
         });
     }
+
+    [HttpGet]
+    [Route("ConfirmMail")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmMail([FromQuery] ConfirmPasswordModel model)
+    {
+        try
+        {
+            var tokenDecoded = HttpUtility.UrlDecode(model.Token);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            var res = await _userManager.ConfirmEmailAsync(user, tokenDecoded);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Confirming mail failed");
+            return BadRequest();
+        }
+        
+    }
+
     //public async Task<IActionResult> Login(Login model)
     //{
     //    var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, lockoutOnFailure: false);

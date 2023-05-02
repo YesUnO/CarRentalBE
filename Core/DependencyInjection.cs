@@ -9,6 +9,8 @@ using Core.Infrastructure.Files.Options;
 using Core.Domain.Payment.Options;
 using Core.Domain.StripePayments;
 using Core.Domain.StripePayments.Interfaces;
+using Core.Infrastructure.Emails;
+using Core.Infrastructure.Emails.Options;
 
 namespace Core;
 
@@ -31,6 +33,10 @@ public static class DependencyInjection
 
         services.AddTransient<IFileService, FileService>();
         services.Configure<AzureStorageConfig>(configuration.GetSection("AzureStorageConfig"));
+
+        services.AddSingleton<IEmailService, EmailService>();
+        services.Configure<EmailsSettings>(configuration.GetSection("EmailsSettings"));
+
         return services;
     }
 }

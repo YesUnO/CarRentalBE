@@ -10,7 +10,7 @@ public interface IUserService
     Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false);
     Task<bool> DeleteUser(IdentityUser user);
     Task<bool> SoftDeleteUser(IdentityUser user);
-    Task<bool> RegisterCustomer(IdentityUser user, string email, string password);
+    Task<bool> RegisterCustomer(IdentityUser user, string email, string password, string baseUrl);
     Task<UserResponseModel> GetUserDTOByMailAsync(string loggedinUserMail);
     Task<List<UserResponseModel>> GetCustomerListAsync();
 }
