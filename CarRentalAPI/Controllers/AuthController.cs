@@ -60,8 +60,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var tokenDecoded = HttpUtility.UrlDecode(model.Token);
             var user = await _userManager.FindByEmailAsync(model.Email);
+            var tokenDecoded = HttpUtility.UrlDecode(model.Token);
             var res = await _userManager.ConfirmEmailAsync(user, tokenDecoded);
             return Ok();
         }
