@@ -61,8 +61,7 @@ public class AuthController : ControllerBase
         try
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            var tokenDecoded = HttpUtility.UrlDecode(model.Token);
-            var res = await _userManager.ConfirmEmailAsync(user, tokenDecoded);
+            var res = await _userManager.ConfirmEmailAsync(user, model.Token);
             return Ok();
         }
         catch (Exception ex)
