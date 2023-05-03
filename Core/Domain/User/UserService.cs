@@ -4,10 +4,8 @@ using Core.Infrastructure.Emails;
 using DataLayer;
 using DataLayer.Entities.User;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Web;
 
 namespace Core.Domain.User;
@@ -22,8 +20,7 @@ public class UserService : IUserService
     public UserService(
             UserManager<IdentityUser> userManager,
             ApplicationDbContext applicationDbContext,
-            ILogger<UserService> logger
-,
+            ILogger<UserService> logger,
             IEmailService emailService)
     {
         _userManager = userManager;
@@ -175,6 +172,11 @@ public class UserService : IUserService
             throw;
         }
 
+    }
+
+    public async Task ResendConfirmationEmailAsync(IdentityUser user, string confirmUrl)
+    {
+        await SendConfirmationMailAsync(user, confirmUrl);
     }
 
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)

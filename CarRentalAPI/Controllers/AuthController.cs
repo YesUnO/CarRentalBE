@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Duende.IdentityServer;
 using Core.ControllerModels.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
 
 namespace CarRentalAPI.Controllers;
 
@@ -42,7 +44,7 @@ public class AuthController : ControllerBase
                 return BadRequest();
             await _signInManager.PasswordSignInAsync(user.UserName,model.Password, isPersistent: false, lockoutOnFailure: false);
             var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
-            return Ok();
+            return Ok(new { Result = "Succesfully registered a new customer." });
         }
         catch (Exception ex)
         {
@@ -71,6 +73,31 @@ public class AuthController : ControllerBase
             return BadRequest();
         }
         
+    }
+
+
+    [HttpGet]
+    [Route("ResendConfirmationEmail")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    public async Task<IActionResult> ResendConfirmationEmail()
+    {
+        try
+        {
+            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(loggedinUserMail);
+
+            var action = Url.Action("ConfirmMail");
+            var url = $"{Request.Scheme}://{Request.Host}{action}";
+            await _userService.ResendConfirmationEmailAsync(user, url);
+            return Ok(new { Result = "Succesfully send confirm email." });
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Confirming mail failed.");
+            return BadRequest();
+        }
+
     }
 
 
