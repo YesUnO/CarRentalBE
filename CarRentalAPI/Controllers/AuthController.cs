@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Duende.IdentityServer;
 using Core.ControllerModels.Auth;
-using Core.Infrastructure.Emails;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Web;
 
 namespace CarRentalAPI.Controllers;
 
