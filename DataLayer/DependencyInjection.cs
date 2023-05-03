@@ -1,7 +1,5 @@
-﻿using DataLayer.IdentityServer;
-using DataLayer.IdentityServer.AuthorizationPolicies.OwnOrdersRequirement;
+﻿using DataLayer.IdentityServer.AuthorizationPolicies.OwnOrdersRequirement;
 using Duende.IdentityServer.Models;
-using Duende.IdentityServer.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

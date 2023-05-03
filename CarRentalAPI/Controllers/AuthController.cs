@@ -36,21 +36,24 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterModel model)
     {
-        var user = new IdentityUser(model.UserName);
-        var action = Url.Action("ConfirmMail");
-        var url = $"{Request.Scheme}://{Request.Host}{action}";
-        var registerCustomer = await _userService.RegisterCustomer(user, model.Email, model.Password, url);
-        if (!registerCustomer)
-            return BadRequest();
-        await _signInManager.SignInAsync(user, isPersistent: false);
-        var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
-        return Ok(new
+        try
         {
-            access_token = response,
-            expires_in = 3600,
-            token_type = "Bearer",
-            scope = "email openid profile role"
-        });
+            var user = new IdentityUser(model.UserName);
+            var action = Url.Action("ConfirmMail");
+            var url = $"{Request.Scheme}://{Request.Host}{action}";
+            var registerCustomer = await _userService.RegisterCustomer(user, model.Email, model.Password, url);
+            if (!registerCustomer)
+                return BadRequest();
+            await _signInManager.PasswordSignInAsync(user.UserName,model.Password, isPersistent: false, lockoutOnFailure: false);
+            var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Registering new user failed.");
+            return BadRequest();
+        }
+
     }
 
     [HttpGet]
@@ -62,15 +65,18 @@ public class AuthController : ControllerBase
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             var res = await _userManager.ConfirmEmailAsync(user, model.Token);
-            return Ok();
+            var feUrl = Environment.GetEnvironmentVariable("FE");
+            return Redirect($"{feUrl}/confirmEmail");
+
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Confirming mail failed");
+            _logger.LogError(ex, "Confirming mail failed.");
             return BadRequest();
         }
         
     }
+
 
     //public async Task<IActionResult> Login(Login model)
     //{
