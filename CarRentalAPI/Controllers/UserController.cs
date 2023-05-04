@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Core.Domain.User;
 using Core.Infrastructure.Files;
 using System.Security.Claims;
+using System.Drawing;
+using Core.ControllerModels.User;
 
 namespace CarRentalAPI.Controllers;
 
@@ -94,6 +96,23 @@ public class UserController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
+            return BadRequest();
+        }
+    }
+
+    [HttpPost]
+    [Route("VerifyDocument")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    public async Task<IActionResult> VerifyDoc(VerifyDocumentRequestModel model)
+    {
+        try
+        {
+            await _userService.VerifyUserDocumentAsync(model);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Veryficastion failed");
             return BadRequest();
         }
     }

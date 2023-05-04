@@ -102,19 +102,14 @@ public class UserService : IUserService
     public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
     {
         var identityUser = await _userManager.FindByEmailAsync(mail);
-        ApplicationUser applicationUser;
-        if (includeDocuments)
-        {
-            applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense.BackSideImage)
-                                                                          .Include(x => x.DriversLicense.FrontSideImage)
-                                                                          .Include(x => x.IdentificationCard.BackSideImage)
-                                                                          .Include(x => x.IdentificationCard.FrontSideImage)
-                                                                          .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
-        }
-        else
-        {
-            applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
-        }
+        ApplicationUser applicationUser = includeDocuments ?
+            await _applicationDbContext.ApplicationUsers
+            .Include(x => x.DriversLicense.BackSideImage)
+            .Include(x => x.DriversLicense.FrontSideImage)
+            .Include(x => x.IdentificationCard.BackSideImage)
+            .Include(x => x.IdentificationCard.FrontSideImage)
+            .FirstOrDefaultAsync(x => x.IdentityUser == identityUser) :
+            await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
 
         if (applicationUser == null)
         {
@@ -126,16 +121,7 @@ public class UserService : IUserService
 
     public async Task<UserResponseModel> GetUserDTOByMailAsync(string loggedinUserMail)
     {
-        var identityUser = await _userManager.FindByEmailAsync(loggedinUserMail);
-        var applicationUser = await _applicationDbContext.ApplicationUsers.Include(x => x.DriversLicense)
-            .Include(x => x.IdentityUser)
-            .Include(x => x.IdentificationCard)
-            .Include(x => x.StripeSubscriptions)
-            .FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
-        if (applicationUser is null)
-        {
-            throw new Exception("User doesnt have profile... damn");
-        }
+        var applicationUser = await GetUserByMailAsync(loggedinUserMail, true);
         return UserHelper.GetUserResponseModelFromApplicationUser(applicationUser);
     }
 
@@ -177,6 +163,12 @@ public class UserService : IUserService
     public async Task ResendConfirmationEmailAsync(IdentityUser user, string confirmUrl)
     {
         await SendConfirmationMailAsync(user, confirmUrl);
+    }
+
+    public async Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model)
+    {
+        var applicationUser = await GetUserByMailAsync(model.CustomerMail, true);
+        throw new NotImplementedException();
     }
 
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)

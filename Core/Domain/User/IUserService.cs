@@ -14,4 +14,5 @@ public interface IUserService
     Task<UserResponseModel> GetUserDTOByMailAsync(string loggedinUserMail);
     Task<List<UserForAdminModel>> GetCustomerListAsync();
     Task ResendConfirmationEmailAsync(IdentityUser user, string confirmUrl);
+    Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model);
 }
