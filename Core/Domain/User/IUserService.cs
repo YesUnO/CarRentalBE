@@ -12,6 +12,6 @@ public interface IUserService
     Task<bool> SoftDeleteUser(IdentityUser user);
     Task<bool> RegisterCustomer(IdentityUser user, string email, string password, string baseUrl);
     Task<UserResponseModel> GetUserDTOByMailAsync(string loggedinUserMail);
-    Task<List<UserResponseModel>> GetCustomerListAsync();
+    Task<List<UserForAdminModel>> GetCustomerListAsync();
     Task ResendConfirmationEmailAsync(IdentityUser user, string confirmUrl);
 }

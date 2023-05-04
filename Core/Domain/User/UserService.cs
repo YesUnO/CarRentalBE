@@ -139,7 +139,7 @@ public class UserService : IUserService
         return UserHelper.GetUserResponseModelFromApplicationUser(applicationUser);
     }
 
-    public async Task<List<UserResponseModel>> GetCustomerListAsync()
+    public async Task<List<UserForAdminModel>> GetCustomerListAsync()
     {
         try
         {
@@ -164,7 +164,7 @@ public class UserService : IUserService
                 .Include(x => x.StripeSubscriptions)
                 .ToListAsync();
 
-            return applicationUsersList.Select(x => UserHelper.GetUserResponseModelFromApplicationUser(x)).ToList();
+            return applicationUsersList.Select(x => UserHelper.GetUserForAdminModelFromApplicationUser(x)).ToList();
         }
         catch (Exception ex)
         {
