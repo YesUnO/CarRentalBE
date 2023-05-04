@@ -112,7 +112,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Veryficastion failed");
+            _logger.LogError(ex, "Veryfication failed");
             return BadRequest();
         }
     }

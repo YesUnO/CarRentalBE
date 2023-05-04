@@ -168,7 +168,26 @@ public class UserService : IUserService
     public async Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model)
     {
         var applicationUser = await GetUserByMailAsync(model.CustomerMail, true);
-        throw new NotImplementedException();
+        if (model.UserDocumentType == UserDocumentType.DriversLicense)
+        {
+            if (applicationUser.DriversLicense == null)
+            {
+                throw new Exception("Document doesnt exist");
+            }
+            applicationUser.DriversLicense.DocNr = model.DocNr;
+            applicationUser.DriversLicense.ValidTill = model.ValidTill;
+            applicationUser.DriversLicense.Checked = true;
+        }
+        else
+        {
+            if (applicationUser.IdentificationCard == null)
+            {
+                throw new Exception("Document doesnt exist");
+            }
+            applicationUser.IdentificationCard.DocNr = model.DocNr;
+            applicationUser.IdentificationCard.ValidTill = model.ValidTill;
+            applicationUser.IdentificationCard.Checked = true;
+        }
     }
 
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
