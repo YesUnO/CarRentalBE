@@ -1,6 +1,5 @@
 ﻿using Core.ControllerModels.User;
 using DataLayer.Entities.User;
-using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace Core.Domain.Helpers;
 
@@ -12,9 +11,13 @@ public static class UserHelper
         IsApprooved = applicationUser.Approved,
         HasEmailVerified = applicationUser.IdentityUser.EmailConfirmed,
         HasDrivingLicense = applicationUser.DriversLicense != null,
+        HasDrivingLicenseBackImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.BackSideImage != null,
+        HasDrivingLicenseFrontImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.FrontSideImage != null,
         HasDrivingLicenseVerified = applicationUser.DriversLicense != null &&
                 applicationUser.DriversLicense.Checked,
         HasIdCard = applicationUser.IdentificationCard != null,
+        HasIdBackImg= applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.BackSideImage != null,
+        HasIdFrontImg= applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.FrontSideImage != null,
         HasIdCardVerified = applicationUser.IdentificationCard != null &&
                 applicationUser.IdentificationCard.Checked,
         HasActivePaymentCard = applicationUser.StripeSubscriptions != null &&
