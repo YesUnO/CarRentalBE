@@ -144,9 +144,13 @@ public class UserService : IUserService
             var applicationUsersList = await userRoleNameJoin
                 .Where(x => x.RoleNameNormalized == "CUSTOMER")
                 .Select(x => x.User)
-                .Include(x => x.DriversLicense)
+                //.Include(x => x.DriversLicense)
+                .Include(x=>x.DriversLicense.BackSideImage)
+                .Include(x=>x.DriversLicense.FrontSideImage)
                 .Include(x => x.IdentityUser)
-                .Include(x => x.IdentificationCard)
+                //.Include(x => x.IdentificationCard)
+                .Include(x => x.IdentificationCard.BackSideImage)
+                .Include(x => x.IdentificationCard.FrontSideImage)
                 .Include(x => x.StripeSubscriptions)
                 .ToListAsync();
 
@@ -188,6 +192,8 @@ public class UserService : IUserService
             applicationUser.IdentificationCard.ValidTill = model.ValidTill;
             applicationUser.IdentificationCard.Checked = true;
         }
+
+        await _applicationDbContext.SaveChangesAsync();
     }
 
     private async Task<bool> CreateApplicationUserAsync(IdentityUser user)

@@ -124,23 +124,32 @@ public class FileService : IFileService
 
     private async Task<string> UploadFileToStorage(Stream fileStream, string fileName, bool secret)
     {
-        string container = secret ? _azureStorageConfig.DocumentImageContainer : _azureStorageConfig.ImageContainer;
+        try
+        {
+            string container = secret ? _azureStorageConfig.DocumentImageContainer : _azureStorageConfig.ImageContainer;
 
-        Uri blobUri = new Uri("https://" +
-                                  _azureStorageConfig.AccountName +
-                                  ".blob.core.windows.net/" +
-                                  container +
-                                  "/" + fileName);
+            Uri blobUri = new Uri("https://" +
+                                      _azureStorageConfig.AccountName +
+                                      ".blob.core.windows.net/" +
+                                      container +
+                                      "/" + fileName);
 
-        StorageSharedKeyCredential storageCredentials =
-                new StorageSharedKeyCredential(_azureStorageConfig.AccountName, _azureStorageConfig.AccountKey);
+            StorageSharedKeyCredential storageCredentials =
+                    new StorageSharedKeyCredential(_azureStorageConfig.AccountName, _azureStorageConfig.AccountKey);
 
-        BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
+            BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
 
-        // Upload the file
-        await blobClient.UploadAsync(fileStream);
+            // Upload the file
+            await blobClient.UploadAsync(fileStream);
 
-        return await Task.FromResult(blobUri.ToString());
+            return await Task.FromResult(blobUri.ToString());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogInformation(ex, "Azure out, going in with fake photo");
+            return "https://carrentalblobstorage.blob.core.windows.net/images/2carPic17aadf588c5f6.jpg";
+        }
+        
     }
 
     private OrderImage GetOrderImageDbEntitity(CarReturningImageType carReturningImageType, string filePath) => carReturningImageType switch
@@ -168,6 +177,7 @@ public class FileService : IFileService
                     user.DriversLicense = new UserDocument
                     {
                         FrontSideImage = dbEntity,
+                        BackSideImage = new UserDocumentImage { RelativePath = "empty" }
                     };
                 }
                 else
@@ -182,6 +192,7 @@ public class FileService : IFileService
                     user.DriversLicense = new UserDocument
                     {
                         BackSideImage = dbEntity,
+                        FrontSideImage = new UserDocumentImage { RelativePath = "empty" }
                     };
                 }
                 else
@@ -195,6 +206,7 @@ public class FileService : IFileService
                     user.IdentificationCard = new UserDocument
                     {
                         FrontSideImage = dbEntity,
+                        BackSideImage = new UserDocumentImage { RelativePath = "empty" }
                     };
                 }
                 else
@@ -205,7 +217,11 @@ public class FileService : IFileService
             case UserDocumentImageType.IdentificationCardBackImage:
                 if (user.IdentificationCard == null)
                 {
-                    user.IdentificationCard = new UserDocument { BackSideImage = dbEntity };
+                    user.IdentificationCard = new UserDocument 
+                    { 
+                        BackSideImage = dbEntity,
+                        FrontSideImage = new UserDocumentImage { RelativePath = "empty" }
+                    };
                 }
                 else
                 {
