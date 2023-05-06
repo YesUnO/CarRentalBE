@@ -70,6 +70,31 @@ public class UserService : IUserService
     }
 
 
+    public async Task ApproveCustomer(string mail)
+    {
+        var customer = await GetUserByMailAsync(mail, true);
+        if (customer == null)
+        {
+            _logger.LogError("Customer doesnt exist");
+            throw new Exception("Customer doesnt exist");
+        }
+
+        if (!customer.IdentityUser.EmailConfirmed ||
+            customer.DriversLicense is null ||
+            !customer.DriversLicense.Checked ||
+            customer.IdentificationCard is null ||
+            !customer.IdentificationCard.Checked  ||
+            customer.StripeSubscriptions is null ||
+            !customer.StripeSubscriptions.Any(x=>x.StripeSubscriptionStatus == StripeSubscriptionStatus.active)
+            )
+        {
+            throw new Exception("Customer not ready");
+        }
+
+        customer.Approved = true;
+        await _applicationDbContext.SaveChangesAsync();
+    }
+
     public async Task<bool> RegisterCustomer(IdentityUser user, string email, string password, string baseUrl)
     {
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
@@ -102,7 +127,7 @@ public class UserService : IUserService
     public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
     {
         var identityUser = await _userManager.FindByEmailAsync(mail);
-        ApplicationUser applicationUser = includeDocuments ?
+        ApplicationUser? applicationUser = includeDocuments ?
             await _applicationDbContext.ApplicationUsers
             .Include(x => x.DriversLicense.BackSideImage)
             .Include(x => x.DriversLicense.FrontSideImage)
@@ -114,7 +139,7 @@ public class UserService : IUserService
         if (applicationUser == null)
         {
             _logger.LogWarning("User doesnt exist");
-            return null;
+            throw new Exception("User doesnt exist");
         }
         return applicationUser;
     }
@@ -145,8 +170,8 @@ public class UserService : IUserService
                 .Where(x => x.RoleNameNormalized == "CUSTOMER")
                 .Select(x => x.User)
                 //.Include(x => x.DriversLicense)
-                .Include(x=>x.DriversLicense.BackSideImage)
-                .Include(x=>x.DriversLicense.FrontSideImage)
+                .Include(x => x.DriversLicense.BackSideImage)
+                .Include(x => x.DriversLicense.FrontSideImage)
                 .Include(x => x.IdentityUser)
                 //.Include(x => x.IdentificationCard)
                 .Include(x => x.IdentificationCard.BackSideImage)

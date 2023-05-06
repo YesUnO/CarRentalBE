@@ -116,4 +116,21 @@ public class UserController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpPost]
+    [Route("Approve")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    public async Task<IActionResult> VerifyDoc(string mail)
+    {
+        try
+        {
+            await _userService.ApproveCustomer(mail);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Approoval failed");
+            return BadRequest();
+        }
+    }
 }

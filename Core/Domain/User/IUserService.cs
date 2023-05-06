@@ -15,4 +15,5 @@ public interface IUserService
     Task<List<UserForAdminModel>> GetCustomerListAsync();
     Task ResendConfirmationEmailAsync(IdentityUser user, string confirmUrl);
     Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model);
+    Task ApproveCustomer(string mail);
 }
