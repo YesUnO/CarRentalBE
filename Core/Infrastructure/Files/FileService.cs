@@ -283,7 +283,7 @@ public class FileService : IFileService
     {
         if (_applicationUser is null)
         {
-            _applicationUser = _userService.GetUserByMailAsync(mail).Result;
+            _applicationUser = _userService.GetUserByMailAsync(mail, true).Result;
         }
         return _applicationUser;
     }

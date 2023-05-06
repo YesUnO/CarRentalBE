@@ -11,13 +11,13 @@ public static class UserHelper
         IsApprooved = applicationUser.Approved,
         HasEmailVerified = applicationUser.IdentityUser.EmailConfirmed,
         HasDrivingLicense = applicationUser.DriversLicense != null,
-        HasDrivingLicenseBackImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.BackSideImage != null,
-        HasDrivingLicenseFrontImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.FrontSideImage != null,
+        HasDrivingLicenseBackImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.BackSideImage.RelativePath != "empty",
+        HasDrivingLicenseFrontImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.FrontSideImage.RelativePath != "empty",
         HasDrivingLicenseVerified = applicationUser.DriversLicense != null &&
                 applicationUser.DriversLicense.Checked,
         HasIdCard = applicationUser.IdentificationCard != null,
-        HasIdBackImg= applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.BackSideImage != null,
-        HasIdFrontImg= applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.FrontSideImage != null,
+        HasIdBackImg= applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.BackSideImage.RelativePath != "empty",
+        HasIdFrontImg= applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.FrontSideImage.RelativePath != "empty",
         HasIdCardVerified = applicationUser.IdentificationCard != null &&
                 applicationUser.IdentificationCard.Checked,
         HasActivePaymentCard = applicationUser.StripeSubscriptions != null &&
