@@ -30,9 +30,9 @@ public class UserController : ControllerBase
 
     [HttpDelete]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> Delete(string name)
+    public async Task<IActionResult> Delete(string email)
     {
-        var user = await _userManager.FindByNameAsync(name);
+        var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
             return NotFound();
@@ -120,7 +120,7 @@ public class UserController : ControllerBase
     [HttpPost]
     [Route("Approve")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> VerifyDoc(string mail)
+    public async Task<IActionResult> Approove(string mail)
     {
         try
         {
