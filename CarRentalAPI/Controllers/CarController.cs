@@ -45,7 +45,29 @@ public class CarController : ControllerBase
         try
         {
             await _fileService.SaveCarProfilePickAsync(carId, model.File);
-            return Ok();
+            return Ok(new
+            {
+                Success = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Adding car picture failed cause:");
+            return BadRequest();
+        }
+    }
+
+    [HttpDelete("{carId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    public async Task<IActionResult> DeleteProfilePicToCar(int carId)
+    {
+        try
+        {
+            await _fileService.DeleteCarProfilePickAsync(carId);
+            return Ok(new
+            {
+                Success = true,
+            });
         }
         catch (Exception ex)
         {

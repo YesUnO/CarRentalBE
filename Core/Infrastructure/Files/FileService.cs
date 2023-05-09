@@ -12,6 +12,7 @@ using Core.Infrastructure.Files.Options;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Core.Infrastructure.Helpers;
+using Google.Cloud.Storage.V1;
 
 namespace Core.Infrastructure.Files;
 
@@ -23,16 +24,19 @@ public class FileService : IFileService
     private readonly IUserService _userService;
     private ApplicationUser? _applicationUser;
     private Order? _order;
+    private readonly StorageClient _googleStorageClient;
 
     public FileService(ApplicationDbContext applicationDbContext,
                        IOptions<AzureStorageConfig> azureStorageConfig,
                        ILogger<FileService> logger,
-                       IUserService userService)
+                       IUserService userService,
+                       StorageClient googleStorageClient)
     {
         _applicationDbContext = applicationDbContext;
         _azureStorageConfig = azureStorageConfig.Value;
         _logger = logger;
         _userService = userService;
+        _googleStorageClient = googleStorageClient;
     }
 
 
@@ -120,36 +124,70 @@ public class FileService : IFileService
         return new FileStream(entity.RelativePath, FileMode.Open);
     }
 
+
+    public async Task DeleteCarProfilePickAsync(int carId)
+    {
+        var car = _applicationDbContext.Cars.Include(x => x.ProfilePic).FirstOrDefault(x => x.Id == carId);
+        if (car == null)
+        {
+            throw new Exception("Unexisting car");
+        }
+
+        var picture = car.ProfilePic;
+        if (picture != null)
+        {
+            car.ProfilePic = null;
+            _applicationDbContext.Remove(picture);
+            await _applicationDbContext.SaveChangesAsync();
+        }
+    }
+
+
     #region private
 
     private async Task<string> UploadFileToStorage(Stream fileStream, string fileName, bool secret)
     {
         try
         {
-            string container = secret ? _azureStorageConfig.DocumentImageContainer : _azureStorageConfig.ImageContainer;
-
-            Uri blobUri = new Uri("https://" +
-                                      _azureStorageConfig.AccountName +
-                                      ".blob.core.windows.net/" +
-                                      container +
-                                      "/" + fileName);
-
-            StorageSharedKeyCredential storageCredentials =
-                    new StorageSharedKeyCredential(_azureStorageConfig.AccountName, _azureStorageConfig.AccountKey);
-
-            BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
-
-            // Upload the file
-            await blobClient.UploadAsync(fileStream);
-
-            return await Task.FromResult(blobUri.ToString());
+            return await UploadFileToGoogleStorage(fileStream, fileName, secret);
         }
         catch (Exception ex)
         {
-            _logger.LogInformation(ex, "Azure out, going in with fake photo");
-            return "https://carrentalblobstorage.blob.core.windows.net/images/2carPic17aadf588c5f6.jpg";
+            _logger.LogInformation(ex, "Google storage doesnt work");
+            throw;
         }
         
+    }
+
+    private async Task<string> UploadFileToAzureStorageAsync(Stream fileStream, string fileName, bool secret)
+    {
+        string container = secret ? _azureStorageConfig.DocumentImageContainer : _azureStorageConfig.ImageContainer;
+
+        Uri blobUri = new Uri("https://" +
+                                  _azureStorageConfig.AccountName +
+                                  ".blob.core.windows.net/" +
+                                  container +
+                                  "/" + fileName);
+
+        StorageSharedKeyCredential storageCredentials =
+                new StorageSharedKeyCredential(_azureStorageConfig.AccountName, _azureStorageConfig.AccountKey);
+
+        BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
+
+        // Upload the file
+        await blobClient.UploadAsync(fileStream);
+
+        return await Task.FromResult(blobUri.ToString());
+    }
+
+    private async Task<string> UploadFileToGoogleStorage(Stream fileStream, string fileName, bool secret)
+    {
+        var bucketName = "car_rental_img";
+        var folderName = secret ? "private" : "public";
+        var objName = folderName+ "/" + fileName;
+        var storageObj = await _googleStorageClient.UploadObjectAsync(bucketName, objName, null, fileStream);
+        var url = $"https://storage.googleapis.com/{bucketName}/{objName}";
+        return url;
     }
 
     private OrderImage GetOrderImageDbEntitity(CarReturningImageType carReturningImageType, string filePath) => carReturningImageType switch

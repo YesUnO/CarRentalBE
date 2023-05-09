@@ -11,6 +11,9 @@ using Core.Domain.StripePayments;
 using Core.Domain.StripePayments.Interfaces;
 using Core.Infrastructure.Emails;
 using Core.Infrastructure.Emails.Options;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
+using Newtonsoft.Json;
 
 namespace Core;
 
@@ -36,6 +39,15 @@ public static class DependencyInjection
 
         services.AddSingleton<IEmailService, EmailService>();
         services.Configure<EmailsSettings>(configuration.GetSection("EmailsSettings"));
+
+        var googleStorageServiceAccKey = JsonConvert.SerializeObject(configuration.GetSection("GoogleCloud:ServiceClientAPIKeyJson").Get<GoogleStorageServiceAccKey>());
+        services.AddSingleton(_=>
+            {
+                var credentials = GoogleCredential.FromJson(googleStorageServiceAccKey);
+                var googleStorageClient = StorageClient.Create(credentials);
+                return googleStorageClient;
+            }
+        );
 
         return services;
     }

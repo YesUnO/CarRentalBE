@@ -9,4 +9,5 @@ public interface IFileService
     Task SaveUserDocumentPhotoAsync(IFormFile file, UserDocumentImageType imageType, string loggedinUserMail);
     Task<FileStream> GetUserDocumentPhoto(string mail, UserDocumentImageType userDocumentImageType);
     Task SaveCarProfilePickAsync(int carId, IFormFile file);
+    Task DeleteCarProfilePickAsync(int carId);
 }
