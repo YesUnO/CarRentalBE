@@ -41,7 +41,10 @@ public class UserController : ControllerBase
 
         if (result)
         {
-            return Ok();
+            return Ok(new
+            {
+                Success = true,
+            });
         }
         return BadRequest();
     }
@@ -61,7 +64,10 @@ public class UserController : ControllerBase
 
         if (result)
         {
-            return Ok();
+            return Ok(new
+            {
+                Success = true,
+            });
         }
         return BadRequest();
     }
@@ -108,7 +114,10 @@ public class UserController : ControllerBase
         try
         {
             await _userService.VerifyUserDocumentAsync(model);
-            return Ok();
+            return Ok(new
+            {
+                Success = true,
+            });
         }
         catch (Exception ex)
         {
@@ -120,12 +129,15 @@ public class UserController : ControllerBase
     [HttpPost]
     [Route("Approve")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> Approove(string mail)
+    public async Task<IActionResult> Approove(ApproveUserRequestModel model)
     {
         try
         {
-            await _userService.ApproveCustomer(mail);
-            return Ok();
+            await _userService.ApproveCustomer(model.Email);
+            return Ok(new
+            {
+                Success = true,
+            });
         }
         catch (Exception ex)
         {

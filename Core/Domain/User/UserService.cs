@@ -83,9 +83,9 @@ public class UserService : IUserService
             customer.DriversLicense is null ||
             !customer.DriversLicense.Checked ||
             customer.IdentificationCard is null ||
-            !customer.IdentificationCard.Checked  ||
+            !customer.IdentificationCard.Checked ||
             customer.StripeSubscriptions is null ||
-            !customer.StripeSubscriptions.Any(x=>x.StripeSubscriptionStatus == StripeSubscriptionStatus.active)
+            !customer.StripeSubscriptions.Any(x => x.StripeSubscriptionStatus == StripeSubscriptionStatus.active)
             )
         {
             throw new Exception("Customer not ready");
@@ -133,6 +133,7 @@ public class UserService : IUserService
             .Include(x => x.DriversLicense.FrontSideImage)
             .Include(x => x.IdentificationCard.BackSideImage)
             .Include(x => x.IdentificationCard.FrontSideImage)
+            .Include(x => x.StripeSubscriptions)
             .FirstOrDefaultAsync(x => x.IdentityUser == identityUser) :
             await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
 
