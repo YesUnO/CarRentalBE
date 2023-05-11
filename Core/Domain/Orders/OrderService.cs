@@ -27,7 +27,7 @@ public class OrderService : IOrderService
         _stripeInvoiceService = stripeInvoiceService;
     }
 
-    public async Task<OrderResponseModel> CreateOrder(OrderDTO model, string clientMail)
+    public async Task<OrderResponseModel> CreateOrder(CreateOrderRequestModel model, string clientMail)
     {
         var signedInUser = await _userService.GetUserByMailAsync(clientMail);
         var car = await _applicationDbContext.FindAsync<Car>(model.CarId);

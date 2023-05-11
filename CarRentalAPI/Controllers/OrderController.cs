@@ -24,7 +24,7 @@ public class OrderController : ControllerBase
 
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
-    public async Task<IActionResult> Create(OrderDTO model)
+    public async Task<IActionResult> Create(CreateOrderRequestModel model)
     {
         try
         {

@@ -1,7 +1,6 @@
-﻿
-namespace DTO;
+﻿namespace Core.ControllerModels.Order;
 
-public class OrderDTO
+public class CreateOrderRequestModel
 {
     public int CarId { get; set; }
     public DateTime StartDate { get; set; }
