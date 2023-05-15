@@ -121,7 +121,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Veryfication failed");
+            _logger.LogError(ex, "Customer veryfication failed");
             return BadRequest();
         }
     }
@@ -141,7 +141,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Approoval failed");
+            _logger.LogError(ex, "Customer approoval failed");
             return BadRequest();
         }
     }
