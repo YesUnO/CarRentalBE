@@ -95,27 +95,24 @@ public class UserService : IUserService
         await _applicationDbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> RegisterCustomer(IdentityUser user, string email, string password, string baseUrl)
+    public async Task RegisterCustomer(IdentityUser user, string email, string password, string baseUrl)
     {
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
             var creatingUserResult = await _userManager.CreateAsync(user, password);
 
-            if (creatingUserResult.Succeeded)
+            if (!creatingUserResult.Succeeded)
             {
-                var createApplicationUser = await CreateApplicationUserAsync(user);
-                if (!createApplicationUser)
-                    return false;
-
-                await _userManager.AddToRoleAsync(user, "customer");
-                await _userManager.SetEmailAsync(user, email);
-                await SendConfirmationMailAsync(user, baseUrl);
+                throw new Exception(string.Join(", ", creatingUserResult.Errors.Select(x => x.Description)));
             }
-            else
-                return false;
+
+            await CreateApplicationUserAsync(user);
+
+            await _userManager.AddToRoleAsync(user, "customer");
+            await _userManager.SetEmailAsync(user, email);
+            await SendConfirmationMailAsync(user, baseUrl);
             transaction.Commit();
         }
-        return true;
     }
 
     public Task<bool> SoftDeleteUser(IdentityUser user)
@@ -222,12 +219,11 @@ public class UserService : IUserService
         await _applicationDbContext.SaveChangesAsync();
     }
 
-    private async Task<bool> CreateApplicationUserAsync(IdentityUser user)
+    private async Task CreateApplicationUserAsync(IdentityUser user)
     {
         var applicationUser = new ApplicationUser { IdentityUser = user };
         var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
         await _applicationDbContext.SaveChangesAsync();
-        return userAdd.IsKeySet;
     }
 
     private async Task<bool> DeleteApplicationUser(IdentityUser user)

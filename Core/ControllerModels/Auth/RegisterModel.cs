@@ -19,7 +19,6 @@ public class RegisterModel
     [DataType(DataType.EmailAddress)]
     public string Email { get; set; }
 
-    [Required]
     [DataType(DataType.PhoneNumber)]
     public string PhoneNumber { get; set; }
 }

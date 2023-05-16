@@ -18,13 +18,16 @@ public static class DependencyInjection
 
         services.AddTransient<IAuthorizationHandler, ViewOwnOrdersHandler>();
 
-        services.AddIdentity<IdentityUser, IdentityRole>()
+        services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+        })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-         services.Configure<DataProtectionTokenProviderOptions>(o =>
-            o.TokenLifespan = TimeSpan.FromMinutes(30));
+        services.Configure<DataProtectionTokenProviderOptions>(o =>
+           o.TokenLifespan = TimeSpan.FromMinutes(30));
 
         var identityResources = new List<IdentityResource>
         {

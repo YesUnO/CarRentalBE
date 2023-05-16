@@ -39,17 +39,27 @@ public class AuthController : ControllerBase
             var user = new IdentityUser(model.UserName);
             var action = Url.Action("ConfirmMail");
             var url = $"{Request.Scheme}://{Request.Host}{action}";
-            var registerCustomer = await _userService.RegisterCustomer(user, model.Email, model.Password, url);
-            if (!registerCustomer)
-                return BadRequest();
-            await _signInManager.PasswordSignInAsync(user.UserName,model.Password, isPersistent: false, lockoutOnFailure: false);
+            await _userService.RegisterCustomer(user, model.Email, model.Password, url);
+            await _signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: false, lockoutOnFailure: false);
             var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
             return Ok(new { Result = "Succesfully registered a new customer." });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Registering new user failed.");
-            return BadRequest();
+            var errorMsg = "";
+            switch (ex.Message)
+            {
+                case "User validation failed: DuplicateUserName.":
+                    errorMsg = "Username is taken. Choose another one.";
+                    break;
+                case "User validation failed: InvalidEmail.":
+                    errorMsg = "Email is already taken or is invalid. Select another one.";
+                    break;
+                default:
+                    break;
+            }
+            return BadRequest(errorMsg);
         }
 
     }
@@ -72,7 +82,7 @@ public class AuthController : ControllerBase
             _logger.LogError(ex, "Confirming mail failed.");
             return BadRequest();
         }
-        
+
     }
 
 
