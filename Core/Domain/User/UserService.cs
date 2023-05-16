@@ -1,5 +1,6 @@
 ﻿using Core.ControllerModels.User;
 using Core.Domain.Helpers;
+using Core.Exceptions;
 using Core.Infrastructure.Emails;
 using DataLayer;
 using DataLayer.Entities.User;
@@ -103,7 +104,7 @@ public class UserService : IUserService
 
             if (!creatingUserResult.Succeeded)
             {
-                throw new Exception(string.Join(", ", creatingUserResult.Errors.Select(x => x.Description)));
+                throw new UserRegistrationException("Unable to create user",creatingUserResult.Errors);
             }
 
             await CreateApplicationUserAsync(user);

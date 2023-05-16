@@ -7,6 +7,7 @@ using Duende.IdentityServer;
 using Core.ControllerModels.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
+using Core.Exceptions;
 
 namespace CarRentalAPI.Controllers;
 
@@ -44,22 +45,17 @@ public class AuthController : ControllerBase
             var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
             return Ok(new { Result = "Succesfully registered a new customer." });
         }
+        catch (UserRegistrationException ex)
+        {
+            return BadRequest(new
+            {
+                errors = ex.IdentityErrors.Select(x => x.Description)
+            });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Registering new user failed.");
-            var errorMsg = "";
-            switch (ex.Message)
-            {
-                case "User validation failed: DuplicateUserName.":
-                    errorMsg = "Username is taken. Choose another one.";
-                    break;
-                case "User validation failed: InvalidEmail.":
-                    errorMsg = "Email is already taken or is invalid. Select another one.";
-                    break;
-                default:
-                    break;
-            }
-            return BadRequest(errorMsg);
+            return BadRequest();
         }
 
     }
