@@ -7,7 +7,7 @@ using Duende.IdentityServer;
 using Core.ControllerModels.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
-using Core.Exceptions;
+using Core.Exceptions.UserRegistration;
 
 namespace CarRentalAPI.Controllers;
 
@@ -47,10 +47,37 @@ public class AuthController : ControllerBase
         }
         catch (UserRegistrationException ex)
         {
-            return BadRequest(new
+            var errors = new RegisterErrorResponseModel();
+            foreach (var error in ex.Errors)
             {
-                errors = ex.IdentityErrors.Select(x => x.Description)
-            });
+                switch (error.Field)
+                {
+                    case "email":
+                        if (errors.Email is null)
+                        {
+                            errors.Email = new List<string>();
+                        }
+                        ((List<string>)errors.Email).Add(error.Description);
+                        break;
+                    case "password":
+                        if (errors.Password is null)
+                        {
+                            errors.Password = new List<string>();
+                        }
+                        ((List<string>)errors.Password).Add(error.Description);
+                        break;
+                    case "username":
+                        if (errors.Username is null)
+                        {
+                            errors.Username = new List<string>();
+                        }
+                        ((List<string>)errors.Username).Add(error.Description);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return BadRequest(new { errors = errors } );
         }
         catch (Exception ex)
         {

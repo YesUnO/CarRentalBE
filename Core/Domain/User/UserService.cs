@@ -1,6 +1,7 @@
 ﻿using Core.ControllerModels.User;
 using Core.Domain.Helpers;
 using Core.Exceptions;
+using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Emails;
 using DataLayer;
 using DataLayer.Entities.User;
@@ -100,11 +101,15 @@ public class UserService : IUserService
     {
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
+            user.Email = email;
             var creatingUserResult = await _userManager.CreateAsync(user, password);
 
             if (!creatingUserResult.Succeeded)
             {
-                throw new UserRegistrationException("Unable to create user",creatingUserResult.Errors);
+                throw new UserRegistrationException(
+                    "Unable to create user",
+                    creatingUserResult.Errors.Select(x =>
+                        new UserRegistrationError { Description = x.Description, Field = ParseIdentityErrorCodesToFields(x.Code) }));
             }
 
             await CreateApplicationUserAsync(user);
@@ -219,6 +224,32 @@ public class UserService : IUserService
 
         await _applicationDbContext.SaveChangesAsync();
     }
+
+    private string ParseIdentityErrorCodesToFields(string code) => code switch
+    {
+        "ConcurrencyFailure" => "concurrency",
+        "DefaultError" => "default",
+        "DuplicateEmail" => "email",
+        "DuplicateRoleName" => "roleName",
+        "DuplicateUserName" => "username",
+        "InvalidEmail" => "email",
+        "InvalidRoleName" => "roleName",
+        "InvalidToken" => "token",
+        "InvalidUserName" => "userName",
+        "LoginAlreadyAssociated" => "login",
+        "PasswordMismatch" => "password",
+        "PasswordRequiresDigit" => "password",
+        "PasswordRequiresLower" => "password",
+        "PasswordRequiresNonAlphanumeric" => "password",
+        "PasswordRequiresUniqueChars" => "password",
+        "PasswordRequiresUpper" => "password",
+        "PasswordTooShort" => "password",
+        "RecoveryCodeRedemptionFailed" => "recoveryCode",
+        "UserAlreadyHasPassword" => "password",
+        "UserAlreadyInRole" => "roleName",
+        "UserLockoutNotEnabled" => "lockout",
+        "UserNotInRole" => "roleName"
+    };
 
     private async Task CreateApplicationUserAsync(IdentityUser user)
     {
