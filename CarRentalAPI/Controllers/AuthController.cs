@@ -87,6 +87,15 @@ public class AuthController : ControllerBase
 
     }
 
+    [HttpPost]
+    [Route("ExternalLogin")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ExternalLogin()
+    {
+        var yo = _signInManager.GetExternalLoginInfoAsync();
+        return Ok();
+    }
+
     [HttpGet]
     [Route("ConfirmMail")]
     [AllowAnonymous]

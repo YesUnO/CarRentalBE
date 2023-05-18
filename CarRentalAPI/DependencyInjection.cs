@@ -21,6 +21,11 @@ public static class DependencyInjection
         });
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddGoogle(options =>
+            {
+                options.ClientId = configuration["ExternalAuthenticationProviders:Google:ClientId"];
+                options.ClientSecret= configuration["ExternalAuthenticationProviders:Google:ClientSecret"];
+            })
             .AddJwtBearer(options =>
             {
                 options.Authority = "https://localhost:7125";
