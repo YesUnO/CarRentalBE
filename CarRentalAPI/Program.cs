@@ -1,4 +1,6 @@
 using CarRentalAPI;
+using Core.Infrastructure.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Stripe;
 
@@ -6,6 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 // Add services to the container.
+
+var apiUrls = builder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey).Split(";");
+var baseApiUrls = new BaseApiUrls
+{
+    HttpsUrl = apiUrls.FirstOrDefault(x => x.StartsWith("https")),
+    HttpUrl = apiUrls.FirstOrDefault(x => x.StartsWith("http"))
+};
+builder.Services.Configure<BaseApiUrls>(x=>x = baseApiUrls);
 
 builder.Services.AddThingsToContainer(builder.Configuration);
 builder.Services.AddControllers();

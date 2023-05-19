@@ -23,8 +23,8 @@ public static class DependencyInjection
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddGoogle(options =>
             {
-                options.ClientId = configuration["ExternalAuthenticationProviders:Google:ClientId"];
-                options.ClientSecret= configuration["ExternalAuthenticationProviders:Google:ClientSecret"];
+                options.ClientId = configuration["ExternalAuthenticationProviders:GoogleClientId"];
+                options.ClientSecret= configuration["ExternalAuthenticationProviders:GoogleClientSecret"];
             })
             .AddJwtBearer(options =>
             {

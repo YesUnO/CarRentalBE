@@ -38,11 +38,8 @@ public class AuthController : ControllerBase
         try
         {
             var user = new IdentityUser(model.UserName);
-            var action = Url.Action("ConfirmMail");
-            var url = $"{Request.Scheme}://{Request.Host}{action}";
-            await _userService.RegisterCustomer(user, model.Email, model.Password, url);
+            await _userService.RegisterCustomer(user, model.Email, model.Password);
             await _signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: false, lockoutOnFailure: false);
-            var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
             return Ok(new { Result = "Succesfully registered a new customer." });
         }
         catch (UserRegistrationException ex)
@@ -77,7 +74,7 @@ public class AuthController : ControllerBase
                         break;
                 }
             }
-            return BadRequest(new { errors = errors } );
+            return BadRequest(new { errors } );
         }
         catch (Exception ex)
         {
@@ -90,10 +87,25 @@ public class AuthController : ControllerBase
     [HttpPost]
     [Route("ExternalLogin")]
     [AllowAnonymous]
-    public async Task<IActionResult> ExternalLogin()
+    public async Task<IActionResult> ExternalLogin(ExternalLoginRequestModel model)
     {
-        var yo = _signInManager.GetExternalLoginInfoAsync();
-        return Ok();
+        try
+        {
+            var identity = await _userService.HandleExternalLoginAsync(model.Credentials);
+            var user = new IdentityServerUser(identity.Id)
+            {
+                DisplayName = identity.UserName,
+            };
+
+            await HttpContext.SignInAsync(user);
+            var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "External login failed.");
+            return BadRequest();
+        }
     }
 
     [HttpGet]
@@ -130,7 +142,7 @@ public class AuthController : ControllerBase
 
             var action = Url.Action("ConfirmMail");
             var url = $"{Request.Scheme}://{Request.Host}{action}";
-            await _userService.ResendConfirmationEmailAsync(user, url);
+            await _userService.ResendConfirmationEmailAsync(user);
             return Ok(new { Result = "Succesfully send confirm email." });
 
         }

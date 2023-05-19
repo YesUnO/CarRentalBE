@@ -1,14 +1,19 @@
 ﻿using Core.ControllerModels.User;
 using Core.Domain.Helpers;
-using Core.Exceptions;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Emails;
+using Core.Infrastructure.ExternalAuthProviders.Options;
+using Core.Infrastructure.Options;
 using DataLayer;
 using DataLayer.Entities.User;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Web;
+using static Google.Apis.Auth.GoogleJsonWebSignature;
+using static Google.Apis.Auth.JsonWebSignature;
 
 namespace Core.Domain.User;
 
@@ -18,13 +23,20 @@ public class UserService : IUserService
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly ILogger<UserService> _logger;
     private readonly IEmailService _emailService;
+    private readonly ExternalAuthProvidersConfig _externalAuthProvidersConfig;
+    private readonly BaseApiUrls _baseApiUrls;
 
     public UserService(
             UserManager<IdentityUser> userManager,
             ApplicationDbContext applicationDbContext,
             ILogger<UserService> logger,
-            IEmailService emailService)
+            IEmailService emailService,
+            IOptions<ExternalAuthProvidersConfig> externalAuthProvidersOptions,
+            IOptions<BaseApiUrls> baseApiUrls
+        )
     {
+        _baseApiUrls = baseApiUrls.Value;
+        _externalAuthProvidersConfig = externalAuthProvidersOptions.Value;
         _userManager = userManager;
         _applicationDbContext = applicationDbContext;
         _logger = logger;
@@ -65,6 +77,29 @@ public class UserService : IUserService
         return true;
     }
 
+    public async Task<IdentityUser> HandleExternalLoginAsync(string credentials)
+    {
+        var payload = await ParseGoogleCredentials(credentials);
+        var info = new UserLoginInfo("Google", payload.Subject, "Google");
+
+        var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+        if (user == null)
+        {
+            user = await _userManager.FindByEmailAsync(payload.Email);
+            if (user == null)
+            {
+                user = await RegisterCustomerFromGoogleSignin(payload, user);
+                if (!user.EmailConfirmed)
+                {
+                    await SendConfirmationMailAsync(user);
+                }
+            }
+            await _userManager.AddLoginAsync(user, info);
+        }
+        return user;
+    }
+
+
     //TODO: cleanup
     public ApplicationUser GetSignedInUser()
     {
@@ -97,7 +132,7 @@ public class UserService : IUserService
         await _applicationDbContext.SaveChangesAsync();
     }
 
-    public async Task RegisterCustomer(IdentityUser user, string email, string password, string baseUrl)
+    public async Task RegisterCustomer(IdentityUser user, string email, string password)
     {
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
@@ -116,7 +151,8 @@ public class UserService : IUserService
 
             await _userManager.AddToRoleAsync(user, "customer");
             await _userManager.SetEmailAsync(user, email);
-            await SendConfirmationMailAsync(user, baseUrl);
+            await SendConfirmationMailAsync(user);
+            await _applicationDbContext.SaveChangesAsync();
             transaction.Commit();
         }
     }
@@ -168,7 +204,7 @@ public class UserService : IUserService
                 .Join(_applicationDbContext.Roles,
                 userRole => userRole.UserRole.RoleId,
                 role => role.Id,
-                (userRole, role) => new { User = userRole.User, RoleNameNormalized = role.NormalizedName });
+                (userRole, role) => new { userRole.User, RoleNameNormalized = role.NormalizedName });
 
             var applicationUsersList = await userRoleNameJoin
                 .Where(x => x.RoleNameNormalized == "CUSTOMER")
@@ -193,9 +229,9 @@ public class UserService : IUserService
 
     }
 
-    public async Task ResendConfirmationEmailAsync(IdentityUser user, string confirmUrl)
+    public async Task ResendConfirmationEmailAsync(IdentityUser user)
     {
-        await SendConfirmationMailAsync(user, confirmUrl);
+        await SendConfirmationMailAsync(user);
     }
 
     public async Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model)
@@ -223,6 +259,38 @@ public class UserService : IUserService
         }
 
         await _applicationDbContext.SaveChangesAsync();
+    }
+
+    #region private methods
+
+    private async Task<IdentityUser> RegisterCustomerFromGoogleSignin(GoogleJsonWebSignature.Payload payload, IdentityUser? user)
+    {
+        using (var transaction = _applicationDbContext.Database.BeginTransaction())
+        {
+            user = new IdentityUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = payload.EmailVerified };
+            await _userManager.CreateAsync(user);
+
+            await _userManager.AddToRoleAsync(user, "Customer");
+            await CreateApplicationUserAsync(user);
+            transaction.Commit();
+        }
+        return user;
+    }
+
+    private async Task<GoogleJsonWebSignature.Payload> ParseGoogleCredentials(string credentials)
+    {
+        var settings = new ValidationSettings()
+        {
+            Audience = new List<string>() { _externalAuthProvidersConfig.GoogleClientId }
+        };
+
+        var payload = await ValidateAsync(credentials, settings);
+        if (payload is null)
+        {
+            throw new Exception("Invalid External Authentication.");
+        }
+
+        return payload;
     }
 
     private string ParseIdentityErrorCodesToFields(string code) => code switch
@@ -255,7 +323,6 @@ public class UserService : IUserService
     {
         var applicationUser = new ApplicationUser { IdentityUser = user };
         var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
-        await _applicationDbContext.SaveChangesAsync();
     }
 
     private async Task<bool> DeleteApplicationUser(IdentityUser user)
@@ -269,15 +336,16 @@ public class UserService : IUserService
         return result.IsKeySet;
     }
 
-    private async Task SendConfirmationMailAsync(IdentityUser user, string baseUrl)
+    private async Task SendConfirmationMailAsync(IdentityUser user)
     {
         var subject = "Account confirmation";
         var confirmAccountToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var tokenEncoded = HttpUtility.UrlEncode(confirmAccountToken);
+        var baseUrl = new Uri(_baseApiUrls.HttpsUrl + "api/auth/ConfirmMail");
         var link = $"{baseUrl}?token={tokenEncoded}&email={user.Email}";
         var body = $"Hello {user.UserName}," +
             $"<p>Confirm your mail address with this link: <a href=\"{link}\">confirm mail link</a></p>";
         await _emailService.SendEmailAsync(user.Email, subject, body);
     }
-
+    #endregion
 }

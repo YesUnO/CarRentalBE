@@ -14,6 +14,7 @@ using Core.Infrastructure.Emails.Options;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Newtonsoft.Json;
+using Core.Infrastructure.ExternalAuthProviders.Options;
 
 namespace Core;
 
@@ -41,13 +42,15 @@ public static class DependencyInjection
         services.Configure<EmailsSettings>(configuration.GetSection("EmailsSettings"));
 
         var googleStorageServiceAccKey = JsonConvert.SerializeObject(configuration.GetSection("GoogleCloud:ServiceClientAPIKeyJson").Get<GoogleStorageServiceAccKey>());
-        services.AddSingleton(_=>
+        services.AddSingleton(_ =>
             {
                 var credentials = GoogleCredential.FromJson(googleStorageServiceAccKey);
                 var googleStorageClient = StorageClient.Create(credentials);
                 return googleStorageClient;
             }
         );
+
+        services.Configure<ExternalAuthProvidersConfig>(configuration.GetSection("ExternalAuthenticationProviders"));
 
         return services;
     }

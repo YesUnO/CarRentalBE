@@ -7,6 +7,7 @@ using Core.Infrastructure.Files;
 using System.Security.Claims;
 using System.Drawing;
 using Core.ControllerModels.User;
+using CarRentalAPI.Models.User;
 
 namespace CarRentalAPI.Controllers;
 
@@ -30,12 +31,12 @@ public class UserController : ControllerBase
 
     [HttpDelete]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> Delete(string email)
+    public async Task<IActionResult> Delete([FromQuery] string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            return NotFound();
+            return BadRequest();
         }
         var result = await _userService.DeleteUser(user);
 
