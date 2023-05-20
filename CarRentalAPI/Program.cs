@@ -12,10 +12,15 @@ var configuration = builder.Configuration;
 var apiUrls = builder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey).Split(";");
 var baseApiUrls = new BaseApiUrls
 {
-    HttpsUrl = apiUrls.FirstOrDefault(x => x.StartsWith("https")),
-    HttpUrl = apiUrls.FirstOrDefault(x => x.StartsWith("http"))
+    HttpsUrl = apiUrls.FirstOrDefault(x => x.StartsWith("https:")),
+    HttpUrl = apiUrls.FirstOrDefault(x => x.StartsWith("http:"))
 };
-builder.Services.Configure<BaseApiUrls>(x=>x = baseApiUrls);
+builder.Services.AddOptions<BaseApiUrls>()
+    .Configure(x =>
+    {
+        x.HttpsUrl = baseApiUrls.HttpsUrl;
+        x.HttpUrl = baseApiUrls.HttpUrl;
+    });
 
 builder.Services.AddThingsToContainer(builder.Configuration);
 builder.Services.AddControllers();

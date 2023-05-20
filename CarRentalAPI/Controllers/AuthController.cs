@@ -8,6 +8,8 @@ using Core.ControllerModels.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Core.Exceptions.UserRegistration;
+using Core.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 
 namespace CarRentalAPI.Controllers;
 
@@ -19,16 +21,19 @@ public class AuthController : ControllerBase
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
     private readonly ILogger<AuthController> _logger;
+    private readonly BaseApiUrls _baseApiUrls;
 
     public AuthController(SignInManager<IdentityUser> signInManager,
                           UserManager<IdentityUser> userManager,
                           IUserService userService,
-                          ILogger<AuthController> logger)
+                          ILogger<AuthController> logger,
+                          IOptions<BaseApiUrls> baseApiUrls)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _userService = userService;
         _logger = logger;
+        _baseApiUrls = baseApiUrls.Value;
     }
 
     [HttpPost]
@@ -84,28 +89,50 @@ public class AuthController : ControllerBase
 
     }
 
-    [HttpPost]
-    [Route("ExternalLogin")]
-    [AllowAnonymous]
-    public async Task<IActionResult> ExternalLogin(ExternalLoginRequestModel model)
-    {
-        try
-        {
-            var identity = await _userService.HandleExternalLoginAsync(model.Credentials);
-            var user = new IdentityServerUser(identity.Id)
-            {
-                DisplayName = identity.UserName,
-            };
+    //[HttpPost]
+    //[Route("ExternalLogin")]
+    //[AllowAnonymous]
+    //public async Task<IActionResult> ExternalLogin(ExternalLoginRequestModel model)
+    //{
+    //    try
+    //    {
+    //        var identity = await _userService.HandleExternalLoginAsync(model.Credentials);
+    //        var user = new IdentityServerUser(identity.Id)
+    //        {
+    //            DisplayName = identity.UserName,
+    //        };
 
-            await HttpContext.SignInAsync(user);
-            var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "External login failed.");
-            return BadRequest();
-        }
+    //        await HttpContext.SignInAsync(user);
+    //        var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
+    //        return Ok(response);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, "External login failed.");
+    //        return BadRequest();
+    //    }
+    //}
+
+    [HttpGet]
+    [Route("ExternalLogin")]
+    public IActionResult GoogleLogin()
+    {
+        string referrerUrl = Request.Headers["Referer"].ToString();
+        var redirectUrl = $"{_baseApiUrls.HttpsUrl}/api/auth/ExternalLoginCallback";
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+        properties.AllowRefresh = true;
+        return Challenge(properties,"Google");
+    }
+
+    [HttpGet]
+    [Route("ExternalLoginCallback")]
+    public async Task<IActionResult> GoogleLoginCallback()
+    {
+        ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+        info = await _signInManager.GetExternalLoginInfoAsync(); 
+        await HttpContext.SignInAsync(info.Principal);
+        return Ok(info.AuthenticationTokens);
     }
 
     [HttpGet]
@@ -117,8 +144,8 @@ public class AuthController : ControllerBase
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             var res = await _userManager.ConfirmEmailAsync(user, model.Token);
-            var feUrl = Environment.GetEnvironmentVariable("FE");
-            return Redirect($"{feUrl}/confirmEmail");
+            string referrerUrl = Request.Headers["Referer"].ToString();
+            return Redirect($"{referrerUrl}/confirmEmail");
 
         }
         catch (Exception ex)
@@ -140,8 +167,6 @@ public class AuthController : ControllerBase
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(loggedinUserMail);
 
-            var action = Url.Action("ConfirmMail");
-            var url = $"{Request.Scheme}://{Request.Host}{action}";
             await _userService.ResendConfirmationEmailAsync(user);
             return Ok(new { Result = "Succesfully send confirm email." });
 
