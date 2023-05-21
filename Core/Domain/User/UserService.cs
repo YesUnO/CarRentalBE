@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
 using System.Web;
 using static Google.Apis.Auth.GoogleJsonWebSignature;
 using static Google.Apis.Auth.JsonWebSignature;
@@ -77,22 +78,16 @@ public class UserService : IUserService
         return true;
     }
 
-    public async Task<IdentityUser> HandleExternalLoginAsync(string credentials)
+    public async Task<IdentityUser> HandleExternalLoginAsync(ExternalLoginInfo info)
     {
-        var payload = await ParseGoogleCredentials(credentials);
-        var info = new UserLoginInfo("Google", payload.Subject, "Google");
-
+        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
         if (user == null)
         {
-            user = await _userManager.FindByEmailAsync(payload.Email);
+            user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                user = await RegisterCustomerFromGoogleSignin(payload, user);
-                if (!user.EmailConfirmed)
-                {
-                    await SendConfirmationMailAsync(user);
-                }
+                user = await RegisterCustomerFromGoogleSignin(email, user);
             }
             await _userManager.AddLoginAsync(user, info);
         }
@@ -263,11 +258,11 @@ public class UserService : IUserService
 
     #region private methods
 
-    private async Task<IdentityUser> RegisterCustomerFromGoogleSignin(GoogleJsonWebSignature.Payload payload, IdentityUser? user)
+    private async Task<IdentityUser> RegisterCustomerFromGoogleSignin(string email, IdentityUser? user)
     {
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
-            user = new IdentityUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = payload.EmailVerified };
+            user = new IdentityUser { Email = email, UserName = email, EmailConfirmed = true };
             await _userManager.CreateAsync(user);
 
             await _userManager.AddToRoleAsync(user, "Customer");
@@ -275,22 +270,6 @@ public class UserService : IUserService
             transaction.Commit();
         }
         return user;
-    }
-
-    private async Task<GoogleJsonWebSignature.Payload> ParseGoogleCredentials(string credentials)
-    {
-        var settings = new ValidationSettings()
-        {
-            Audience = new List<string>() { _externalAuthProvidersConfig.GoogleClientId }
-        };
-
-        var payload = await ValidateAsync(credentials, settings);
-        if (payload is null)
-        {
-            throw new Exception("Invalid External Authentication.");
-        }
-
-        return payload;
     }
 
     private string ParseIdentityErrorCodesToFields(string code) => code switch

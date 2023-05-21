@@ -10,6 +10,9 @@ using System.Security.Claims;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using Duende.IdentityServer.Services;
+using Newtonsoft.Json;
+using IdentityModel.Client;
 
 namespace CarRentalAPI.Controllers;
 
@@ -22,18 +25,21 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly ILogger<AuthController> _logger;
     private readonly BaseApiUrls _baseApiUrls;
+    private readonly IIdentityServerInteractionService _identityServerInteractionService;
 
     public AuthController(SignInManager<IdentityUser> signInManager,
                           UserManager<IdentityUser> userManager,
                           IUserService userService,
                           ILogger<AuthController> logger,
-                          IOptions<BaseApiUrls> baseApiUrls)
+                          IOptions<BaseApiUrls> baseApiUrls,
+                          IIdentityServerInteractionService identityServerInteractionService)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _userService = userService;
         _logger = logger;
         _baseApiUrls = baseApiUrls.Value;
+        _identityServerInteractionService = identityServerInteractionService;
     }
 
     [HttpPost]
@@ -118,7 +124,7 @@ public class AuthController : ControllerBase
     public IActionResult GoogleLogin()
     {
         string referrerUrl = Request.Headers["Referer"].ToString();
-        var redirectUrl = $"{_baseApiUrls.HttpsUrl}/api/auth/ExternalLoginCallback";
+        var redirectUrl = $"{_baseApiUrls.HttpsUrl}/api/auth/ExternalLoginCallback?redirectUrl={referrerUrl}";
         var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
         properties.AllowRefresh = true;
         return Challenge(properties,"Google");
@@ -126,13 +132,23 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("ExternalLoginCallback")]
-    public async Task<IActionResult> GoogleLoginCallback()
+    public async Task<IActionResult> GoogleLoginCallback(string redirectUrl)
     {
         ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+        
+        var identity = await _userService.HandleExternalLoginAsync(info);
         var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-        info = await _signInManager.GetExternalLoginInfoAsync(); 
-        await HttpContext.SignInAsync(info.Principal);
-        return Ok(info.AuthenticationTokens);
+        await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+        var client = new HttpClient();
+        //var disco = await client.GetDiscoveryDocumentAsync(_baseApiUrls.HttpsUrl);
+        var credentialsTokenRequest = new ClientCredentialsTokenRequest
+        {
+            Address = $"{_baseApiUrls.HttpsUrl}/connect/token",
+
+            ClientId = "local-dev",
+        };
+        var tokenResponse = await client.RequestClientCredentialsTokenAsync(credentialsTokenRequest);
+        return Redirect(redirectUrl);
     }
 
     [HttpGet]

@@ -16,5 +16,5 @@ public interface IUserService
     Task ResendConfirmationEmailAsync(IdentityUser user);
     Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model);
     Task ApproveCustomer(string mail);
-    Task<IdentityUser> HandleExternalLoginAsync(string credentials);
+    Task<IdentityUser> HandleExternalLoginAsync(ExternalLoginInfo info);
 }
