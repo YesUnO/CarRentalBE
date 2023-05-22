@@ -72,6 +72,13 @@ public class OrderController : ControllerBase
             return BadRequest(ex.Message);
 
         }
-        
+    }
+
+    [HttpGet]
+    [Route("test")]    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public IActionResult Test ()
+    {
+        return Ok();
     }
 }

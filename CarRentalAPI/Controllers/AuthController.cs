@@ -124,31 +124,53 @@ public class AuthController : ControllerBase
     public IActionResult GoogleLogin()
     {
         string referrerUrl = Request.Headers["Referer"].ToString();
-        var redirectUrl = $"{_baseApiUrls.HttpsUrl}/api/auth/ExternalLoginCallback?redirectUrl={referrerUrl}";
+        var redirectUrl = $"{referrerUrl}externalAuth";
         var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
         properties.AllowRefresh = true;
-        return Challenge(properties,"Google");
+        return Challenge(properties, "Google");
     }
 
     [HttpGet]
     [Route("ExternalLoginCallback")]
-    public async Task<IActionResult> GoogleLoginCallback(string redirectUrl)
+    public async Task<IActionResult> GoogleLoginCallback()
     {
-        ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
-        
-        var identity = await _userService.HandleExternalLoginAsync(info);
-        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-        await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-        var client = new HttpClient();
-        //var disco = await client.GetDiscoveryDocumentAsync(_baseApiUrls.HttpsUrl);
-        var credentialsTokenRequest = new ClientCredentialsTokenRequest
+        try
         {
-            Address = $"{_baseApiUrls.HttpsUrl}/connect/token",
+            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
 
-            ClientId = "local-dev",
-        };
-        var tokenResponse = await client.RequestClientCredentialsTokenAsync(credentialsTokenRequest);
-        return Redirect(redirectUrl);
+            if (info != null)
+            {
+                var identity = await _userService.HandleExternalLoginAsync(info);
+                var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+                if (result.Succeeded)
+                {
+                    await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+
+                    var client = new HttpClient();
+                    var credentialsTokenRequest = new ClientCredentialsTokenRequest
+                    {
+                        Address = $"{_baseApiUrls.HttpsUrl}/connect/token",
+
+                        ClientId = "local-dev",
+                    };
+                    var tokenResponse = await client.RequestClientCredentialsTokenAsync(credentialsTokenRequest);
+                    return Ok(new
+                    {
+                        access_token = tokenResponse.AccessToken,
+                        expires_in = tokenResponse.ExpiresIn,
+                        scope = tokenResponse.Scope,
+                        token_type = tokenResponse.TokenType,
+                    });
+                }
+            }
+            return BadRequest("Google login callback failed");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Google login callback failed");
+            return BadRequest("Google login callback failed");
+        }
+        
     }
 
     [HttpGet]
