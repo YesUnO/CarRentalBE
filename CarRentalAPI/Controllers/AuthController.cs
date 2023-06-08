@@ -10,8 +10,6 @@ using System.Security.Claims;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using Duende.IdentityServer.Services;
-using Newtonsoft.Json;
 using IdentityModel.Client;
 
 namespace CarRentalAPI.Controllers;
@@ -25,21 +23,18 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly ILogger<AuthController> _logger;
     private readonly BaseApiUrls _baseApiUrls;
-    private readonly IIdentityServerInteractionService _identityServerInteractionService;
 
     public AuthController(SignInManager<IdentityUser> signInManager,
                           UserManager<IdentityUser> userManager,
                           IUserService userService,
                           ILogger<AuthController> logger,
-                          IOptions<BaseApiUrls> baseApiUrls,
-                          IIdentityServerInteractionService identityServerInteractionService)
+                          IOptions<BaseApiUrls> baseApiUrls)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _userService = userService;
         _logger = logger;
         _baseApiUrls = baseApiUrls.Value;
-        _identityServerInteractionService = identityServerInteractionService;
     }
 
     [HttpPost]
@@ -94,30 +89,6 @@ public class AuthController : ControllerBase
         }
 
     }
-
-    //[HttpPost]
-    //[Route("ExternalLogin")]
-    //[AllowAnonymous]
-    //public async Task<IActionResult> ExternalLogin(ExternalLoginRequestModel model)
-    //{
-    //    try
-    //    {
-    //        var identity = await _userService.HandleExternalLoginAsync(model.Credentials);
-    //        var user = new IdentityServerUser(identity.Id)
-    //        {
-    //            DisplayName = identity.UserName,
-    //        };
-
-    //        await HttpContext.SignInAsync(user);
-    //        var response = await HttpContext.GetTokenAsync(IdentityServerConstants.TokenTypes.AccessToken);
-    //        return Ok(response);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex, "External login failed.");
-    //        return BadRequest();
-    //    }
-    //}
 
     [HttpGet]
     [Route("ExternalLogin")]
@@ -216,38 +187,4 @@ public class AuthController : ControllerBase
         }
 
     }
-
-
-    //public async Task<IActionResult> Login(Login model)
-    //{
-    //    var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, lockoutOnFailure: false);
-
-    //    if (result.Succeeded)
-    //    {
-    //        var user = await _signInManager.UserManager.FindByNameAsync(model.Username);
-    //        var token = GenerateToken(user);
-    //        return Ok(new { token });
-    //    }
-    //    return Unauthorized();
-    //}
-    //private string GenerateToken(IdentityUser user)
-    //{
-    //    var claims = new[]
-    //{
-    //    new Claim(ClaimTypes.NameIdentifier, user.Id),
-    //    new Claim(ClaimTypes.Name, user.UserName),
-    //};
-
-    //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key"));
-    //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-    //    var token = new JwtSecurityToken(
-    //        issuer: "your-website-url",
-    //        audience: "your-website-url",
-    //        claims: claims,
-    //        expires: DateTime.Now.AddMinutes(30),
-    //        signingCredentials: creds);
-
-    //    return new JwtSecurityTokenHandler().WriteToken(token);
-    //}
 }

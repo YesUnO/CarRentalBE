@@ -6,15 +6,12 @@ using Core.Infrastructure.ExternalAuthProviders.Options;
 using Core.Infrastructure.Options;
 using DataLayer;
 using DataLayer.Entities.User;
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Web;
-using static Google.Apis.Auth.GoogleJsonWebSignature;
-using static Google.Apis.Auth.JsonWebSignature;
 
 namespace Core.Domain.User;
 

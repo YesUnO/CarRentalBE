@@ -24,18 +24,18 @@ public static class DependencyInjection
     {
         services.AddDataLayer(configuration);
 
-        services.AddTransient<IUserService, UserService>();
-        services.AddTransient<ICarService, CarService>();
-        services.AddTransient<IOrderService, OrderService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ICarService, CarService>();
+        services.AddScoped<IOrderService, OrderService>();
 
-        services.AddTransient<IStripeInvoiceService, StripeInvoiceService>();
-        services.AddTransient<IStripeWebhookService, StripeWebhookService>();
-        services.AddTransient<IStripeProductService, StripeProductService>();
+        services.AddScoped<IStripeInvoiceService, StripeInvoiceService>();
+        services.AddScoped<IStripeWebhookService, StripeWebhookService>();
+        services.AddScoped<IStripeProductService, StripeProductService>();
 
-        services.AddTransient<IStripeSubscriptionService, StripeSubscriptionService>();
+        services.AddScoped<IStripeSubscriptionService, StripeSubscriptionService>();
         services.Configure<StripeSettings>(configuration.GetSection("StripeSettings"));
 
-        services.AddTransient<IFileService, FileService>();
+        services.AddScoped<IFileService, FileService>();
         services.Configure<AzureStorageConfig>(configuration.GetSection("AzureStorageConfig"));
 
         services.AddSingleton<IEmailService, EmailService>();
