@@ -7,9 +7,7 @@ public static class UserHelper
 {
     public static UserResponseModel GetUserResponseModelFromApplicationUser(ApplicationUser applicationUser) => new UserResponseModel
     {
-        Email = applicationUser.IdentityUser.Email,
         IsApprooved = applicationUser.Approved,
-        HasEmailVerified = applicationUser.IdentityUser.EmailConfirmed,
         HasDrivingLicense = applicationUser.DriversLicense != null,
         HasDrivingLicenseBackImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.BackSideImage.RelativePath != "empty",
         HasDrivingLicenseFrontImg = applicationUser.DriversLicense != null && applicationUser.DriversLicense.FrontSideImage.RelativePath != "empty",
@@ -29,9 +27,7 @@ public static class UserHelper
         var email = applicationUser.IdentityUser.Email;
         return new UserForAdminModel
         {
-            Email = applicationUser.IdentityUser.Email,
             IsApprooved = applicationUser.Approved,
-            HasEmailVerified = applicationUser.IdentityUser.EmailConfirmed,
             HasDrivingLicenseVerified = applicationUser.DriversLicense != null && applicationUser.DriversLicense.Checked,
             HasIdCardVerified = applicationUser.IdentificationCard != null && applicationUser.IdentificationCard.Checked,
             HasActivePaymentCard = applicationUser.StripeSubscriptions.Any(x => x.StripeSubscriptionStatus == StripeSubscriptionStatus.active),

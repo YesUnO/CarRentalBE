@@ -15,6 +15,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Newtonsoft.Json;
 using Core.Infrastructure.ExternalAuthProviders.Options;
+using Core.Infrastructure.Authentication;
 
 namespace Core;
 
@@ -51,6 +52,8 @@ public static class DependencyInjection
         );
 
         services.Configure<ExternalAuthProvidersConfig>(configuration.GetSection("ExternalAuthenticationProviders"));
+
+        services.AddBffToContainer();
 
         return services;
     }

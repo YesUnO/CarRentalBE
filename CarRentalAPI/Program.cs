@@ -76,10 +76,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 
+app.UseBff();
 //app.UseAuthentication();
-app.UseIdentityServer();
+//app.UseIdentityServer();
 app.UseAuthorization();
 
+app.MapBffManagementEndpoints();
 app.MapControllers();
 
 app.Run();

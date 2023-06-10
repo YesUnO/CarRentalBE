@@ -2,32 +2,21 @@
 using DataLayer.Entities.Files;
 using DataLayer.Entities.Orders;
 using DataLayer.Entities.User;
-using Duende.IdentityServer.EntityFramework.Entities;
 using Duende.IdentityServer.EntityFramework.Extensions;
-using Duende.IdentityServer.EntityFramework.Interfaces;
-using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace DataLayer;
 
-public class ApplicationDbContext : IdentityDbContext, IPersistedGrantDbContext
+public class ApplicationDbContext : IdentityDbContext
 {
-    private readonly IOptions<OperationalStoreOptions> _operationalStoreOptions;
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IOptions<OperationalStoreOptions> operationalStoreOptions)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        _operationalStoreOptions = operationalStoreOptions;
     }
 
     //Identity Setup
-    public DbSet<PersistedGrant> PersistedGrants { get; set; }
-    public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
-    public DbSet<Key> Keys { get; set; }
-
-    Task<int> IPersistedGrantDbContext.SaveChangesAsync() => base.SaveChangesAsync();
 
 
     //Application entities
@@ -154,7 +143,5 @@ public class ApplicationDbContext : IdentityDbContext, IPersistedGrantDbContext
             UserId = "1b7fe7c6-fc40-4f0e-934e-7c83f9d75406"
         };
         builder.Entity<IdentityUserRole<string>>().HasData(userRoles);
-
-        builder.ConfigurePersistedGrantContext(_operationalStoreOptions.Value);
     }
 }

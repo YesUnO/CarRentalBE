@@ -41,7 +41,6 @@ public static class DependencyInjection
         {
             options.EmitStaticAudienceClaim = true;
         })
-            .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
             .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
             .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
             .AddInMemoryIdentityResources(identityResources);
