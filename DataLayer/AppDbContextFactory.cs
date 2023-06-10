@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
 using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;

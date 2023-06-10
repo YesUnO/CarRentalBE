@@ -18,33 +18,6 @@ public static class DependencyInjection
 
         services.AddTransient<IAuthorizationHandler, ViewOwnOrdersHandler>();
 
-        services.AddIdentity<IdentityUser, IdentityRole>(options =>
-        {
-            options.User.RequireUniqueEmail = true;
-        })
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
-        services.Configure<DataProtectionTokenProviderOptions>(o =>
-           o.TokenLifespan = TimeSpan.FromMinutes(30));
-
-        var identityResources = new List<IdentityResource>
-        {
-            new IdentityResources.OpenId(),
-            new IdentityResources.Profile(),
-        };
-
-        var client = configuration.GetSection("IdentityServer:Clients").Get<List<Client>>();
-
-        services.AddIdentityServer(options =>
-        {
-            options.EmitStaticAudienceClaim = true;
-        })
-            .AddInMemoryApiScopes(configuration.GetSection("IdentityServer:ApiScopes"))
-            .AddInMemoryClients(configuration.GetSection("IdentityServer:Clients"))
-            .AddInMemoryIdentityResources(identityResources);
-
         services.AddAuthorization(options =>
         {
             options.AddPolicy("ViewOwnOrdersPolicy", policy =>

@@ -24,7 +24,6 @@ public static class UserHelper
 
     public static UserForAdminModel GetUserForAdminModelFromApplicationUser(ApplicationUser applicationUser)
     {
-        var email = applicationUser.IdentityUser.Email;
         return new UserForAdminModel
         {
             IsApprooved = applicationUser.Approved,

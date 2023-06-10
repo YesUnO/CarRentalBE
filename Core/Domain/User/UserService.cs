@@ -2,7 +2,6 @@
 using Core.Domain.Helpers;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Emails;
-using Core.Infrastructure.ExternalAuthProviders.Options;
 using Core.Infrastructure.Options;
 using DataLayer;
 using DataLayer.Entities.User;
@@ -10,87 +9,83 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
 using System.Web;
 
 namespace Core.Domain.User;
 
 public class UserService : IUserService
 {
-    private readonly UserManager<IdentityUser> _userManager;
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly ILogger<UserService> _logger;
     private readonly IEmailService _emailService;
-    private readonly ExternalAuthProvidersConfig _externalAuthProvidersConfig;
     private readonly BaseApiUrls _baseApiUrls;
 
     public UserService(
-            UserManager<IdentityUser> userManager,
             ApplicationDbContext applicationDbContext,
             ILogger<UserService> logger,
             IEmailService emailService,
-            IOptions<ExternalAuthProvidersConfig> externalAuthProvidersOptions,
             IOptions<BaseApiUrls> baseApiUrls
         )
     {
         _baseApiUrls = baseApiUrls.Value;
-        _externalAuthProvidersConfig = externalAuthProvidersOptions.Value;
-        _userManager = userManager;
         _applicationDbContext = applicationDbContext;
         _logger = logger;
         _emailService = emailService;
     }
 
-    public async Task<bool> DeleteUser(IdentityUser user)
-    {
-        var logins = await _userManager.GetLoginsAsync(user);
-        var rolesForUser = await _userManager.GetRolesAsync(user);
+    #region to be deleted
 
-        using (var transaction = _applicationDbContext.Database.BeginTransaction())
-        {
-            var deleteApplicationUserResult = await DeleteApplicationUser(user);
+    //public async Task<bool> DeleteUser(IdentityUser user)
+    //{
+    //    var logins = await _userManager.GetLoginsAsync(user);
+    //    var rolesForUser = await _userManager.GetRolesAsync(user);
 
-            if (!deleteApplicationUserResult)
-                return false;
+    //    using (var transaction = _applicationDbContext.Database.BeginTransaction())
+    //    {
+    //        var deleteApplicationUserResult = await DeleteApplicationUser(user);
 
-            foreach (var login in logins.ToList())
-            {
-                var result = await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
-                if (!result.Succeeded) return false;
-            }
+    //        if (!deleteApplicationUserResult)
+    //            return false;
 
-            if (rolesForUser.Count() > 0)
-            {
-                foreach (var item in rolesForUser.ToList())
-                {
-                    // item should be the name of the role
-                    var result = await _userManager.RemoveFromRoleAsync(user, item);
-                    if (!result.Succeeded) return false;
-                }
-            }
+    //        foreach (var login in logins.ToList())
+    //        {
+    //            var result = await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
+    //            if (!result.Succeeded) return false;
+    //        }
 
-            await _userManager.DeleteAsync(user);
-            transaction.Commit();
-        }
-        return true;
-    }
+    //        if (rolesForUser.Count() > 0)
+    //        {
+    //            foreach (var item in rolesForUser.ToList())
+    //            {
+    //                // item should be the name of the role
+    //                var result = await _userManager.RemoveFromRoleAsync(user, item);
+    //                if (!result.Succeeded) return false;
+    //            }
+    //        }
 
-    public async Task<IdentityUser> HandleExternalLoginAsync(ExternalLoginInfo info)
-    {
-        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-        if (user == null)
-        {
-            user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                user = await RegisterCustomerFromGoogleSignin(email, user);
-            }
-            await _userManager.AddLoginAsync(user, info);
-        }
-        return user;
-    }
+    //        await _userManager.DeleteAsync(user);
+    //        transaction.Commit();
+    //    }
+    //    return true;
+    //}
 
+    //public async Task<IdentityUser> HandleExternalLoginAsync(ExternalLoginInfo info)
+    //{
+    //    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+    //    var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+    //    if (user == null)
+    //    {
+    //        user = await _userManager.FindByEmailAsync(email);
+    //        if (user == null)
+    //        {
+    //            user = await RegisterCustomerFromGoogleSignin(email, user);
+    //        }
+    //        await _userManager.AddLoginAsync(user, info);
+    //    }
+    //    return user;
+    //}
+
+    #endregion
 
     //TODO: cleanup
     public ApplicationUser GetSignedInUser()
@@ -108,7 +103,7 @@ public class UserService : IUserService
             throw new Exception("Customer doesnt exist");
         }
 
-        if (!customer.IdentityUser.EmailConfirmed ||
+        if (
             customer.DriversLicense is null ||
             !customer.DriversLicense.Checked ||
             customer.IdentificationCard is null ||
@@ -129,7 +124,7 @@ public class UserService : IUserService
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
             user.Email = email;
-            var creatingUserResult = await _userManager.CreateAsync(user, password);
+            var creatingUserResult = new { Succeeded = true, Errors =  new List<IdentityError>() };
 
             if (!creatingUserResult.Succeeded)
             {
@@ -141,8 +136,6 @@ public class UserService : IUserService
 
             await CreateApplicationUserAsync(user);
 
-            await _userManager.AddToRoleAsync(user, "customer");
-            await _userManager.SetEmailAsync(user, email);
             await SendConfirmationMailAsync(user);
             await _applicationDbContext.SaveChangesAsync();
             transaction.Commit();
@@ -157,7 +150,6 @@ public class UserService : IUserService
 
     public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
     {
-        var identityUser = await _userManager.FindByEmailAsync(mail);
         ApplicationUser? applicationUser = includeDocuments ?
             await _applicationDbContext.ApplicationUsers
             .Include(x => x.DriversLicense.BackSideImage)
@@ -165,8 +157,8 @@ public class UserService : IUserService
             .Include(x => x.IdentificationCard.BackSideImage)
             .Include(x => x.IdentificationCard.FrontSideImage)
             .Include(x => x.StripeSubscriptions)
-            .FirstOrDefaultAsync(x => x.IdentityUser == identityUser) :
-            await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+            .FirstOrDefaultAsync(x => x.Email == mail) :
+            await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == mail);
 
         if (applicationUser == null)
         {
@@ -186,32 +178,7 @@ public class UserService : IUserService
     {
         try
         {
-            var applicationUserIdentityUserRoleJoin = _applicationDbContext.ApplicationUsers
-            .Join(_applicationDbContext.UserRoles,
-            user => user.IdentityUser.Id,
-            userRole => userRole.UserId,
-            (user, userRole) => new { User = user, UserRole = userRole });
-
-            var userRoleNameJoin = applicationUserIdentityUserRoleJoin
-                .Join(_applicationDbContext.Roles,
-                userRole => userRole.UserRole.RoleId,
-                role => role.Id,
-                (userRole, role) => new { userRole.User, RoleNameNormalized = role.NormalizedName });
-
-            var applicationUsersList = await userRoleNameJoin
-                .Where(x => x.RoleNameNormalized == "CUSTOMER")
-                .Select(x => x.User)
-                //.Include(x => x.DriversLicense)
-                .Include(x => x.DriversLicense.BackSideImage)
-                .Include(x => x.DriversLicense.FrontSideImage)
-                .Include(x => x.IdentityUser)
-                //.Include(x => x.IdentificationCard)
-                .Include(x => x.IdentificationCard.BackSideImage)
-                .Include(x => x.IdentificationCard.FrontSideImage)
-                .Include(x => x.StripeSubscriptions)
-                .ToListAsync();
-
-            return applicationUsersList.Select(x => UserHelper.GetUserForAdminModelFromApplicationUser(x)).ToList();
+            return _applicationDbContext.ApplicationUsers.Select(x => UserHelper.GetUserForAdminModelFromApplicationUser(x)).ToList();
         }
         catch (Exception ex)
         {
@@ -260,9 +227,9 @@ public class UserService : IUserService
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
             user = new IdentityUser { Email = email, UserName = email, EmailConfirmed = true };
-            await _userManager.CreateAsync(user);
+            //await _userManager.CreateAsync(user);
 
-            await _userManager.AddToRoleAsync(user, "Customer");
+            //await _userManager.AddToRoleAsync(user, "Customer");
             await CreateApplicationUserAsync(user);
             transaction.Commit();
         }
@@ -301,27 +268,17 @@ public class UserService : IUserService
         var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
     }
 
-    private async Task<bool> DeleteApplicationUser(IdentityUser user)
-    {
-        var applicationUser = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityUser == user);
-        if (applicationUser == null)
-        {
-            return true;
-        }
-        var result = _applicationDbContext.ApplicationUsers.Remove(applicationUser);
-        return result.IsKeySet;
-    }
 
-    private async Task SendConfirmationMailAsync(IdentityUser user)
+    private async Task SendConfirmationMailAsync(string email, string confirmationEmailtoken, string name)
     {
+        //TODO: fetch token from Is
         var subject = "Account confirmation";
-        var confirmAccountToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var tokenEncoded = HttpUtility.UrlEncode(confirmAccountToken);
+        var tokenEncoded = HttpUtility.UrlEncode(confirmationEmailtoken);
         var baseUrl = new Uri(_baseApiUrls.HttpsUrl + "api/auth/ConfirmMail");
-        var link = $"{baseUrl}?token={tokenEncoded}&email={user.Email}";
-        var body = $"Hello {user.UserName}," +
+        var link = $"{baseUrl}?token={tokenEncoded}&email={email}";
+        var body = $"Hello {name}," +
             $"<p>Confirm your mail address with this link: <a href=\"{link}\">confirm mail link</a></p>";
-        await _emailService.SendEmailAsync(user.Email, subject, body);
+        await _emailService.SendEmailAsync(email, subject, body);
     }
     #endregion
 }

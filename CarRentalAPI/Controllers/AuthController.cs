@@ -111,7 +111,7 @@ public class AuthController : ControllerBase
 
             if (info != null)
             {
-                var identity = await _userService.HandleExternalLoginAsync(info);
+                //var identity = await _userService.HandleExternalLoginAsync(info);
                 var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
                 if (result.Succeeded)
                 {

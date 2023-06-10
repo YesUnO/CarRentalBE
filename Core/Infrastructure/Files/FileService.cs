@@ -308,7 +308,7 @@ public class FileService : IFileService
     {
         var signedInUser = GetAndSetIfNullApplicationUser(loggedinUserMail);
         var id = FileHelper.GetDateShortId();
-        return $"{userDocumentImageType.ToString()}{id}{signedInUser.IdentityUser.UserName}.jpg";
+        return $"{userDocumentImageType.ToString()}{id}{signedInUser.Email}.jpg";
     }
 
     private string GetCarProfilePicFileName(int carId)
