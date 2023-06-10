@@ -38,7 +38,8 @@ public class UserController : ControllerBase
         {
             return BadRequest();
         }
-        var result = await _userService.DeleteUser(user);
+        //TODO: handle delete
+        var result = true;
 
         if (result)
         {
@@ -51,27 +52,6 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpDelete]
-    [Route("SoftDelete")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> SoftDelete(string name)
-    {
-        var user = await _userManager.FindByNameAsync(name);
-        if (user == null)
-        {
-            return NotFound();
-        }
-        var result = await _userService.SoftDeleteUser(user);
-
-        if (result)
-        {
-            return Ok(new
-            {
-                Success = true,
-            });
-        }
-        return BadRequest();
-    }
 
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]

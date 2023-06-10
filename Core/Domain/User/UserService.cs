@@ -119,11 +119,10 @@ public class UserService : IUserService
         await _applicationDbContext.SaveChangesAsync();
     }
 
-    public async Task RegisterCustomer(IdentityUser user, string email, string password)
+    public async Task RegisterCustomer(string email, string password, string username)
     {
         using (var transaction = _applicationDbContext.Database.BeginTransaction())
         {
-            user.Email = email;
             var creatingUserResult = new { Succeeded = true, Errors =  new List<IdentityError>() };
 
             if (!creatingUserResult.Succeeded)
@@ -134,18 +133,12 @@ public class UserService : IUserService
                         new UserRegistrationError { Description = x.Description, Field = ParseIdentityErrorCodesToFields(x.Code) }));
             }
 
-            await CreateApplicationUserAsync(user);
+            await CreateApplicationUserAsync(username);
 
-            await SendConfirmationMailAsync(user);
+            await SendConfirmationMailAsync(email, "", username);
             await _applicationDbContext.SaveChangesAsync();
             transaction.Commit();
         }
-    }
-
-    public Task<bool> SoftDeleteUser(IdentityUser user)
-    {
-        //TODO: implement
-        throw new NotImplementedException();
     }
 
     public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
@@ -230,7 +223,7 @@ public class UserService : IUserService
             //await _userManager.CreateAsync(user);
 
             //await _userManager.AddToRoleAsync(user, "Customer");
-            await CreateApplicationUserAsync(user);
+            await CreateApplicationUserAsync(email);
             transaction.Commit();
         }
         return user;
@@ -262,9 +255,9 @@ public class UserService : IUserService
         "UserNotInRole" => "roleName"
     };
 
-    private async Task CreateApplicationUserAsync(IdentityUser user)
+    private async Task CreateApplicationUserAsync(string email)
     {
-        var applicationUser = new ApplicationUser { IdentityUser = user };
+        var applicationUser = new ApplicationUser { Email = email };
         var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
     }
 
