@@ -18,7 +18,7 @@ namespace Core.Infrastructure.Authentication
             })
             .AddCookie("cookie", options =>
             {
-                options.Cookie.Name = "__Host-RecipeManagementApp-bff";
+                options.Cookie.Name = "__CarRentalApp-bff";
                 options.Cookie.SameSite = SameSiteMode.Strict;
             })
             .AddOpenIdConnect("oidc", options =>
