@@ -2,7 +2,6 @@
 using DataLayer.Entities.Files;
 using DataLayer.Entities.Orders;
 using DataLayer.Entities.User;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer;
@@ -13,9 +12,6 @@ public class ApplicationDbContext : DbContext
         : base(options)
     {
     }
-
-    //Identity Setup
-
 
     //Application entities
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }

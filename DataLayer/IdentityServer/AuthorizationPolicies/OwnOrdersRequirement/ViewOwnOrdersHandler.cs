@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -10,12 +9,10 @@ namespace DataLayer.IdentityServer.AuthorizationPolicies.OwnOrdersRequirement;
 public class ViewOwnOrdersHandler : AuthorizationHandler<ViewOwnOrdersRequirement>
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly UserManager<IdentityUser> _userManager;
 
-    public ViewOwnOrdersHandler(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
+    public ViewOwnOrdersHandler(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
-        _userManager = userManager;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
@@ -41,8 +38,7 @@ public class ViewOwnOrdersHandler : AuthorizationHandler<ViewOwnOrdersRequiremen
 
         // Check if the user has a claim that matches the order's customer ID
         var email = context.User.FindFirstValue(ClaimTypes.Email);
-        var identityUser = await _userManager.FindByEmailAsync(email);
-        var customer = await _dbContext.ApplicationUsers.Include(x=>x.Orders).FirstOrDefaultAsync(x => x.IdentityUser == identityUser);
+        var customer = await _dbContext.ApplicationUsers.Include(x=>x.Orders).FirstOrDefaultAsync(x => x.Email == email);
         if (customer == null || !customer.Orders.Any(x => x.Id == orderId)) 
         { 
             return; 

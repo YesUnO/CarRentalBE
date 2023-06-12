@@ -14,8 +14,7 @@ using Core.Infrastructure.Emails.Options;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Newtonsoft.Json;
-using Core.Infrastructure.ExternalAuthProviders.Options;
-using Core.Infrastructure.Authentication;
+using Core.Infrastructure.IdentityServer;
 
 namespace Core;
 
@@ -51,9 +50,7 @@ public static class DependencyInjection
             }
         );
 
-        services.Configure<ExternalAuthProvidersConfig>(configuration.GetSection("ExternalAuthenticationProviders"));
-
-        services.AddBffToContainer();
+        services.AddIdentityServerHttpClientFactory();
 
         return services;
     }

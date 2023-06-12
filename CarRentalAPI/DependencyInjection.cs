@@ -1,5 +1,5 @@
 ﻿using Core;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Core.Infrastructure.Authentication;
 
 namespace CarRentalAPI;
 
@@ -9,9 +9,6 @@ public static class DependencyInjection
     {
         services.AddCore(configuration);
 
-        //TODO: remove
-        services.AddHttpContextAccessor();
-
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy", builder => builder
@@ -20,20 +17,21 @@ public static class DependencyInjection
                 .AllowAnyHeader());
         });
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddGoogle(options =>
-            {
-                options.ClientId = configuration["ExternalAuthenticationProviders:GoogleClientId"];
-                options.ClientSecret = configuration["ExternalAuthenticationProviders:GoogleClientSecret"];
-            })
-            .AddJwtBearer(options =>
-            {
-                options.Authority = "https://localhost:7125";
+        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //    .AddGoogle(options =>
+        //    {
+        //        options.ClientId = configuration["ExternalAuthenticationProviders:GoogleClientId"];
+        //        options.ClientSecret = configuration["ExternalAuthenticationProviders:GoogleClientSecret"];
+        //    })
+        //    .AddJwtBearer(options =>
+        //    {
+        //        options.Authority = "https://localhost:7125";
 
-                options.TokenValidationParameters.ValidateAudience = false;
+        //        options.TokenValidationParameters.ValidateAudience = false;
 
-                options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-            });
+        //        options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+        //    });
+        services.AddBffToContainer();
 
         return services;
      }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using System.Web;
 
 namespace Core.Domain.User;
@@ -19,18 +20,21 @@ public class UserService : IUserService
     private readonly ILogger<UserService> _logger;
     private readonly IEmailService _emailService;
     private readonly BaseApiUrls _baseApiUrls;
+    IHttpClientFactory _clientFactory;
 
     public UserService(
             ApplicationDbContext applicationDbContext,
             ILogger<UserService> logger,
             IEmailService emailService,
-            IOptions<BaseApiUrls> baseApiUrls
+            IOptions<BaseApiUrls> baseApiUrls,
+            IHttpClientFactory factory
         )
     {
         _baseApiUrls = baseApiUrls.Value;
         _applicationDbContext = applicationDbContext;
         _logger = logger;
         _emailService = emailService;
+        _clientFactory = factory;
     }
 
     #region to be deleted
@@ -121,24 +125,22 @@ public class UserService : IUserService
 
     public async Task RegisterCustomer(string email, string password, string username)
     {
-        using (var transaction = _applicationDbContext.Database.BeginTransaction())
+        var creatingUserResult = new { Succeeded = true, Errors = new List<IdentityError>() };
+
+        var res = await RegisterCustomerOnIdentityServerAsync(email, password, username);
+
+        if (!creatingUserResult.Succeeded)
         {
-            var creatingUserResult = new { Succeeded = true, Errors =  new List<IdentityError>() };
-
-            if (!creatingUserResult.Succeeded)
-            {
-                throw new UserRegistrationException(
-                    "Unable to create user",
-                    creatingUserResult.Errors.Select(x =>
-                        new UserRegistrationError { Description = x.Description, Field = ParseIdentityErrorCodesToFields(x.Code) }));
-            }
-
-            await CreateApplicationUserAsync(username);
-
-            await SendConfirmationMailAsync(email, "", username);
-            await _applicationDbContext.SaveChangesAsync();
-            transaction.Commit();
+            throw new UserRegistrationException(
+                "Unable to create user",
+                creatingUserResult.Errors.Select(x =>
+                    new UserRegistrationError { Description = x.Description, Field = ParseIdentityErrorCodesToFields(x.Code) }));
         }
+
+        await CreateApplicationUserAsync(username);
+
+        await SendConfirmationMailAsync(email, "", username);
+        await _applicationDbContext.SaveChangesAsync();
     }
 
     public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
@@ -181,9 +183,10 @@ public class UserService : IUserService
 
     }
 
-    public async Task ResendConfirmationEmailAsync(IdentityUser user)
+    public async Task ResendConfirmationEmailAsync(string email)
     {
-        await SendConfirmationMailAsync(user);
+        var token = await GetEmailConfirmationTokenFromIdentityServer(email);
+        await SendConfirmationMailAsync(email, token, "name");
     }
 
     public async Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model)
@@ -214,6 +217,28 @@ public class UserService : IUserService
     }
 
     #region private methods
+
+    private async Task<object> RegisterCustomerOnIdentityServerAsync(string email, string password, string username)
+    {
+        var client = _clientFactory.CreateClient("identityServerClient");
+        var requestBody = JsonSerializer.Serialize(new { Username = username, Password = password, Email = email });
+        var content = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync(new Uri("https://localhost:5001/api/admin"), content);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<object>(body);
+        return result;
+    }
+
+    private async Task<string> GetEmailConfirmationTokenFromIdentityServer(string email)
+    {
+        var client = _clientFactory.CreateClient("identityServerClient");
+
+        var response = await client.GetAsync(new Uri($"https://localhost:5001/api/admin/EmailConfirmation?email={email}"));
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<string>(body);
+        return result;
+    }
 
     private async Task<IdentityUser> RegisterCustomerFromGoogleSignin(string email, IdentityUser? user)
     {

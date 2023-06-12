@@ -11,7 +11,7 @@ public interface IUserService
     Task RegisterCustomer(string email, string password, string username);
     Task<UserResponseModel> GetUserDTOByMailAsync(string loggedinUserMail);
     Task<List<UserForAdminModel>> GetCustomerListAsync();
-    Task ResendConfirmationEmailAsync(IdentityUser user);
+    Task ResendConfirmationEmailAsync(string email);
     Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model);
     Task ApproveCustomer(string mail);
 }

@@ -1,16 +1,13 @@
 ﻿using Core.Domain.User;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Duende.IdentityServer;
 using Core.ControllerModels.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using IdentityModel.Client;
 
 namespace CarRentalAPI.Controllers;
 
@@ -114,7 +111,7 @@ public class AuthController : ControllerBase
         {
             var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
 
-            await _userService.ResendConfirmationEmailAsync(user);
+            await _userService.ResendConfirmationEmailAsync(loggedinUserMail);
             return Ok(new { Result = "Succesfully send confirm email." });
 
         }

@@ -18,7 +18,6 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbCont
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         IServiceCollection services = new ServiceCollection();
         services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
-        services.Configure<OperationalStoreOptions>(x => { });
 
         var context = services.BuildServiceProvider().GetService<ApplicationDbContext>();
         return context;
