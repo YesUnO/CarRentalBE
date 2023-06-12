@@ -31,7 +31,7 @@ public static class DependencyInjection
 
         //        options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
         //    });
-        services.AddBffToContainer();
+        services.AddBffToContainer(configuration);
 
         return services;
      }

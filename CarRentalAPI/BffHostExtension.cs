@@ -1,14 +1,11 @@
 ﻿using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Infrastructure.Authentication
 {
     internal static class BffHostExtension
     {
-        internal static IServiceCollection AddBffToContainer(this IServiceCollection Services)
+        internal static IServiceCollection AddBffToContainer(this IServiceCollection Services, IConfiguration configuration)
         {
             Services.AddBff()
                 .AddRemoteApis();
@@ -26,9 +23,9 @@ namespace Core.Infrastructure.Authentication
             })
             .AddOpenIdConnect("oidc", options =>
             {
-                options.Authority = "";
-                options.ClientId = "";
-                options.ClientSecret = "";
+                options.Authority = configuration.GetValue<string>("IdentityServer:Authority");
+                options.ClientId = configuration.GetValue<string>("IdentityServer:ClientId");
+                options.ClientSecret = configuration.GetValue<string>("IdentityServer:ClientSecret");
                 options.ResponseType = "code";
                 options.ResponseMode = "query";
                 options.UsePkce = true;
