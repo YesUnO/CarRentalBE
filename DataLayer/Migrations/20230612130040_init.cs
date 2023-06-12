@@ -54,6 +54,7 @@ namespace DataLayer.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Email = table.Column<string>(type: "text", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
                     DriversLicenseId = table.Column<int>(type: "integer", nullable: true),
                     IdentificationCardId = table.Column<int>(type: "integer", nullable: true),
                     Approved = table.Column<bool>(type: "boolean", nullable: false)

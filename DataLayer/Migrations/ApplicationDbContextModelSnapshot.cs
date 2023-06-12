@@ -374,6 +374,10 @@ namespace DataLayer.Migrations
                     b.Property<int?>("IdentificationCardId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DriversLicenseId");

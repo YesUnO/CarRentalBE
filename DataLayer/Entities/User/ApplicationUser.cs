@@ -7,6 +7,7 @@ public class ApplicationUser
 {
     public int Id { get; set; }
     public string Email { get; set; }
+    public string Username { get; set; }
     public UserDocument? DriversLicense { get; set; }
     public UserDocument? IdentificationCard { get; set; }
     public List<StripeSubscription> StripeSubscriptions { get; set; }

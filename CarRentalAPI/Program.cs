@@ -1,6 +1,5 @@
 using CarRentalAPI;
 using Core.Infrastructure.Options;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Stripe;
 

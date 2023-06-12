@@ -1,15 +1,16 @@
-﻿using Core.ControllerModels.User;
+﻿using CarRentalIdentityServer.Models;
+using Core.ControllerModels.User;
 using Core.Domain.Helpers;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Emails;
 using Core.Infrastructure.Options;
 using DataLayer;
 using DataLayer.Entities.User;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
+using Newtonsoft.Json;
+//using System.Text.Json;
 using System.Web;
 
 namespace Core.Domain.User;
@@ -125,9 +126,13 @@ public class UserService : IUserService
 
     public async Task RegisterCustomer(string email, string password, string username)
     {
-        var creatingUserResult = new { Succeeded = true, Errors = new List<IdentityError>() };
+        CheckAvailibility(username, email);
+        var creatingUserResult = await RegisterCustomerOnIdentityServerAsync(email, password, username);
 
-        var res = await RegisterCustomerOnIdentityServerAsync(email, password, username);
+        if (creatingUserResult.Exception is not null)
+        {
+            throw creatingUserResult.Exception;
+        }
 
         if (!creatingUserResult.Succeeded)
         {
@@ -137,9 +142,9 @@ public class UserService : IUserService
                     new UserRegistrationError { Description = x.Description, Field = ParseIdentityErrorCodesToFields(x.Code) }));
         }
 
-        await CreateApplicationUserAsync(username);
+        await CreateApplicationUserAsync(email, username);
 
-        await SendConfirmationMailAsync(email, "", username);
+        await SendConfirmationMailAsync(email, creatingUserResult.EmailConfirmationToken, username);
         await _applicationDbContext.SaveChangesAsync();
     }
 
@@ -185,8 +190,13 @@ public class UserService : IUserService
 
     public async Task ResendConfirmationEmailAsync(string email)
     {
+        var user = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == email);
+        if (user is null)
+        {
+            throw new Exception("User doesnt exist");
+        }
         var token = await GetEmailConfirmationTokenFromIdentityServer(email);
-        await SendConfirmationMailAsync(email, token, "name");
+        await SendConfirmationMailAsync(email, token, user.Username);
     }
 
     public async Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model)
@@ -218,15 +228,42 @@ public class UserService : IUserService
 
     #region private methods
 
-    private async Task<object> RegisterCustomerOnIdentityServerAsync(string email, string password, string username)
+    private void CheckAvailibility(string username, string email)
+    {
+        var errors = new List<UserRegistrationError>();
+        var emailIsTaken = _applicationDbContext.ApplicationUsers.Any(x => x.Email == email);
+        if (emailIsTaken)
+        {
+            errors.Add(new UserRegistrationError
+            {
+                Description = $"Email '{email}' is already taken.",
+                Field = ParseIdentityErrorCodesToFields("DuplicateEmail")
+            });
+        }
+        var usernameIsTaken = _applicationDbContext.ApplicationUsers.Any(x => x.Username == username);
+        if (usernameIsTaken)
+        {
+            errors.Add(new UserRegistrationError
+            {
+                Description = $"Username '{username}' is already taken.",
+                Field = ParseIdentityErrorCodesToFields("DuplicateUserName")
+            });
+        }
+        if (errors.Any())
+        {
+            throw new UserRegistrationException("Unable to create user",errors);
+        }
+    }
+
+    private async Task<RegisterResponseModel> RegisterCustomerOnIdentityServerAsync(string email, string password, string username)
     {
         var client = _clientFactory.CreateClient("identityServerClient");
-        var requestBody = JsonSerializer.Serialize(new { Username = username, Password = password, Email = email });
+        var requestBody = JsonConvert.SerializeObject(new { Username = username, Password = password, Email = email });
         var content = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
 
         var response = await client.PostAsync(new Uri("https://localhost:5001/api/admin"), content);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<object>(body);
+        var result = JsonConvert.DeserializeObject<RegisterResponseModel>(body);
         return result;
     }
 
@@ -236,22 +273,8 @@ public class UserService : IUserService
 
         var response = await client.GetAsync(new Uri($"https://localhost:5001/api/admin/EmailConfirmation?email={email}"));
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<string>(body);
+        var result = JsonConvert.DeserializeObject<string>(body);
         return result;
-    }
-
-    private async Task<IdentityUser> RegisterCustomerFromGoogleSignin(string email, IdentityUser? user)
-    {
-        using (var transaction = _applicationDbContext.Database.BeginTransaction())
-        {
-            user = new IdentityUser { Email = email, UserName = email, EmailConfirmed = true };
-            //await _userManager.CreateAsync(user);
-
-            //await _userManager.AddToRoleAsync(user, "Customer");
-            await CreateApplicationUserAsync(email);
-            transaction.Commit();
-        }
-        return user;
     }
 
     private string ParseIdentityErrorCodesToFields(string code) => code switch
@@ -280,19 +303,18 @@ public class UserService : IUserService
         "UserNotInRole" => "roleName"
     };
 
-    private async Task CreateApplicationUserAsync(string email)
+    private async Task CreateApplicationUserAsync(string email, string username)
     {
-        var applicationUser = new ApplicationUser { Email = email };
+        var applicationUser = new ApplicationUser { Email = email, Username = username };
         var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
     }
 
 
     private async Task SendConfirmationMailAsync(string email, string confirmationEmailtoken, string name)
     {
-        //TODO: fetch token from Is
         var subject = "Account confirmation";
         var tokenEncoded = HttpUtility.UrlEncode(confirmationEmailtoken);
-        var baseUrl = new Uri(_baseApiUrls.HttpsUrl + "api/auth/ConfirmMail");
+        var baseUrl = new Uri(_baseApiUrls.HttpsUrl + "/api/auth/ConfirmMail");
         var link = $"{baseUrl}?token={tokenEncoded}&email={email}";
         var body = $"Hello {name}," +
             $"<p>Confirm your mail address with this link: <a href=\"{link}\">confirm mail link</a></p>";
