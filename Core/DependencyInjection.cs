@@ -24,7 +24,7 @@ public static class DependencyInjection
     {
         services.AddDataLayer(configuration);
 
-        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUsersService, UserService>();
         services.AddScoped<ICarService, CarService>();
         services.AddScoped<IOrderService, OrderService>();
 

@@ -21,7 +21,7 @@ public class FileService : IFileService
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly AzureStorageConfig _azureStorageConfig;
     private readonly ILogger<FileService> _logger;
-    private readonly IUserService _userService;
+    private readonly IUsersService _userService;
     private ApplicationUser? _applicationUser;
     private Order? _order;
     private readonly StorageClient _googleStorageClient;
@@ -29,7 +29,7 @@ public class FileService : IFileService
     public FileService(ApplicationDbContext applicationDbContext,
                        IOptions<AzureStorageConfig> azureStorageConfig,
                        ILogger<FileService> logger,
-                       IUserService userService,
+                       IUsersService userService,
                        StorageClient googleStorageClient)
     {
         _applicationDbContext = applicationDbContext;

@@ -8,18 +8,19 @@ using System.Security.Claims;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Options;
 using Microsoft.Extensions.Options;
+//using Duende.Bff;
 
 namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
+[BffApi]
 public class AuthController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IUsersService _userService;
     private readonly ILogger<AuthController> _logger;
     private readonly BaseApiUrls _baseApiUrls;
 
-    public AuthController(IUserService userService,
+    public AuthController(IUsersService userService,
                           ILogger<AuthController> logger,
                           IOptions<BaseApiUrls> baseApiUrls)
     {

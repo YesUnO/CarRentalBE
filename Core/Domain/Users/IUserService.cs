@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Core.Domain.User;
 
-public interface IUserService
+public interface IUsersService
 {
     ApplicationUser GetSignedInUser();
     Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false);

@@ -15,7 +15,7 @@ using System.Web;
 
 namespace Core.Domain.User;
 
-public class UserService : IUserService
+public class UserService : IUsersService
 {
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly ILogger<UserService> _logger;

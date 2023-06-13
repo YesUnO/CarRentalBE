@@ -14,12 +14,12 @@ namespace Core.Domain.Orders;
 
 public class OrderService : IOrderService
 {
-    private readonly IUserService _userService;
+    private readonly IUsersService _userService;
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly ILogger<OrderService> _logger;
     private readonly IStripeInvoiceService _stripeInvoiceService;
 
-    public OrderService(IUserService userService, ApplicationDbContext applicationDbContext, ILogger<OrderService> logger, IStripeInvoiceService stripeInvoiceService)
+    public OrderService(IUsersService userService, ApplicationDbContext applicationDbContext, ILogger<OrderService> logger, IStripeInvoiceService stripeInvoiceService)
     {
         _userService = userService;
         _applicationDbContext = applicationDbContext;

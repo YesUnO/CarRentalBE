@@ -45,7 +45,7 @@ public static class DIServiceUtilities
     public static IServiceCollection AddUserServiceMockWithSignedInUser(this IServiceCollection services, ApplicationUser? desiredUser = null)
     {
         var user = desiredUser is null ? new ApplicationUser() : desiredUser;
-        var userServicceMock = new Mock<IUserService>();
+        var userServicceMock = new Mock<IUsersService>();
         userServicceMock.Setup(x => x.GetUserByMailAsync("", false)).Returns(Task.FromResult(user));
         services.AddSingleton(userServicceMock.Object);
 

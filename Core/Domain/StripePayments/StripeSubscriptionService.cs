@@ -13,12 +13,12 @@ public class StripeSubscriptionService : IStripeSubscriptionService
 {
     private readonly StripeSettings _stripeSettings;
     private readonly ApplicationDbContext _applicationDbContext;
-    private readonly IUserService _userService;
+    private readonly IUsersService _userService;
     private readonly ILogger<StripeSubscriptionService> _logger;
 
     public StripeSubscriptionService(IOptions<StripeSettings> stripeSettings,
                                      ApplicationDbContext applicationDbContext,
-                                     IUserService userService,
+                                     IUsersService userService,
                                      ILogger<StripeSubscriptionService> logger)
     {
         _stripeSettings = stripeSettings.Value;

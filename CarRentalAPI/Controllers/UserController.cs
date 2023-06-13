@@ -16,12 +16,12 @@ namespace CarRentalAPI.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IUsersService _userService;
     private readonly IFileService _fileService;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ILogger<UserController> _logger;
 
-    public UserController(IUserService userService, UserManager<IdentityUser> userManager, IFileService fileService, ILogger<UserController> logger)
+    public UserController(IUsersService userService, UserManager<IdentityUser> userManager, IFileService fileService, ILogger<UserController> logger)
     {
         _userService = userService;
         _userManager = userManager;
