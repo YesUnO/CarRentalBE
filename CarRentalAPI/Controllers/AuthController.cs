@@ -8,7 +8,7 @@ using System.Security.Claims;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Options;
 using Microsoft.Extensions.Options;
-//using Duende.Bff;
+using Duende.Bff;
 
 namespace CarRentalAPI.Controllers;
 
@@ -105,7 +105,7 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("ResendConfirmationEmail")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    [Authorize(Roles = "Customer")]
     public async Task<IActionResult> ResendConfirmationEmail()
     {
         try
