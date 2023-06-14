@@ -1,6 +1,5 @@
 ﻿using Core.ControllerModels.User;
 using DataLayer.Entities.User;
-using Microsoft.AspNetCore.Identity;
 
 namespace Core.Domain.User;
 

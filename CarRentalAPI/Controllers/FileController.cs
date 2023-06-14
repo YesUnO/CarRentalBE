@@ -1,6 +1,6 @@
 ﻿using Core.ControllerModels.File;
 using Core.Infrastructure.Files;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Duende.Bff;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
+[BffApi]
 public class FileController : ControllerBase
 {
     private readonly IFileService _fileService;
@@ -21,7 +21,7 @@ public class FileController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUserDocumentPhoto([FromQuery] GetUserDocumentPhotoModel model)
     {
         var fileStream = await _fileService.GetUserDocumentPhoto(model.Mail, model.UserDocumentImageType);
@@ -32,7 +32,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("{orderId}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy", Roles = "Customer")]
+    [Authorize(Policy = "ViewOwnOrdersPolicy", Roles = "Customer")]
     public async Task<IActionResult> PostCarReturningPhoto([FromRoute] int orderId, [FromForm] PostCarReturningPhotoModel model)
     {
         try
@@ -50,7 +50,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    [Authorize(Roles = "Customer")]
     public async Task<IActionResult> PostUserDocumentImage([FromForm] PostUserDocumentImageModel model)
     {
         try

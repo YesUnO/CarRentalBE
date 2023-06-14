@@ -1,7 +1,7 @@
 ﻿using Core.ControllerModels.Stripe;
 using Core.Domain.Payment.Options;
 using Core.Domain.StripePayments.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Duende.Bff;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
+[BffApi]
 public class StripeController : ControllerBase
 {
     private readonly IStripeSubscriptionService _subscriptionService;
@@ -31,7 +31,7 @@ public class StripeController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    [Authorize(Roles = "Customer")]
     public async Task<IActionResult> CreateSubscription()
     {
         try
@@ -54,6 +54,7 @@ public class StripeController : ControllerBase
 
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();

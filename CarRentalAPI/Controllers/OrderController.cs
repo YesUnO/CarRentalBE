@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Core.Domain.Orders;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using DTO;
 using System.Security.Claims;
 using Core.ControllerModels.Order;
+using Duende.Bff;
 
 namespace CarRentalAPI.Controllers;
 
 
 [Route("api/[controller]")]
-[ApiController]
+[BffApi]
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -23,7 +22,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    [Authorize(Roles = "Customer")]
     public async Task<IActionResult> Create(CreateOrderRequestModel model)
     {
         try
@@ -40,7 +39,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    [Authorize(Roles = "Customer")]
     public async Task<IActionResult> GetOrdes()
     {
         try
@@ -57,7 +56,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost("{orderId}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ViewOwnOrdersPolicy", Roles = "Customer")]
+    [Authorize(Policy = "ViewOwnOrdersPolicy", Roles = "Customer")]
     public async Task<IActionResult> PayOrder(int orderId)
     {
         try
@@ -72,13 +71,5 @@ public class OrderController : ControllerBase
             return BadRequest(ex.Message);
 
         }
-    }
-
-    [HttpGet]
-    [Route("test")]    
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public IActionResult Test ()
-    {
-        return Ok();
     }
 }

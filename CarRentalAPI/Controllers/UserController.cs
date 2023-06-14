@@ -1,40 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Core.Domain.User;
 using Core.Infrastructure.Files;
 using System.Security.Claims;
-using System.Drawing;
 using Core.ControllerModels.User;
-using CarRentalAPI.Models.User;
+using Duende.Bff;
 
 namespace CarRentalAPI.Controllers;
 
 
 [Route("api/[controller]")]
-[ApiController]
+[BffApi]
 public class UserController : ControllerBase
 {
     private readonly IUsersService _userService;
     private readonly IFileService _fileService;
-    private readonly UserManager<IdentityUser> _userManager;
     private readonly ILogger<UserController> _logger;
 
-    public UserController(IUsersService userService, UserManager<IdentityUser> userManager, IFileService fileService, ILogger<UserController> logger)
+    public UserController(IUsersService userService, IFileService fileService, ILogger<UserController> logger)
     {
         _userService = userService;
-        _userManager = userManager;
         _fileService = fileService;
         _logger = logger;
     }
 
     [HttpDelete]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete([FromQuery] string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
+        if (false)
         {
             return BadRequest();
         }
@@ -54,7 +49,7 @@ public class UserController : ControllerBase
 
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+    [Authorize(Roles = "Customer")]
     public async Task<IActionResult> GetUser()
     {
         try
@@ -72,7 +67,7 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [Route("List")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUsers()
     {
         try
@@ -89,7 +84,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Route("VerifyDocument")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> VerifyDoc(VerifyDocumentRequestModel model)
     {
         try
@@ -109,7 +104,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Route("Approve")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Approove(ApproveUserRequestModel model)
     {
         try

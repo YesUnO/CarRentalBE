@@ -1,14 +1,14 @@
 ﻿using Core.ControllerModels.Car;
 using Core.Domain.Cars;
 using Core.Infrastructure.Files;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Duende.Bff;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
+[BffApi]
 public class CarController : ControllerBase
 {
     private readonly ICarService _carService;
@@ -23,7 +23,7 @@ public class CarController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(CreateCarRequestModel model)
     {
         try
@@ -39,7 +39,7 @@ public class CarController : ControllerBase
     }
 
     [HttpPost("{carId}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddProfilePicToCar([FromRoute] int carId, [FromForm] AddProfilePicToCarRequestModel model)
     {
         try
@@ -58,7 +58,7 @@ public class CarController : ControllerBase
     }
 
     [HttpDelete("{carId}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteProfilePicToCar(int carId)
     {
         try
@@ -77,6 +77,7 @@ public class CarController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetCars()
     {
         try
