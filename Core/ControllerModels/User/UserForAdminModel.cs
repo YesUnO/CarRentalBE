@@ -3,6 +3,7 @@ namespace Core.ControllerModels.User
 {
     public class UserForAdminModel
     {
+        public string Email { get; set; }
         public string? DrivingLicenseImgBack { get; set; }
         public string? DrivingLicenseImgFront { get; set; }
         public bool HasDrivingLicenseVerified { get; set; }
