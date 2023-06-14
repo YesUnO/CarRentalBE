@@ -40,10 +40,8 @@ namespace Core.Infrastructure.Authentication
                 options.Scope.Clear();
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
-                options.Scope.Add("cred");
+                options.ClaimActions.MapJsonKey("email_verified", "email_verified", "email_verified");
                 options.ClaimActions.MapJsonKey("role", "role", "role");
-                options.ClaimActions.MapJsonKey("email", "email", "email");
-                options.ClaimActions.MapJsonKey("name", "name", "name");
 
                 options.TokenValidationParameters = new()
                 {
