@@ -9,6 +9,7 @@ namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
 [BffApi]
+[ApiController]
 public class FileController : ControllerBase
 {
     private readonly IFileService _fileService;

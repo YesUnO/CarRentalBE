@@ -12,6 +12,7 @@ namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
 [BffApi]
+[ApiController]
 public class StripeController : ControllerBase
 {
     private readonly IStripeSubscriptionService _subscriptionService;

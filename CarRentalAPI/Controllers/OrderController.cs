@@ -10,6 +10,7 @@ namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
 [BffApi]
+[ApiController]
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;

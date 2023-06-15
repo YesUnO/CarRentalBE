@@ -9,6 +9,7 @@ namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
 [BffApi]
+[ApiController]
 public class CarController : ControllerBase
 {
     private readonly ICarService _carService;

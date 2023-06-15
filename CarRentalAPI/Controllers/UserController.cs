@@ -11,6 +11,7 @@ namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
 [BffApi]
+[ApiController]
 public class UserController : ControllerBase
 {
     private readonly IUsersService _userService;

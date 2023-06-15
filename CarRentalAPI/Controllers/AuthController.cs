@@ -1,9 +1,7 @@
 ﻿using Core.Domain.User;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Core.ControllerModels.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Options;
@@ -14,6 +12,7 @@ namespace CarRentalAPI.Controllers;
 
 [Route("api/[controller]")]
 [BffApi]
+[ApiController]
 public class AuthController : ControllerBase
 {
     private readonly IUsersService _userService;
@@ -35,8 +34,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var user = new IdentityUser(model.UserName);
-            await _userService.RegisterCustomer(model.Email, model.Password, model.UserName);
+            await _userService.RegisterCustomer(model.Email, model.Password, model.Username);
             return Ok(new { Result = "Succesfully registered a new customer." });
         }
         catch (UserRegistrationException ex)
