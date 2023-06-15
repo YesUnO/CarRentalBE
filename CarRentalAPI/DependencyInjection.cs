@@ -1,5 +1,5 @@
-﻿using Core;
-using Core.Infrastructure.Authentication;
+﻿using CarRentalAPI.Bff;
+using Core;
 
 namespace CarRentalAPI;
 

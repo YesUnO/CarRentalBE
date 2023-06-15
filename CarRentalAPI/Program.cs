@@ -19,6 +19,8 @@ builder.Services.AddOptions<BaseApiUrls>()
     {
         x.HttpsUrl = baseApiUrls.HttpsUrl;
         x.HttpUrl = baseApiUrls.HttpUrl;
+        x.FrontEndUrl = builder.Configuration["FrontEndUrl"];
+
     });
 
 builder.Services.AddThingsToContainer(builder.Configuration);

@@ -1,16 +1,17 @@
-﻿using Duende.Bff.Yarp;
+﻿using Duende.Bff;
+using Duende.Bff.Yarp;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Core.Infrastructure.Authentication
+namespace CarRentalAPI.Bff
 {
     internal static class BffHostExtension
     {
-        internal static IServiceCollection AddBffToContainer(this IServiceCollection Services, IConfiguration configuration)
+        internal static IServiceCollection AddBffToContainer(this IServiceCollection services, IConfiguration configuration)
         {
-            Services.AddBff()
+            services.AddBff()
                 .AddRemoteApis();
 
-            Services.AddAuthentication(options =>
+            services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "cookie";
                 options.DefaultChallengeScheme = "oidc";
@@ -49,7 +50,9 @@ namespace Core.Infrastructure.Authentication
                     RoleClaimType = "role"
                 };
             });
-            return Services;
+
+            services.AddTransient<IUserService, BffUserService>();
+            return services;
         }
     }
 }
