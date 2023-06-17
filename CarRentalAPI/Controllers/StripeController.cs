@@ -2,6 +2,7 @@
 using Core.Domain.Payment.Options;
 using Core.Domain.StripePayments.Interfaces;
 using Duende.Bff;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -37,7 +38,7 @@ public class StripeController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var loggedinUserMail = HttpContext.User.FindFirstValue(JwtClaimTypes.Email);
             var domain = Request.Headers["Referer"].ToString();
 
             var sessionUrl = _subscriptionService.CreateSubscriptionReturnCheckoutSession(domain, loggedinUserMail);

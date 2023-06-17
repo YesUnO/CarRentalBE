@@ -7,6 +7,7 @@ using Core.Exceptions.UserRegistration;
 using Core.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Duende.Bff;
+using IdentityModel;
 
 namespace CarRentalAPI.Controllers;
 
@@ -108,7 +109,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var loggedinUserMail = HttpContext.User.FindFirstValue(JwtClaimTypes.Email);
 
             await _userService.ResendConfirmationEmailAsync(loggedinUserMail);
             return Ok(new { Result = "Succesfully send confirm email." });

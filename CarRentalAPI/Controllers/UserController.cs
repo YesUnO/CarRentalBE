@@ -5,6 +5,7 @@ using Core.Infrastructure.Files;
 using System.Security.Claims;
 using Core.ControllerModels.User;
 using Duende.Bff;
+using IdentityModel;
 
 namespace CarRentalAPI.Controllers;
 
@@ -54,7 +55,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var loggedinUserMail = HttpContext.User.FindFirstValue(JwtClaimTypes.Email);
             var result = await _userService.GetUserDTOByMailAsync(loggedinUserMail);
             return Ok(result);
         }

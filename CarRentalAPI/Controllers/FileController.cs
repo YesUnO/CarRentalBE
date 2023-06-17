@@ -56,7 +56,7 @@ public class FileController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var loggedinUserMail = HttpContext.User.FindFirstValue("email");
 
             await _fileService.SaveUserDocumentPhotoAsync(model.File, model.UserDocumentImageType, loggedinUserMail);
             return Ok();

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Core.ControllerModels.Order;
 using Duende.Bff;
+using IdentityModel;
 
 namespace CarRentalAPI.Controllers;
 
@@ -28,7 +29,7 @@ public class OrderController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var loggedinUserMail = HttpContext.User.FindFirstValue(JwtClaimTypes.Email);
             var order = await _orderService.CreateOrder(model, loggedinUserMail);
             return Ok(order);
         }
@@ -45,7 +46,7 @@ public class OrderController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var loggedinUserMail = HttpContext.User.FindFirstValue(JwtClaimTypes.Email);
             List< OrderResponseModel> orders = await _orderService.GetCustomersOrders(loggedinUserMail);
             return Ok(orders);
         }
@@ -62,7 +63,7 @@ public class OrderController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var loggedinUserMail = HttpContext.User.FindFirstValue(JwtClaimTypes.Email);
             _orderService.PayOrder(orderId, loggedinUserMail);
             return Ok();
         }
