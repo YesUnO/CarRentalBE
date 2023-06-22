@@ -124,29 +124,29 @@ public class UserService : IUsersService
         await _applicationDbContext.SaveChangesAsync();
     }
 
-    public async Task RegisterCustomer(string email, string password, string username)
-    {
-        CheckAvailibility(username, email);
-        var creatingUserResult = await RegisterCustomerOnIdentityServerAsync(email, password, username);
+    //public async Task RegisterCustomer(string email, string password, string username)
+    //{
+    //    CheckAvailibility(username, email);
+    //    var creatingUserResult = await RegisterCustomerOnIdentityServerAsync(email, password, username);
 
-        if (creatingUserResult.Exception is not null)
-        {
-            throw creatingUserResult.Exception;
-        }
+    //    if (creatingUserResult.Exception is not null)
+    //    {
+    //        throw creatingUserResult.Exception;
+    //    }
 
-        if (!creatingUserResult.Succeeded)
-        {
-            throw new UserRegistrationException(
-                "Unable to create user",
-                creatingUserResult.Errors.Select(x =>
-                    new UserRegistrationError { Description = x.Description, Field = ParseIdentityErrorCodesToFields(x.Code) }));
-        }
+    //    if (!creatingUserResult.Succeeded)
+    //    {
+    //        throw new UserRegistrationException(
+    //            "Unable to create user",
+    //            creatingUserResult.Errors.Select(x =>
+    //                new UserRegistrationError { Description = x.Description, Field = ParseIdentityErrorCodesToFields(x.Code) }));
+    //    }
 
-        await CreateApplicationUserAsync(email, username);
+    //    await CreateApplicationUserAsync(email, username);
 
-        await SendConfirmationMailAsync(email, creatingUserResult.EmailConfirmationToken, username);
-        await _applicationDbContext.SaveChangesAsync();
-    }
+    //    await SendConfirmationMailAsync(email, creatingUserResult.EmailConfirmationToken, username);
+    //    await _applicationDbContext.SaveChangesAsync();
+    //}
 
     public async Task<ApplicationUser> GetUserByMailAsync(string mail, bool includeDocuments = false)
     {
@@ -188,16 +188,16 @@ public class UserService : IUsersService
 
     }
 
-    public async Task ResendConfirmationEmailAsync(string email)
-    {
-        var user = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == email);
-        if (user is null)
-        {
-            throw new Exception("User doesnt exist");
-        }
-        var token = await GetEmailConfirmationTokenFromIdentityServer(email);
-        await SendConfirmationMailAsync(email, token, user.Username);
-    }
+    //public async Task ResendConfirmationEmailAsync(string email)
+    //{
+    //    var user = await _applicationDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == email);
+    //    if (user is null)
+    //    {
+    //        throw new Exception("User doesnt exist");
+    //    }
+    //    var token = await GetEmailConfirmationTokenFromIdentityServer(email);
+    //    await SendConfirmationMailAsync(email, token, user.Username);
+    //}
 
     public async Task VerifyUserDocumentAsync(VerifyDocumentRequestModel model)
     {
@@ -228,44 +228,44 @@ public class UserService : IUsersService
 
     #region private methods
 
-    private void CheckAvailibility(string username, string email)
-    {
-        var errors = new List<UserRegistrationError>();
-        var emailIsTaken = _applicationDbContext.ApplicationUsers.Any(x => x.Email == email);
-        if (emailIsTaken)
-        {
-            errors.Add(new UserRegistrationError
-            {
-                Description = $"Email '{email}' is already taken.",
-                Field = ParseIdentityErrorCodesToFields("DuplicateEmail")
-            });
-        }
-        var usernameIsTaken = _applicationDbContext.ApplicationUsers.Any(x => x.Username == username);
-        if (usernameIsTaken)
-        {
-            errors.Add(new UserRegistrationError
-            {
-                Description = $"Username '{username}' is already taken.",
-                Field = ParseIdentityErrorCodesToFields("DuplicateUserName")
-            });
-        }
-        if (errors.Any())
-        {
-            throw new UserRegistrationException("Unable to create user",errors);
-        }
-    }
+    //private void CheckAvailibility(string username, string email)
+    //{
+    //    var errors = new List<UserRegistrationError>();
+    //    var emailIsTaken = _applicationDbContext.ApplicationUsers.Any(x => x.Email == email);
+    //    if (emailIsTaken)
+    //    {
+    //        errors.Add(new UserRegistrationError
+    //        {
+    //            Description = $"Email '{email}' is already taken.",
+    //            Field = ParseIdentityErrorCodesToFields("DuplicateEmail")
+    //        });
+    //    }
+    //    var usernameIsTaken = _applicationDbContext.ApplicationUsers.Any(x => x.Username == username);
+    //    if (usernameIsTaken)
+    //    {
+    //        errors.Add(new UserRegistrationError
+    //        {
+    //            Description = $"Username '{username}' is already taken.",
+    //            Field = ParseIdentityErrorCodesToFields("DuplicateUserName")
+    //        });
+    //    }
+    //    if (errors.Any())
+    //    {
+    //        throw new UserRegistrationException("Unable to create user",errors);
+    //    }
+    //}
 
-    private async Task<RegisterResponseModel> RegisterCustomerOnIdentityServerAsync(string email, string password, string username)
-    {
-        var client = _clientFactory.CreateClient("identityServerClient");
-        var requestBody = JsonConvert.SerializeObject(new { Username = username, Password = password, Email = email });
-        var content = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
+    //private async Task<RegisterResponseModel> RegisterCustomerOnIdentityServerAsync(string email, string password, string username)
+    //{
+    //    var client = _clientFactory.CreateClient("identityServerClient");
+    //    var requestBody = JsonConvert.SerializeObject(new { Username = username, Password = password, Email = email });
+    //    var content = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
 
-        var response = await client.PostAsync(new Uri("https://localhost:5001/api/admin"), content);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<RegisterResponseModel>(body);
-        return result;
-    }
+    //    var response = await client.PostAsync(new Uri("https://localhost:5001/api/admin"), content);
+    //    var body = await response.Content.ReadAsStringAsync();
+    //    var result = JsonConvert.DeserializeObject<RegisterResponseModel>(body);
+    //    return result;
+    //}
 
     private async Task<string> GetEmailConfirmationTokenFromIdentityServer(string email)
     {
@@ -277,48 +277,48 @@ public class UserService : IUsersService
         return result;
     }
 
-    private string ParseIdentityErrorCodesToFields(string code) => code switch
-    {
-        "ConcurrencyFailure" => "concurrency",
-        "DefaultError" => "default",
-        "DuplicateEmail" => "email",
-        "DuplicateRoleName" => "roleName",
-        "DuplicateUserName" => "username",
-        "InvalidEmail" => "email",
-        "InvalidRoleName" => "roleName",
-        "InvalidToken" => "token",
-        "InvalidUserName" => "userName",
-        "LoginAlreadyAssociated" => "login",
-        "PasswordMismatch" => "password",
-        "PasswordRequiresDigit" => "password",
-        "PasswordRequiresLower" => "password",
-        "PasswordRequiresNonAlphanumeric" => "password",
-        "PasswordRequiresUniqueChars" => "password",
-        "PasswordRequiresUpper" => "password",
-        "PasswordTooShort" => "password",
-        "RecoveryCodeRedemptionFailed" => "recoveryCode",
-        "UserAlreadyHasPassword" => "password",
-        "UserAlreadyInRole" => "roleName",
-        "UserLockoutNotEnabled" => "lockout",
-        "UserNotInRole" => "roleName"
-    };
+    //private string ParseIdentityErrorCodesToFields(string code) => code switch
+    //{
+    //    "ConcurrencyFailure" => "concurrency",
+    //    "DefaultError" => "default",
+    //    "DuplicateEmail" => "email",
+    //    "DuplicateRoleName" => "roleName",
+    //    "DuplicateUserName" => "username",
+    //    "InvalidEmail" => "email",
+    //    "InvalidRoleName" => "roleName",
+    //    "InvalidToken" => "token",
+    //    "InvalidUserName" => "userName",
+    //    "LoginAlreadyAssociated" => "login",
+    //    "PasswordMismatch" => "password",
+    //    "PasswordRequiresDigit" => "password",
+    //    "PasswordRequiresLower" => "password",
+    //    "PasswordRequiresNonAlphanumeric" => "password",
+    //    "PasswordRequiresUniqueChars" => "password",
+    //    "PasswordRequiresUpper" => "password",
+    //    "PasswordTooShort" => "password",
+    //    "RecoveryCodeRedemptionFailed" => "recoveryCode",
+    //    "UserAlreadyHasPassword" => "password",
+    //    "UserAlreadyInRole" => "roleName",
+    //    "UserLockoutNotEnabled" => "lockout",
+    //    "UserNotInRole" => "roleName"
+    //};
 
-    private async Task CreateApplicationUserAsync(string email, string username)
-    {
-        var applicationUser = new ApplicationUser { Email = email, Username = username };
-        var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
-    }
+    //private async Task CreateApplicationUserAsync(string email, string username)
+    //{
+    //    var applicationUser = new ApplicationUser { Email = email, Username = username };
+    //    var userAdd = await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
+    //}
 
 
-    private async Task SendConfirmationMailAsync(string email, string confirmationEmailtoken, string name)
-    {
-        var subject = "Account confirmation";
-        var tokenEncoded = HttpUtility.UrlEncode(confirmationEmailtoken);
-        var baseUrl = new Uri(_baseApiUrls.HttpsUrl + "/api/auth/ConfirmMail");
-        var link = $"{baseUrl}?token={tokenEncoded}&email={email}";
-        var body = $"Hello {name}," +
-            $"<p>Confirm your mail address with this link: <a href=\"{link}\">confirm mail link</a></p>";
-        await _emailService.SendEmailAsync(email, subject, body);
-    }
+    //private async Task SendConfirmationMailAsync(string email, string confirmationEmailtoken, string name)
+    //{
+    //    var subject = "Account confirmation";
+    //    var tokenEncoded = HttpUtility.UrlEncode(confirmationEmailtoken);
+    //    var baseUrl = new Uri(_baseApiUrls.HttpsUrl + "/api/auth/ConfirmMail");
+    //    var link = $"{baseUrl}?token={tokenEncoded}&email={email}";
+    //    var body = $"Hello {name}," +
+    //        $"<p>Confirm your mail address with this link: <a href=\"{link}\">confirm mail link</a></p>";
+    //    await _emailService.SendEmailAsync(email, subject, body);
+    //}
     #endregion
 }

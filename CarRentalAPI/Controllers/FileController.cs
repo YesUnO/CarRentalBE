@@ -1,6 +1,7 @@
 ﻿using Core.ControllerModels.File;
 using Core.Infrastructure.Files;
 using Duende.Bff;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -56,7 +57,8 @@ public class FileController : ControllerBase
     {
         try
         {
-            var loggedinUserMail = HttpContext.User.FindFirstValue("email");
+            
+            var loggedinUserMail = HttpContext.User.FindFirstValue( JwtClaimTypes.Email);
 
             await _fileService.SaveUserDocumentPhotoAsync(model.File, model.UserDocumentImageType, loggedinUserMail);
             return Ok();

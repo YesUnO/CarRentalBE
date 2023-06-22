@@ -23,11 +23,10 @@ namespace CarRentalAPI.Bff
         public override Task ProcessRequestAsync(HttpContext context)
         {
 
-            string authnMethodsReferences = context.User.FindFirstValue("http://schemas.microsoft.com/claims/authnmethodsreferences");
             Claim emailClaim = context.User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Email);
             var nameClaim = context.User.Identity.Name;
 
-            if (authnMethodsReferences != null && authnMethodsReferences == "external" && emailClaim != null)
+            if (emailClaim != null && nameClaim != null)
             {
                 var user = _applicationDbContext.ApplicationUsers.FirstOrDefault(x=>x.Email == emailClaim.Value);
                 if (user == null)
