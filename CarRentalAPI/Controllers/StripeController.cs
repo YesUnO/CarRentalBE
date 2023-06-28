@@ -1,4 +1,4 @@
-﻿using Core.ControllerModels.Stripe;
+﻿using CarRentalAPI.Helpers;
 using Core.Domain.Payment.Options;
 using Core.Domain.StripePayments.Interfaces;
 using Duende.Bff;
@@ -33,6 +33,7 @@ public class StripeController : ControllerBase
     }
 
     [HttpGet]
+    [BffApiSkipAntiforgeryAttribute]
     [Authorize(Roles = "Customer")]
     public async Task<IActionResult> CreateSubscription()
     {
@@ -43,9 +44,7 @@ public class StripeController : ControllerBase
 
             var sessionUrl = _subscriptionService.CreateSubscriptionReturnCheckoutSession(domain, loggedinUserMail);
 
-            //TODO try to implement redirect on release
-            //return new SeeOther(sessionUrl);
-            return Ok(new CreateCheckoutSessionRasponse { Url = sessionUrl });
+            return new SeeOther(sessionUrl);
         }
         catch (Exception ex)
         {

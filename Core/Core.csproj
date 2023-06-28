@@ -21,4 +21,8 @@
     <ProjectReference Include="..\DTO\DTO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ControllerModels\Stripe\" />
+  </ItemGroup>
+
 </Project>
